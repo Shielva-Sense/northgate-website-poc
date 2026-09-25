@@ -23,7 +23,12 @@ const LINKS = [
     { href: "/contact", label: "Contact" },
 ] as const;
 
-export function SiteHeader(): React.JSX.Element {
+export function SiteHeader({
+    hasEmergency = true,
+}: {
+    /** Hidden entirely where the practice has no emergency department. */
+    readonly hasEmergency?: boolean;
+} = {}): React.JSX.Element {
     const brand = useBrand();
     const [open, setOpen] = useState(false);
 
@@ -50,10 +55,12 @@ export function SiteHeader(): React.JSX.Element {
                     {/* Deliberately outside LINKS: it is not a peer of "Services",
                         and someone who needs it is scanning for red, not reading
                         a nav. Kept at five links so the bar stays uncramped. */}
-                    <Link className={styles.urgent} href="/urgent-care">
-                        <Siren size={15} aria-hidden="true" />
-                        Urgent care
-                    </Link>
+                    {hasEmergency ? (
+                        <Link className={styles.urgent} href="/urgent-care">
+                            <Siren size={15} aria-hidden="true" />
+                            Urgent care
+                        </Link>
+                    ) : null}
                     <ThemeMenu />
                     <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
@@ -87,14 +94,16 @@ export function SiteHeader(): React.JSX.Element {
                                 {link.label}
                             </a>
                         ))}
-                        <Link
-                            className={styles.urgent}
-                            href="/urgent-care"
-                            onClick={() => setOpen(false)}
-                        >
-                            <Siren size={15} aria-hidden="true" />
-                            Urgent care
-                        </Link>
+                        {hasEmergency ? (
+                            <Link
+                                className={styles.urgent}
+                                href="/urgent-care"
+                                onClick={() => setOpen(false)}
+                            >
+                                <Siren size={15} aria-hidden="true" />
+                                Urgent care
+                            </Link>
+                        ) : null}
                         <ThemeMenu />
                         <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />

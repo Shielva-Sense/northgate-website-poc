@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { ArrowRight, Layers } from "lucide-react";
 import { isIndexable } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ThemePicker } from "@/app/features/clinic/components/ThemePicker";
@@ -11,7 +11,7 @@ import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
 import styles from "./Templates.module.scss";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `Choose a layout — ${brand.name}`,
         description:
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page(): Promise<React.JSX.Element> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     const indexable = isIndexable();
 
     return (

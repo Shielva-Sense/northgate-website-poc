@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { JsonLd } from "@/app/components/JsonLd";
 import { SERVICES } from "@/app/features/clinic/constants";
 import { isIndexable, serviceJsonLd, siteUrl } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { ServiceClient } from "./ServiceClient";
 
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const service = SERVICES.find((item) => item.slug === slug);
     if (!service) return { title: "Not found" };
 
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     const title = `${service.name} in ${brand.city} - ${brand.name}`;
     const canonical = `${siteUrl()}/services/${service.slug}`;
 
@@ -44,7 +44,7 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
     const service = SERVICES.find((item) => item.slug === slug);
     if (!service) notFound();
 
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     const data = serviceJsonLd(slug);
 
     return (

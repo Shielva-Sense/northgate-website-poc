@@ -4,13 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
 import { ARTICLES, ARTICLE_TOPICS } from "@/app/features/clinic/catalogue";
 import styles from "./Library.module.scss";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `Health library — ${brand.name}`,
         description:

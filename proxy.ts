@@ -1,75 +1,29 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { SESSION_COOKIE, verifyToken } from "@/app/core/session";
 
 /**
- * Invite-only gate for the preview subdomain.
+ * Pass-through.
  *
- * A signed session cookie rather than HTTP Basic: Basic pops the browser's own
- * credential box, which cannot be branded, cannot show an error, and cannot be
- * signed out of without closing the browser. This redirects to a real page.
+ * This used to be an invite gate: one shared username and password in front of
+ * a single demo. The site farm has no use for it — every prospect gets their
+ * own address and is sent the link directly, and a shared password handed to
+ * dozens of people protects nothing anyway.
  *
- * Credentials come from the environment, never source.
+ * What still protects these pages:
+ *
+ * - `X-Robots-Tag: noindex, nofollow` on every response, set in next.config.ts,
+ *   so none of them reach a search result.
+ * - An address nobody can guess: the identifier is chosen per client.
+ * - A visible demo ribbon on the page itself, so a site carrying a real
+ *   clinic's name can never be mistaken for that clinic's own.
+ *
+ * The one thing that is still gated is /api/submissions, which holds other
+ * people's contact details and enforces its own credentials.
  */
 
-/**
- * Paths served without a session.
- *
- * The icons and the manifest are here because a browser fetches a favicon in
- * contexts that do not carry the session cookie — and on the sign-in page there
- * is no cookie yet — so gating them just means a blank tab icon. None of them
- * reveal anything: they are a logo and a colour.
- */
-const PUBLIC_PATHS = [
-    "/login",
-    "/api/login",
-    "/icon",
-    "/apple-icon",
-    "/manifest.webmanifest",
-    /* Not gated by the invite session on purpose: it enforces its own
-       credentials, which are different ones. The invite login is shared with
-       every prospect being shown the demo, so gating this behind it would let
-       any of them read the others' submissions. */
-    "/api/submissions",
-];
-
-export default async function proxy(request: NextRequest): Promise<NextResponse> {
-    const { pathname, search } = request.nextUrl;
-
-    // Fail closed: an unconfigured gate must not silently publish the site.
-    const secret = process.env.POC_PASSWORD;
-    if (!secret || !process.env.POC_USER) {
-        return new NextResponse("Preview is not configured.", {
-            status: 503,
-            headers: { "Cache-Control": "no-store" },
-        });
-    }
-
-    const authorised = await verifyToken(request.cookies.get(SESSION_COOKIE)?.value, secret);
-
-    if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
-        // Already signed in? Skip the form.
-        if (authorised && pathname === "/login") {
-            return NextResponse.redirect(new URL("/", request.url));
-        }
-        return NextResponse.next();
-    }
-
-    if (!authorised) {
-        const url = new URL("/login", request.url);
-        // Send them where they were heading once they are through.
-        if (pathname !== "/") url.searchParams.set("next", `${pathname}${search}`);
-        const response = NextResponse.redirect(url);
-        response.headers.set("Cache-Control", "no-store");
-        return response;
-    }
-
-    const response = NextResponse.next();
-    response.headers.set("X-Robots-Tag", "noindex, nofollow");
-    return response;
+export default function proxy(): NextResponse {
+    return NextResponse.next();
 }
 
 export const config = {
-    // Gate everything except Next's own build output.
     matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

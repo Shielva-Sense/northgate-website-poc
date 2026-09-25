@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import styles from "./Privacy.module.scss";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `Privacy notice — ${brand.name}`,
         description:
@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * fill in the bracketed values.
  */
 export default async function Page(): Promise<React.JSX.Element> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return (
         <main id="main-content" tabIndex={-1} className={styles.page}>
             <div className="wrap">

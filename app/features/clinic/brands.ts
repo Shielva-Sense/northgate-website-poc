@@ -1,3 +1,4 @@
+import { packFor } from "./countries";
 /**
  * Per-prospect branding, resolved from the hostname.
  *
@@ -187,6 +188,22 @@ function titleCase(slug: string): string {
  * A bare host, an IP or localhost has no meaningful prefix, so those fall back
  * to the default brand rather than rendering a clinic called "localhost".
  */
+/**
+ * The site identifier carried by the host.
+ *
+ * `<identifier>.shielva.ai` is the shape the site farm uses, so the label
+ * after a leading "app." is the one that identifies the client. A plain
+ * `<identifier>.shielva.ai` still works, which keeps every existing link alive.
+ */
+export function identifierFromHost(host: string | null | undefined): string {
+    const first = slugFromHost(host);
+    if (first !== "app") return first;
+    const name = (host ?? "").split(":")[0]?.toLowerCase() ?? "";
+    const parts = name.split(".");
+    const second = parts[1] ?? "";
+    return second.replace(/[^a-z0-9-_]/g, "").slice(0, 40) || DEFAULT_SLUG;
+}
+
 export function slugFromHost(host: string | null | undefined): string {
     if (!host) return DEFAULT_SLUG;
     const name = host.split(":")[0]?.toLowerCase() ?? "";
@@ -209,6 +226,12 @@ export function resolveBrand(host: string | null | undefined): Brand {
     const short = override.short ?? titleCase(slug);
     const palette = PALETTES[hash(slug) % PALETTES.length] ?? TEAL;
 
+    /* Everything a country decides — the emergency number above all. Without
+       this, a clinic in Texas told its patients to call 999. */
+    const pack = packFor(override.country);
+    const phone = override.phone ?? pack.samplePhone;
+    const aeLine = override.aeLine ?? phone;
+
     return {
         slug,
         name,
@@ -216,26 +239,25 @@ export function resolveBrand(host: string | null | undefined): Brand {
         kicker: override.kicker ?? "Health",
         monogram: (override.monogram ?? short.charAt(0)).toUpperCase(),
         strapline: override.strapline ?? "See a named doctor this week, not in three",
-        phone: override.phone ?? "+44 20 7946 0958",
-        phoneHref: `tel:${(override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
-        whatsapp:
-            override.whatsapp ??
-            (override.phone ?? "+44 20 7946 0958").replace(/\D/g, ""),
+        phone,
+        phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
+        whatsapp: override.whatsapp ?? phone.replace(/\D/g, ""),
         email: override.email ?? `reception@${slug}.example`,
-        address: override.address ?? `1 High Street, ${override.city ?? "Manchester"}`,
-        city: override.city ?? "Manchester",
-        country: override.country ?? "GB",
-        currency: override.currency ?? "£",
-        emergencyNumber: override.emergencyNumber ?? "999",
+        address: override.address ?? `1 High Street, ${override.city ?? pack.defaultCity}`,
+        city: override.city ?? pack.defaultCity,
+        country: override.country ?? pack.code,
+        currency: override.currency ?? pack.currency,
+        emergencyNumber: override.emergencyNumber ?? pack.emergencyNumber,
         // Falls back to the main switchboard rather than inventing a second
         // number: a wrong emergency line is worse than one that is merely busy.
-        aeLine: override.aeLine ?? override.phone ?? "+44 20 7946 0958",
-        aeLineHref: `tel:${(override.aeLine ?? override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
+        aeLine,
+        aeLineHref: `tel:${aeLine.replace(/[^+\d]/g, "")}`,
         rating: override.rating ?? "4.9",
         ratingCount: override.ratingCount ?? "1,240",
         palette: override.palette ?? palette,
-        // Absent unless the market is known. Never invent a regulator.
-        regulators: override.regulators ?? null,
+        // From the country pack, and null for a market we have not checked —
+        // never invent a regulator.
+        regulators: override.regulators ?? pack.regulators,
     };
 }
 
@@ -263,4 +285,63 @@ export function paletteVarsFor(p: Palette): Record<string, string> {
         "--color-accent-rgb": rgb(p.accent),
         "--color-accent-700": p.accent700,
     };
+}
+
+/**
+ * A brand built from a stored site record, falling back to what the identifier
+ * alone can derive.
+ *
+ * The record only has to carry what differs from the default. A row with a
+ * name and an address produces a complete, coherent site; every unset field
+ * still resolves to something sensible rather than an empty string on a page a
+ * prospect is looking at.
+ */
+export function brandFromRecord(
+    identifier: string,
+    record: SiteOverrides | null,
+): Brand {
+    const base = resolveBrand(identifier);
+    if (record === null) return base;
+
+    const name = record.businessName ?? base.name;
+    const short = record.short ?? name.split(" ")[0] ?? base.short;
+    const theme = record.theme === undefined ? undefined : THEMES.find((t) => t.id === record.theme);
+    const phone = record.phone ?? base.phone;
+    const aeLine = record.aeLine ?? record.phone ?? base.aeLine;
+
+    return {
+        ...base,
+        name,
+        short,
+        kicker: record.kicker ?? base.kicker,
+        monogram: short.charAt(0).toUpperCase(),
+        city: record.city ?? base.city,
+        country: record.country ?? base.country,
+        address: record.address ?? base.address,
+        email: record.email ?? base.email,
+        currency: record.currency ?? base.currency,
+        emergencyNumber: record.emergencyNumber ?? base.emergencyNumber,
+        phone,
+        phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
+        whatsapp: phone.replace(/\D/g, ""),
+        aeLine,
+        aeLineHref: `tel:${aeLine.replace(/[^+\d]/g, "")}`,
+        palette: theme?.palette ?? base.palette,
+    };
+}
+
+/** The subset of a site record that shapes the brand. */
+export interface SiteOverrides {
+    readonly businessName?: string;
+    readonly short?: string;
+    readonly kicker?: string;
+    readonly country?: string;
+    readonly city?: string;
+    readonly address?: string;
+    readonly phone?: string;
+    readonly aeLine?: string;
+    readonly emergencyNumber?: string;
+    readonly email?: string;
+    readonly currency?: string;
+    readonly theme?: string;
 }
