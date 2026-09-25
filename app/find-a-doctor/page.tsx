@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { resolveBrand } from "@/app/features/clinic/brands";
-import { BrandProvider } from "@/app/features/clinic/BrandContext";
-import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
-import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
-import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
+import { PageShell } from "@/app/components/layouts/PageShell";
 import { FindDoctorClient } from "./FindDoctorClient";
 import styles from "./FindDoctor.module.scss";
 
@@ -16,40 +11,31 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: `Find a doctor — ${brand.name}`,
         description:
-            "Tell us what it is about and we will point you at the right department, then show you who is free.",
+            "Every clinician, what they cost, the languages they speak and the next time they are free.",
         alternates: { canonical: `${siteUrl()}/find-a-doctor` },
         robots: isIndexable() ? undefined : { index: false, follow: false },
     };
 }
 
-export default async function Page(): Promise<React.JSX.Element> {
-    const brand = resolveBrand((await headers()).get("host"));
-
+/**
+ * This page used to assemble its own chrome — provider, announce bar, header,
+ * footer — which is the duplication PageShell exists to stop. It also meant the
+ * one page missing a hero image and the demo bar was this one.
+ */
+export default function Page(): React.JSX.Element {
     return (
-        <BrandProvider brand={brand}>
-            <AnnounceBar />
-            <SiteHeader />
-            <main id="main-content" tabIndex={-1}>
-                <div className={`wrap ${styles.page}`}>
-                    <p className={styles.routed}>
-                        <Link href="/">
-                            <ArrowLeft size={14} aria-hidden="true" />
-                            {brand.name}
-                        </Link>
-                    </p>
-                    <h1 className={styles.h1}>Find a doctor</h1>
-                    <p className={styles.lede}>
-                        Nine clinicians, what each one costs, the languages they speak and the
-                        next time they are actually free. Filter to what matters to you — or, if
-                        you are not sure who you need, answer a few questions instead and we will
-                        point you at the department that usually sees it.
-                    </p>
-                    <div className={styles.body}>
-                        <FindDoctorClient />
-                    </div>
+        <PageShell
+            kicker="Our clinicians"
+            title="Find a doctor"
+            lede="Nine clinicians, what each one costs, the languages they speak and the next time they are actually free. Filter to what matters to you — or, if you are not sure who you need, answer a few questions instead."
+            image="/img/corridor.jpg"
+            imageAlt="A bright clinic corridor lined with consulting room doors in pale oak"
+        >
+            <div className={`wrap ${styles.page}`}>
+                <div className={styles.body}>
+                    <FindDoctorClient />
                 </div>
-            </main>
-            <SiteFooter />
-        </BrandProvider>
+            </div>
+        </PageShell>
     );
 }

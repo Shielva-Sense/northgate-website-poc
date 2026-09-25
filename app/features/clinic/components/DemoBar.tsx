@@ -27,7 +27,7 @@ export function DemoBar({
         <aside className={styles.bar} aria-label="Demo layout switcher">
             <span className={styles.label}>
                 <Layers size={14} aria-hidden="true" />
-                Layout
+                <span className={styles.labelText}>Layout</span>
             </span>
             <ul className={styles.options} role="list">
                 {TEMPLATES.map((template) => (

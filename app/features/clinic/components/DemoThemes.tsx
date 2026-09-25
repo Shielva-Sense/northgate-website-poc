@@ -27,7 +27,7 @@ export function DemoThemes(): React.JSX.Element {
         <div className={styles.themes}>
             <span className={styles.label}>
                 <Palette size={14} aria-hidden="true" />
-                Colours
+                <span className={styles.labelText}>Colours</span>
             </span>
             <ul className={styles.swatches} role="list">
                 {THEMES.map((theme) => (
