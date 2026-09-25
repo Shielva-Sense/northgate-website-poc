@@ -10,6 +10,7 @@ import {
     rateLimited,
 } from "@/app/core/intake";
 import { QUESTION_IDS } from "@/app/features/feedback/questions";
+import { appendSubmission } from "@/app/core/feedback-store";
 
 /**
  * Prospect feedback and discovery intake.
@@ -134,6 +135,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         ratings: cleanRatings(body.ratings),
         answers: cleanAnswers(body.answers),
     };
+
+    // Stored before delivery, and never conditionally: if the webhook is down
+    // or unset, the answers still have to survive somewhere readable.
+    await appendSubmission(payload);
 
     const sink = process.env.FEEDBACK_WEBHOOK_URL ?? process.env.ENQUIRY_WEBHOOK_URL;
     if (sink === undefined || sink === "") {

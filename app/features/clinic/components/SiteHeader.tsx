@@ -36,8 +36,8 @@ export function SiteHeader(): React.JSX.Element {
                 <Link href="/" className={styles.logo}>
                     <Logo size={38} />
                     <span>
-                        Northgate
-                        <small>Family Health</small>
+                        {brand.short}
+                        <small>{brand.kicker}</small>
                     </span>
                 </Link>
 

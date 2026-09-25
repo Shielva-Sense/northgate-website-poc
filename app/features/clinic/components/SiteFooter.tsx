@@ -51,8 +51,7 @@ export function SiteFooter(): React.JSX.Element {
                 </div>
                 <div className={styles.footBase}>
                     <span>
-                        Sample build for demonstration. Northgate Family Health is a fictional
-                        practice.
+                        Sample build for demonstration. {brand.name} is a fictional practice.
                     </span>
                     <span>
                         <Link href="/privacy">Privacy notice</Link> &middot; Built by Shielva Sense

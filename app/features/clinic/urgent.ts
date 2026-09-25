@@ -14,6 +14,7 @@
  */
 
 import { RED_FLAGS } from "./care";
+import type { Brand } from "./brands";
 import type { SymptomOption } from "./care";
 
 export type UnitKind = "emergency" | "urgent";
@@ -288,41 +289,52 @@ export interface EmergencySite {
     readonly outwardCodes: readonly string[];
 }
 
-export const EMERGENCY_SITES: readonly EmergencySite[] = [
-    {
-        id: "northgate",
-        name: "Northgate — main emergency department",
-        address: "42 Northgate Street, Manchester, M3 2WY",
-        lat: 53.4839,
-        lng: -2.2446,
-        aeLine: "+44 20 7946 0911",
-        full: true,
-        hours: "24 hours, every day",
-        outwardCodes: ["M1", "M2", "M3", "M4", "M8", "M15", "M60"],
-    },
-    {
-        id: "southbank",
-        name: "Southbank — emergency department",
-        address: "8 Southbank Road, Manchester, M20 4TY",
-        lat: 53.4192,
-        lng: -2.2307,
-        aeLine: "+44 20 7946 0922",
-        full: true,
-        hours: "24 hours, every day",
-        outwardCodes: ["M19", "M20", "M21", "M22", "M33"],
-    },
-    {
-        id: "eastfield",
-        name: "Eastfield — minor injuries unit",
-        address: "119 Eastfield Way, Manchester, M11 3BD",
-        lat: 53.4781,
-        lng: -2.1734,
-        aeLine: "+44 20 7946 0933",
-        full: false,
-        hours: "08:00–22:00, every day",
-        outwardCodes: ["M11", "M12", "M18", "M34", "M43"],
-    },
-];
+/**
+ * Where the emergency departments are.
+ *
+ * A function of the brand, not a constant: the name and the main address have
+ * to follow the host like everything else, or every tenant sends its patients
+ * to another clinic's front door. The satellites are named from the practice
+ * rather than from invented streets — a wrong address on an emergency page is
+ * the worst possible place for filler text.
+ */
+export function emergencySites(brand: Brand): readonly EmergencySite[] {
+    return [
+        {
+            id: "main",
+            name: `${brand.short} — main emergency department`,
+            address: brand.address,
+            lat: 53.4839,
+            lng: -2.2446,
+            aeLine: brand.aeLine,
+            full: true,
+            hours: "24 hours, every day",
+            outwardCodes: ["M1", "M2", "M3", "M4", "M8", "M15", "M60"],
+        },
+        {
+            id: "south",
+            name: `${brand.short} South — emergency department`,
+            address: `South site, ${brand.city}`,
+            lat: 53.4192,
+            lng: -2.2307,
+            aeLine: brand.aeLine,
+            full: true,
+            hours: "24 hours, every day",
+            outwardCodes: ["M19", "M20", "M21", "M22", "M33"],
+        },
+        {
+            id: "east",
+            name: `${brand.short} East — minor injuries unit`,
+            address: `East site, ${brand.city}`,
+            lat: 53.4781,
+            lng: -2.1734,
+            aeLine: brand.aeLine,
+            full: false,
+            hours: "08:00–22:00, every day",
+            outwardCodes: ["M11", "M12", "M18", "M34", "M43"],
+        },
+    ];
+}
 
 export interface SiteMatch {
     readonly site: EmergencySite;
@@ -349,8 +361,14 @@ function distanceKm(aLat: number, aLng: number, b: EmergencySite): number {
  * asks for one: being closer does not make it the right door, and arriving at
  * a unit that cannot treat you costs the time it took to get there.
  */
-export function nearestSites(lat: number, lng: number, fullOnly: boolean): readonly SiteMatch[] {
-    return EMERGENCY_SITES.filter((site) => (fullOnly ? site.full : true))
+export function nearestSites(
+    sites: readonly EmergencySite[],
+    lat: number,
+    lng: number,
+    fullOnly: boolean,
+): readonly SiteMatch[] {
+    return sites
+        .filter((site) => (fullOnly ? site.full : true))
         .map((site) => ({ site, km: distanceKm(lat, lng, site) }))
         .sort((a, b) => a.km - b.km);
 }
@@ -363,8 +381,11 @@ export function nearestSites(lat: number, lng: number, fullOnly: boolean): reado
  * than guessing — a wrong emergency department is worse than an honest "we
  * could not tell, here are all of them".
  */
-export function siteForPostcode(postcode: string): EmergencySite | null {
+export function siteForPostcode(
+    sites: readonly EmergencySite[],
+    postcode: string,
+): EmergencySite | null {
     const outward = postcode.toUpperCase().replace(/[^A-Z0-9]/g, "").match(/^[A-Z]{1,2}\d{1,2}/);
     if (outward === null) return null;
-    return EMERGENCY_SITES.find((site) => site.outwardCodes.includes(outward[0])) ?? null;
+    return sites.find((site) => site.outwardCodes.includes(outward[0])) ?? null;
 }

@@ -14,9 +14,10 @@ import {
     X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
-import { CLINICIANS } from "@/app/features/clinic/constants";
+import { CLINICIANS, siteLabel } from "@/app/features/clinic/constants";
+import { useBrand } from "@/app/features/clinic/BrandContext";
 import { DEPARTMENTS, departmentById } from "@/app/features/clinic/care";
-import type { Clinician } from "@/app/features/clinic/types";
+import type { Clinician, SiteKey } from "@/app/features/clinic/types";
 import styles from "./Directory.module.scss";
 
 type Sort = "soonest" | "rated" | "experience" | "price";
@@ -52,7 +53,9 @@ const ALL_LANGUAGES: readonly string[] = [
     ...new Set(CLINICIANS.flatMap((person) => person.languages)),
 ].sort();
 
-const ALL_SITES: readonly string[] = [...new Set(CLINICIANS.map((p) => p.site))].sort();
+/* Keys at module scope; the labels are the tenant's own addresses and so can
+   only be resolved inside the component, where the brand is known. */
+const ALL_SITE_KEYS: readonly SiteKey[] = [...new Set(CLINICIANS.map((p) => p.site))].sort();
 
 /**
  * The doctor directory.
@@ -72,10 +75,11 @@ export function DoctorDirectory({
 }: {
     readonly onBook: (departmentId: string, clinician: string) => void;
 }): React.JSX.Element {
+    const brand = useBrand();
     const [query, setQuery] = useState("");
     const [department, setDepartment] = useState<string | null>(null);
     const [language, setLanguage] = useState<string | null>(null);
-    const [site, setSite] = useState<string | null>(null);
+    const [site, setSite] = useState<SiteKey | null>(null);
     const [todayOnly, setTodayOnly] = useState(false);
     const [sort, setSort] = useState<Sort>("soonest");
 
@@ -159,8 +163,11 @@ export function DoctorDirectory({
                 <Facet
                     legend="Site"
                     value={site}
-                    onChange={setSite}
-                    options={ALL_SITES.map((l) => ({ value: l, label: l }))}
+                    onChange={(next) => setSite(next as SiteKey | null)}
+                    options={ALL_SITE_KEYS.map((key) => ({
+                        value: key,
+                        label: siteLabel(brand, key),
+                    }))}
                 />
 
                 <button
@@ -252,7 +259,7 @@ export function DoctorDirectory({
                                 </li>
                                 <li>
                                     <MapPin size={13} aria-hidden="true" />
-                                    {person.site}
+                                    {siteLabel(brand, person.site)}
                                 </li>
                                 <li className={styles.depts}>
                                     {person.departments

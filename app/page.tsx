@@ -8,14 +8,15 @@ import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
 import { DemoBar } from "./features/clinic/components/DemoBar";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+    const brand = resolveBrand((await headers()).get("host"));
     const canonical = siteUrl();
     return {
         alternates: { canonical },
         robots: isIndexable() ? undefined : { index: false, follow: false },
         openGraph: {
-            title: "Northgate Family Health",
-            description: "See a named doctor this week, not in three.",
+            title: brand.name,
+            description: brand.strapline,
             url: canonical,
             type: "website",
             images: [{ url: `${canonical}/img/consultation.jpg`, width: 1800, height: 1016 }],

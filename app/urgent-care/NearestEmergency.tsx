@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Crosshair, MapPin, Phone } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
 import { Field, Input } from "@/app/components/ui/Field";
-import { nearestSites, siteForPostcode } from "@/app/features/clinic/urgent";
+import { emergencySites, nearestSites, siteForPostcode } from "@/app/features/clinic/urgent";
 import type { EmergencySite } from "@/app/features/clinic/urgent";
-import { EMERGENCY_SITES } from "@/app/features/clinic/urgent";
+import { useBrand } from "@/app/features/clinic/BrandContext";
 import styles from "./Urgent.module.scss";
 
 function mapsHref(address: string): string {
@@ -32,6 +32,10 @@ type Result =
  * anywhere: the sites and the arithmetic are in the page.
  */
 export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: boolean }): React.JSX.Element {
+    const brand = useBrand();
+    /* The sites follow the tenant, so they are derived here rather than read
+       from a module constant that would name the default clinic on every host. */
+    const sites = emergencySites(brand);
     const [postcode, setPostcode] = useState("");
     const [result, setResult] = useState<Result>({ state: "idle" });
 
@@ -44,6 +48,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const near = nearestSites(
+                    sites,
                     position.coords.latitude,
                     position.coords.longitude,
                     fullOnly,
@@ -61,7 +66,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
     }
 
     function byPostcode(): void {
-        const site = siteForPostcode(postcode);
+        const site = siteForPostcode(sites, postcode);
         setResult(site === null ? { state: "unknown" } : { state: "found", site, km: null });
     }
 
@@ -159,7 +164,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                             Rather than guess, here is every emergency department we run:
                         </p>
                         <ul className={styles.nearestList} role="list">
-                            {EMERGENCY_SITES.map((site) => (
+                            {sites.map((site) => (
                                 <li key={site.id}>
                                     <b>{site.name}</b>
                                     <br />
