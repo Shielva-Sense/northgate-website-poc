@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Check, Palette as PaletteIcon } from "lucide-react";
-import { paletteVarsFor, THEMES } from "../brands";
+import { THEMES } from "../brands";
+import { applyTheme, clearTheme, readStoredTheme } from "../theme";
 import styles from "./ThemePicker.module.scss";
-
-const STORAGE_KEY = "northgate:theme";
 
 /**
  * Live brand-colour chooser.
@@ -27,12 +26,7 @@ export function ThemePicker(): React.JSX.Element {
        the tenant's own palette, and reading storage while rendering would
        produce a hydration mismatch. */
     useEffect(() => {
-        let stored: string | null = null;
-        try {
-            stored = window.localStorage.getItem(STORAGE_KEY);
-        } catch {
-            stored = null;
-        }
+        const stored = readStoredTheme();
         if (stored === null) return;
         const theme = THEMES.find((t) => t.id === stored);
         if (theme === undefined) return;
@@ -41,27 +35,10 @@ export function ThemePicker(): React.JSX.Element {
            point of an effect, syncing React to an external system. Marking the
            swatch is React state, so it waits a frame rather than cascading a
            second render out of this one. */
-        apply(theme.id, false);
+        applyTheme(theme.id, false);
         const frame = window.requestAnimationFrame(() => setActive(theme.id));
         return () => window.cancelAnimationFrame(frame);
     }, []);
-
-    function apply(id: string, persist = true): void {
-        const theme = THEMES.find((t) => t.id === id);
-        if (theme === undefined) return;
-        const root = document.documentElement;
-        for (const [name, value] of Object.entries(paletteVarsFor(theme.palette))) {
-            root.style.setProperty(name, value);
-        }
-        if (persist) {
-            try {
-                window.localStorage.setItem(STORAGE_KEY, id);
-            } catch {
-                /* Storage refused. The theme is applied for this page either
-                   way; only the memory of it is lost. */
-            }
-        }
-    }
 
     return (
         <section className={styles.picker} aria-labelledby="theme-heading">
@@ -83,7 +60,7 @@ export function ThemePicker(): React.JSX.Element {
                             className={styles.swatchCard}
                             aria-pressed={active === theme.id}
                             onClick={() => {
-                                apply(theme.id);
+                                applyTheme(theme.id);
                                 setActive(theme.id);
                             }}
                         >
@@ -109,15 +86,7 @@ export function ThemePicker(): React.JSX.Element {
                 type="button"
                 className={styles.reset}
                 onClick={() => {
-                    const root = document.documentElement;
-                    for (const name of Object.keys(paletteVarsFor(THEMES[0]!.palette))) {
-                        root.style.removeProperty(name);
-                    }
-                    try {
-                        window.localStorage.removeItem(STORAGE_KEY);
-                    } catch {
-                        /* nothing to undo */
-                    }
+                    clearTheme();
                     setActive(null);
                 }}
             >

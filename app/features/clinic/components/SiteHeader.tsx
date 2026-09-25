@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, Phone, Siren, X } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { Logo } from "@/app/components/ui/Logo";
+import { ThemeMenu } from "./ThemeMenu";
 
 import { useBrand } from "../BrandContext";
 import styles from "./SiteHeader.module.scss";
@@ -53,6 +54,7 @@ export function SiteHeader(): React.JSX.Element {
                         <Siren size={15} aria-hidden="true" />
                         Urgent care
                     </Link>
+                    <ThemeMenu />
                     <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
                         {brand.phone}
@@ -93,6 +95,7 @@ export function SiteHeader(): React.JSX.Element {
                             <Siren size={15} aria-hidden="true" />
                             Urgent care
                         </Link>
+                        <ThemeMenu />
                         <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />
                             {brand.phone}

@@ -255,10 +255,10 @@ function HeroEditorial(): React.JSX.Element {
                 <div className={styles.editShot} ref={shot} data-reveal="" data-reveal-style="wipe">
                     {/* HeroMedia rather than a second <video>: it already owns the
                         reduced-motion opt-out, the off-screen pause and the
-                        degrade-to-poster path. The poster is the still this
-                        template used before, so nothing is lost when autoplay is
-                        refused. */}
-                    <HeroMedia poster="/img/waiting.jpg" src="/video/hero.mp4" />
+                        degrade-to-poster path. The poster is this clip's own
+                        first frame, so a refused autoplay leaves the same
+                        composition rather than a different room. */}
+                    <HeroMedia poster="/img/editorial-poster.jpg" src="/video/editorial.mp4" />
                 </div>
             </div>
         </section>

@@ -1,0 +1,119 @@
+.wrap {
+    position: relative;
+    flex: none;
+}
+
+.trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 44px;
+    height: 38px;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+        border-color var(--dur) var(--ease),
+        color var(--dur) var(--ease);
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+    border-color: var(--color-brand-600);
+    color: var(--color-brand-600);
+}
+
+.dot {
+    display: none;
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    z-index: var(--z-header);
+    width: 260px;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.menuHead {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin-bottom: var(--space-3);
+}
+
+.list {
+    list-style: none;
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.option {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-2);
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    font: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+}
+
+.option:hover {
+    background: var(--color-bg-subtle);
+}
+
+.option svg {
+    margin-left: auto;
+    flex: none;
+    color: var(--color-brand-600);
+}
+
+.chips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 42px;
+    height: 16px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    flex: none;
+}
+
+.chips span {
+    display: block;
+}
+
+.reset {
+    width: 100%;
+    min-height: 36px;
+    border: none;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-3);
+    background: none;
+    font: inherit;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-brand-700);
+    cursor: pointer;
+    text-align: left;
+}

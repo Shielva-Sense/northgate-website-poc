@@ -277,8 +277,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "moles-and-skin-changes",
-        image: "/img/dept/general.jpg",
-        imageAlt: "A tidy consulting-room desk with a stethoscope, notebook and blood pressure cuff",
+        image: "/img/dept/skin.jpg",
+        imageAlt: "A dermatology bench with a stereo microscope, a magnifying lamp and an open notebook",
         title: "Moles and skin changes",
         topic: "Skin",
         summary: "Most changes are harmless. The ones that are not are best caught early.",
