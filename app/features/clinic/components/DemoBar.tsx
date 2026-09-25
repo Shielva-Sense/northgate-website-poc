@@ -3,6 +3,7 @@ import { Layers } from "lucide-react";
 import { TEMPLATES } from "../templates";
 import type { TemplateId } from "../templates";
 import { DemoThemes } from "./DemoThemes";
+import { SuggestionTrigger } from "@/app/features/feedback/SuggestionPanel";
 import styles from "./DemoBar.module.scss";
 
 /**
@@ -49,6 +50,10 @@ export function DemoBar({
             <Link href="/templates" className={styles.compare} prefetch={false}>
                 Compare all
             </Link>
+
+            {/* Last, and visually the loudest thing on the bar: it is the one
+                control here that sends something back to us. */}
+            <SuggestionTrigger template={active ?? "practice"} />
         </aside>
     );
 }
