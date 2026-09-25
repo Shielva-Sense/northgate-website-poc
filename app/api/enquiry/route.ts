@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { line, sendSubmission } from "@/app/core/mailer";
 
 /**
  * Appointment enquiry intake.
@@ -208,13 +209,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // any of the answers ever being logged.
     const reference = crypto.randomUUID().slice(0, 8).toUpperCase();
 
+    /* A patient enquiry that reaches nobody is worse than no form at all, so
+       this goes to the inbox whether or not a CRM webhook is configured.
+       ⚠️ It is emailed in plain text, which is fine for a demo and is NOT
+       adequate for real patient data — see the note in CRM.md before this
+       takes live enquiries. */
+    const mail = await sendSubmission(
+        `Appointment enquiry — ${result.data.fullName} (${reference})`,
+        [
+            `Someone asked for an appointment on the demo site.`,
+            ``,
+            line("Reference", reference),
+            line("Name", result.data.fullName),
+            line("Phone", result.data.phone),
+            line("Email", result.data.email),
+            ``,
+            line("Service", result.data.service),
+            line("Clinician", result.data.clinician),
+            line("When", result.data.window),
+            line("Urgency", result.data.urgency),
+            ``,
+            line("Notes", result.data.notes),
+            ``,
+            `Received ${new Date().toISOString()}`,
+        ],
+    );
+
     if (sink === undefined || sink === "") {
         // No sink wired yet. Accept so the journey is testable, and say plainly
         // that nothing was delivered — never pretend it arrived.
-        console.warn(
-            `[enquiry ${reference}] ENQUIRY_WEBHOOK_URL is not set — accepted but NOT delivered`,
+        if (!mail.sent) {
+            console.warn(`[enquiry ${reference}] no webhook and no mail — nobody was told`);
+        }
+        return NextResponse.json(
+            { ok: true, delivered: mail.sent, reference },
+            { status: mail.sent ? 200 : 202 },
         );
-        return NextResponse.json({ ok: true, delivered: false, reference }, { status: 202 });
     }
 
     const payload = JSON.stringify({
