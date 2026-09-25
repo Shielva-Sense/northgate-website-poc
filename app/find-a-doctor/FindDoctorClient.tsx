@@ -26,8 +26,8 @@ import {
 import { Button } from "@/app/components/ui/Button";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
-import { useBrand } from "@/app/features/clinic/BrandContext";
-import { DEPARTMENTS, departmentById, RED_FLAGS } from "@/app/features/clinic/care";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
+import { RED_FLAGS } from "@/app/features/clinic/care";
 import {
     CATEGORISED_SYMPTOMS,
     DURATIONS,
@@ -94,6 +94,7 @@ const STEPS: readonly { readonly stage: Stage; readonly label: string }[] = [
  */
 export function FindDoctorClient(): React.JSX.Element {
     const brand = useBrand();
+    const { departments } = useContent();
     const [mode, setMode] = useState<Mode>("browse");
     const [stage, setStage] = useState<Stage>("safety");
     const [preferred, setPreferred] = useState<string | null>(null);
@@ -108,7 +109,8 @@ export function FindDoctorClient(): React.JSX.Element {
     const routing =
         symptom === null ? null : routeFor({ forWhom, symptomId: symptom, duration, severity });
     const departmentId = direct ?? routing?.department;
-    const department = departmentId === undefined ? undefined : departmentById(departmentId);
+    const department =
+        departmentId === undefined ? undefined : departments.find((d) => d.id === departmentId);
     const inCategory = CATEGORISED_SYMPTOMS.filter((s) => s.category === category);
 
     function jump(next: Stage): void {
@@ -504,7 +506,7 @@ export function FindDoctorClient(): React.JSX.Element {
                     Skip the questions and go straight to who staffs it and when they are free.
                 </p>
                 <ul className={styles.deptGrid} role="list">
-                    {DEPARTMENTS.map((item) => (
+                    {departments.map((item) => (
                         <li key={item.id}>
                             <button
                                 type="button"

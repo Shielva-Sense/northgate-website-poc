@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { SERVICES } from "../constants";
-import { useBrand } from "../BrandContext";
+import { useBrand, useProfile } from "../BrandContext";
 import styles from "./Sections.module.scss";
 
 export function SiteFooter(): React.JSX.Element {
     const brand = useBrand();
+    /* This practice's own services. The footer listed a general practice's
+       four — so a dental site offered vaccinations and travel health. */
+    const profile = useProfile();
     return (
         <footer className={styles.foot}>
             <div className="wrap">
@@ -24,9 +26,9 @@ export function SiteFooter(): React.JSX.Element {
                     <div>
                         <p className={styles.footHead}>Services</p>
                         <ul className={styles.footList}>
-                            {SERVICES.slice(0, 4).map((service) => (
+                            {profile.services.slice(0, 4).map((service) => (
                                 <li key={service.slug}>
-                                    <Link href="/#services">{service.name}</Link>
+                                    <Link href="/services">{service.name}</Link>
                                 </li>
                             ))}
                         </ul>

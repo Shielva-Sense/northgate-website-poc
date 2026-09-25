@@ -14,9 +14,8 @@ import {
     X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
-import { CLINICIANS, siteLabel } from "@/app/features/clinic/constants";
-import { useBrand } from "@/app/features/clinic/BrandContext";
-import { DEPARTMENTS, departmentById } from "@/app/features/clinic/care";
+import { siteLabel } from "@/app/features/clinic/constants";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import type { Clinician, SiteKey } from "@/app/features/clinic/types";
 import styles from "./Directory.module.scss";
 
@@ -49,13 +48,18 @@ function feeNumber(person: Clinician): number {
     return digits === "" ? Number.MAX_SAFE_INTEGER : Number(digits);
 }
 
-const ALL_LANGUAGES: readonly string[] = [
-    ...new Set(CLINICIANS.flatMap((person) => person.languages)),
-].sort();
+/* Derived from this practice's own team. At module scope it was one clinic's
+   eleven languages, offered as filters on every site on the farm — and on a
+   site whose team speaks two of them, nine of the chips matched nobody. */
+function languagesOf(team: readonly Clinician[]): readonly string[] {
+    return [...new Set(team.flatMap((person) => person.languages))].sort();
+}
 
-/* Keys at module scope; the labels are the tenant's own addresses and so can
-   only be resolved inside the component, where the brand is known. */
-const ALL_SITE_KEYS: readonly SiteKey[] = [...new Set(CLINICIANS.map((p) => p.site))].sort();
+/* The labels are the tenant's own addresses, so these can only be resolved
+   inside the component, where the brand and the team are both known. */
+function siteKeysOf(team: readonly Clinician[]): readonly SiteKey[] {
+    return [...new Set(team.map((p) => p.site))].sort();
+}
 
 /**
  * The doctor directory.
@@ -76,6 +80,7 @@ export function DoctorDirectory({
     readonly onBook: (departmentId: string, clinician: string) => void;
 }): React.JSX.Element {
     const brand = useBrand();
+    const { departments, clinicians } = useContent();
     const [query, setQuery] = useState("");
     const [department, setDepartment] = useState<string | null>(null);
     const [language, setLanguage] = useState<string | null>(null);
@@ -85,7 +90,7 @@ export function DoctorDirectory({
 
     const results = useMemo(() => {
         const q = query.trim().toLowerCase();
-        const filtered = CLINICIANS.filter((person) => {
+        const filtered = clinicians.filter((person) => {
             if (department !== null && !person.departments.includes(department)) return false;
             if (language !== null && !person.languages.includes(language)) return false;
             if (site !== null && person.site !== site) return false;
@@ -104,7 +109,7 @@ export function DoctorDirectory({
             if (sort === "price") return feeNumber(a) - feeNumber(b);
             return slotRank(a) - slotRank(b);
         });
-    }, [query, department, language, site, todayOnly, sort]);
+    }, [clinicians, query, department, language, site, todayOnly, sort]);
 
     const filtersOn =
         department !== null || language !== null || site !== null || todayOnly || query !== "";
@@ -152,19 +157,19 @@ export function DoctorDirectory({
                     legend="Department"
                     value={department}
                     onChange={setDepartment}
-                    options={DEPARTMENTS.map((d) => ({ value: d.id, label: d.name }))}
+                    options={departments.map((d) => ({ value: d.id, label: d.name }))}
                 />
                 <Facet
                     legend="Language"
                     value={language}
                     onChange={setLanguage}
-                    options={ALL_LANGUAGES.map((l) => ({ value: l, label: l }))}
+                    options={languagesOf(clinicians).map((l) => ({ value: l, label: l }))}
                 />
                 <Facet
                     legend="Site"
                     value={site}
                     onChange={(next) => setSite(next as SiteKey | null)}
-                    options={ALL_SITE_KEYS.map((key) => ({
+                    options={siteKeysOf(clinicians).map((key) => ({
                         value: key,
                         label: siteLabel(brand, key),
                     }))}
@@ -263,7 +268,7 @@ export function DoctorDirectory({
                                 </li>
                                 <li className={styles.depts}>
                                     {person.departments
-                                        .map((id) => departmentById(id)?.name)
+                                        .map((id) => departments.find((d) => d.id === id)?.name)
                                         .filter(Boolean)
                                         .join(" · ")}
                                 </li>

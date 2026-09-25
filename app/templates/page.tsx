@@ -5,6 +5,7 @@ import { ArrowRight, Layers } from "lucide-react";
 import { isIndexable } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { contentFor } from "@/app/features/clinic/content";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ThemePicker } from "@/app/features/clinic/components/ThemePicker";
 import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
@@ -22,11 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page(): Promise<React.JSX.Element> {
-    const brand = (await siteFromHost((await headers()).get("host"))).brand;
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
     const indexable = isIndexable();
 
     return (
-        <BrandProvider brand={brand}>
+        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand)}>
             <main id="main-content" tabIndex={-1} className={styles.page}>
                 <div className="wrap">
                     <p className={styles.kicker}>

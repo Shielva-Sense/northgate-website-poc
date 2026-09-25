@@ -6,6 +6,7 @@ import { SERVICES } from "@/app/features/clinic/constants";
 import { isIndexable, serviceJsonLd, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { contentFor } from "@/app/features/clinic/content";
 import { ServiceClient } from "./ServiceClient";
 
 type Params = { readonly params: Promise<{ readonly slug: string }> };
@@ -44,11 +45,12 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
     const service = SERVICES.find((item) => item.slug === slug);
     if (!service) notFound();
 
-    const brand = (await siteFromHost((await headers()).get("host"))).brand;
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
     const data = serviceJsonLd(slug);
 
     return (
-        <BrandProvider brand={brand}>
+        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand)}>
             {data ? <JsonLd data={data} /> : null}
             <ServiceClient service={service} />
         </BrandProvider>

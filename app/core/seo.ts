@@ -1,5 +1,6 @@
-import { CLINICIANS, FAQS, OPENING, SERVICES } from "@/app/features/clinic/constants";
+import { FAQS, OPENING, SERVICES } from "@/app/features/clinic/constants";
 import type { Brand } from "@/app/features/clinic/brands";
+import type { KindProfile, PracticeKind } from "@/app/features/clinic/practice-kinds";
 
 /**
  * Canonical origin. Read from the environment so the same build can be served
@@ -30,11 +31,32 @@ const HOURS_SPEC = [
     { days: ["Saturday"], opens: "09:00", closes: "13:00" },
 ] as const;
 
-export function clinicJsonLd(brand: Brand): Record<string, unknown> {
+/**
+ * The schema.org type for each trade.
+ *
+ * Every site declared itself a MedicalClinic, which is wrong for a dental
+ * practice and plainly false for a veterinary one. These are the types search
+ * engines actually recognise for each business; where none fits well enough to
+ * be worth the risk of claiming it, MedicalClinic is the honest general case.
+ */
+const SCHEMA_TYPE: Readonly<Record<PracticeKind, string>> = {
+    hospital: "Hospital",
+    "general-practice": "MedicalClinic",
+    dental: "Dentist",
+    physio: "Physiotherapy",
+    chiro: "Chiropractic",
+    dermatology: "Dermatology",
+    optometry: "Optician",
+    "mental-health": "MedicalClinic",
+    podiatry: "Podiatric",
+    veterinary: "VeterinaryCare",
+};
+
+export function clinicJsonLd(brand: Brand, profile: KindProfile): Record<string, unknown> {
     const url = siteUrl();
     return {
         "@context": "https://schema.org",
-        "@type": "MedicalClinic",
+        "@type": SCHEMA_TYPE[profile.kind] ?? "MedicalClinic",
         "@id": `${url}/#clinic`,
         name: brand.name,
         url,
@@ -57,18 +79,20 @@ export function clinicJsonLd(brand: Brand): Record<string, unknown> {
             ratingValue: brand.rating,
             reviewCount: brand.ratingCount.replace(/,/g, ""),
         },
-        availableService: SERVICES.map((service) => ({
+        // This practice's own services. Publishing a general practice's list
+        // under a dentist's name is a claim about what they provide, and the
+        // one place a machine reads it rather than a person.
+        availableService: profile.services.map((service) => ({
             "@type": "MedicalProcedure",
             name: service.name,
-            description: service.summary,
+            description: service.blurb,
             url: `${url}/services/${service.slug}`,
         })),
-        employee: CLINICIANS.map((person) => ({
-            "@type": "Physician",
-            name: person.name,
-            jobTitle: person.role,
-            knowsLanguage: person.languages,
-        })),
+        /* No `employee`. It was nine invented GP partners, published as
+           structured data under a real business's name — the one falsehood
+           here that a machine would take as fact, and nothing is lost by
+           omitting it. The page still says who the team are, under a banner
+           that says they are placeholders. */
         // OPENING is the copy shown on the page; keep the two from drifting.
         description: `${brand.name}. ${OPENING.map((d) => `${d.day}: ${d.hours}`).join(". ")}.`,
     };
