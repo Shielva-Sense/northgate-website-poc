@@ -1,0 +1,69 @@
+.list {
+    max-width: 46em;
+    border-top: 1px solid var(--color-border);
+}
+
+.item {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-brand-900);
+    text-align: left;
+    cursor: pointer;
+}
+
+.trigger:hover {
+    color: var(--color-brand-600);
+}
+
+.chev {
+    flex: none;
+    color: var(--color-brand-600);
+    transition: transform var(--dur) var(--ease);
+}
+
+.open .chev {
+    transform: rotate(180deg);
+}
+
+/* Height is animated via grid-template-rows so the panel can size to its
+   content without a measured pixel height. */
+.panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur) var(--ease);
+}
+
+.open .panel {
+    grid-template-rows: 1fr;
+}
+
+.panelInner {
+    overflow: hidden;
+}
+
+.answer {
+    padding-bottom: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: 15px;
+    max-width: 42em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel {
+        transition: none;
+    }
+}

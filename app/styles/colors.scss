@@ -1,0 +1,42 @@
+/* Sole owner of the palette. No raw hex may appear outside this file. */
+:root {
+    /* brand */
+    --color-brand-900: #0b3b3c;
+    --color-brand-900-rgb: 11, 59, 60;
+    --color-brand-700: #125e5e;
+    --color-brand-600: #17787a;
+    --color-brand-500: #1d8f91;
+    --color-brand-100: #d9eded;
+    --color-brand-50: #f1f8f8;
+    --color-brand-600-rgb: 23, 120, 122;
+
+    /* warm neutral, used for alternating bands */
+    --color-sand-100: #f6f2ec;
+    --color-sand-200: #ebe3d8;
+
+    /* accent — focus rings and small emphasis only */
+    --color-accent: #e07a3f;
+    /* deep terracotta — white on this passes AA, white on accent-500 does not */
+    --color-accent-700: #b4491c;
+    --color-accent-rgb: 224, 122, 63;
+
+    /* text + surface */
+    --color-text: #152023;
+    --color-text-muted: #38494d;
+    --color-text-subtle: #647478;
+    /* muted, but legible on the dark footer — text-subtle fails AA there */
+    --color-on-dark-muted: #9fb0b3;
+    --color-on-brand: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-rgb: 255, 255, 255;
+    --color-surface-alt: #fbfcfc;
+    --color-border: #dfe6e6;
+    --color-border-strong: #c3d2d2;
+    --color-ink-rgb: 21, 32, 35;
+
+    /* status */
+    --color-success: #1d7a4f;
+    --color-success-rgb: 29, 122, 79;
+    --color-danger: #b3352b;
+    --color-warning: #b07414;
+}

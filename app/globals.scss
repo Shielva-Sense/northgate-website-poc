@@ -1,0 +1,164 @@
+@use "./styles/colors";
+@use "./styles/tokens";
+@use "./styles/common";
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* the sticky header must not cover the anchor it scrolls to */
+    scroll-padding-top: 88px;
+}
+
+body {
+    margin: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: var(--color-brand-600);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    color: var(--color-brand-900);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: var(--z-skip);
+    background: var(--color-brand-900);
+    color: var(--color-on-brand);
+    padding: var(--space-3) var(--space-4);
+    border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.skip-link:focus {
+    left: 0;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Entrance animation. transform + opacity only, so it stays on the compositor.
+   The hidden state is gated behind .js-reveal, which the hook adds only once it
+   knows it can reveal again — without JS, nothing is ever hidden. */
+.js-reveal [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    /* a small defocus makes the settle read as depth rather than a slide */
+    filter: blur(6px);
+    transition:
+        opacity var(--dur-slow) var(--ease),
+        transform var(--dur-slow) var(--ease),
+        filter var(--dur-slow) var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+.js-reveal [data-reveal="shown"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+    will-change: auto;
+}
+
+/* Variant: photographs wipe up from their own bottom edge instead of sliding.
+   Keyed on an attribute rather than a class so it can live here in globals and
+   still be applied from inside a CSS module. */
+.js-reveal [data-reveal-style="wipe"][data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path var(--dur-slow) var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js-reveal [data-reveal-style="wipe"][data-reveal="shown"] {
+    clip-path: inset(0 0 0 0);
+}
+
+/* Variant: a headline line rises out of its own mask. The parent clips. */
+.line-mask {
+    display: block;
+    overflow: hidden;
+}
+
+.js-reveal [data-reveal-style="rise"][data-reveal] {
+    opacity: 1;
+    filter: none;
+    transform: translate3d(0, 105%, 0);
+    transition: transform var(--dur-slow) var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js-reveal [data-reveal-style="rise"][data-reveal="shown"] {
+    transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .js-reveal [data-reveal],
+    .js-reveal [data-reveal-style="wipe"][data-reveal],
+    .js-reveal [data-reveal-style="rise"][data-reveal] {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        clip-path: none;
+    }
+}

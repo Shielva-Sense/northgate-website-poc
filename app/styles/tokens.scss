@@ -1,0 +1,42 @@
+/* Sole owner of spacing, radii, type scale, shadow and z-index. */
+:root {
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 96px;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 18px;
+    --radius-full: 9999px;
+
+    --text-xs: 13px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+
+    --shadow-sm: 0 1px 2px rgba(var(--color-ink-rgb), 0.05);
+    --shadow-md: 0 1px 2px rgba(var(--color-ink-rgb), 0.05),
+        0 8px 24px rgba(var(--color-ink-rgb), 0.06);
+    --shadow-lg: 0 2px 4px rgba(var(--color-ink-rgb), 0.06),
+        0 18px 48px rgba(var(--color-ink-rgb), 0.1);
+
+    --z-header: 50;
+    --z-skip: 100;
+
+    --wrap: 1140px;
+    --font-sans: var(--font-sans-family), system-ui, -apple-system, sans-serif;
+    --font-serif: var(--font-serif-family), Georgia, "Times New Roman", serif;
+
+    /* one place owns motion, so reduced-motion can zero it */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur-fast: 140ms;
+    --dur: 260ms;
+    --dur-slow: 620ms;
+}
