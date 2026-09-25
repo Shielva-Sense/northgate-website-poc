@@ -3,23 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-    Baby,
-    Brain,
     CarFront,
     Check,
     Clock,
     FileCheck2,
-    FlaskConical,
     Headset,
-    HeartPulse,
     Languages,
     Mail,
     MapPin,
     Phone,
     ShieldCheck,
     Star,
-    Stethoscope,
-    Syringe,
     Wallet,
 } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
@@ -27,23 +21,15 @@ import { BookingForm } from "@/app/features/booking/BookingForm";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
-import type { ServiceIcon, Stat } from "../types";
+import type { Stat } from "../types";
 import { DEPARTMENTS } from "../care";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
+import { ServiceGlyph } from "./ServiceGlyph";
 import { Faq } from "./Faq";
 import { Gallery } from "./Gallery";
 import { useBrand } from "../BrandContext";
 import styles from "./Sections.module.scss";
-
-const ICONS: Readonly<Record<ServiceIcon, typeof Stethoscope>> = {
-    stethoscope: Stethoscope,
-    syringe: Syringe,
-    heartPulse: HeartPulse,
-    baby: Baby,
-    brain: Brain,
-    flaskConical: FlaskConical,
-};
 
 /* Stagger is a data concern, not a style one, so it is set as a CSS variable
    rather than a class per index. */
@@ -330,7 +316,6 @@ export function Services({ template }: { readonly template: TemplateId }): React
 
                 <ul className={`${styles.grid} ${styles.grid3}`} role="list">
                     {SERVICES.map((service, index) => {
-                        const Icon = ICONS[service.icon];
                         return (
                             <li
                                 className={styles.card}
@@ -339,7 +324,7 @@ export function Services({ template }: { readonly template: TemplateId }): React
                                 style={delay(index)}
                             >
                                 <span className={styles.ico} aria-hidden="true">
-                                    <Icon size={22} />
+                                    <ServiceGlyph icon={service.icon} />
                                 </span>
                                 <h3 className={styles.cardTitle}>{service.name}</h3>
                                 <p className={styles.cardBody}>{service.summary}</p>

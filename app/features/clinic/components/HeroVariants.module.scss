@@ -248,6 +248,38 @@
     color: var(--color-brand-600);
 }
 
+.panelMedia {
+    position: relative;
+    border-radius: var(--t-radius, var(--radius-lg));
+    overflow: hidden;
+    padding: var(--space-5);
+    display: flex;
+    align-items: center;
+    min-height: 460px;
+}
+
+.panelImg {
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* A scrim under the card so the photograph never fights the form's text. */
+.panelMedia::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+        180deg,
+        rgba(var(--color-brand-900-rgb), 0.35) 0%,
+        rgba(var(--color-brand-900-rgb), 0.6) 100%
+    );
+}
+
+.panelFormCard {
+    width: 100%;
+}
+
 /* ── editorial ────────────────────────────────── */
 .editorial {
     background: var(--color-sand-100);

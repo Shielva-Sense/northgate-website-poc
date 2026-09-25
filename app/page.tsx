@@ -40,9 +40,9 @@ export default async function Page({ searchParams }: Props): Promise<React.JSX.E
         <BrandProvider brand={brand}>
             <JsonLd data={clinicJsonLd(brand)} />
             <JsonLd data={faqJsonLd()} />
-            <HomeClient template={template} />
             {/* Sales control: only while this is an invite-only preview. */}
             {isIndexable() ? null : <DemoBar active={template} />}
+            <HomeClient template={template} />
         </BrandProvider>
     );
 }

@@ -11,9 +11,11 @@ import styles from "./SiteHeader.module.scss";
 
 /* Absolute, not bare hashes: these have to work from /privacy and /services/*
    as well as from the home page. */
+/* Five, not seven. Cramming the gap to make more fit was the wrong trade —
+   Contact lives on /appointments and in the footer, and "Doctors" is the team
+   section that /find-a-doctor already leads to. */
 const LINKS = [
     { href: "/services", label: "Services" },
-    { href: "/#team", label: "Doctors" },
     { href: "/find-a-doctor", label: "Find a doctor" },
     { href: "/health-library", label: "Health library" },
     { href: "/appointments", label: "Appointments" },

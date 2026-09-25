@@ -202,8 +202,21 @@ function HeroPanel(): React.JSX.Element {
                         </LinkButton>
                     </div>
                 </div>
-                <div className={styles.panelForm} data-reveal="">
-                    <LeadCapture />
+                {/* The form sits on the photograph rather than beside it: a
+                    procedure clinic still has to look like somewhere you would
+                    walk into, and a hero of pure copy reads unfinished. */}
+                <div className={styles.panelMedia} data-reveal="">
+                    <Image
+                        src="/img/treatment.jpg"
+                        alt="A spotless minor-procedures room with a sterile instrument trolley"
+                        fill
+                        priority
+                        sizes="(min-width: 980px) 45vw, 100vw"
+                        className={styles.panelImg}
+                    />
+                    <div className={styles.panelFormCard}>
+                        <LeadCapture />
+                    </div>
                 </div>
             </div>
         </section>

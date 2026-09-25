@@ -15,9 +15,16 @@
  * of it, a named clinician has to review and own it — see IMAGERY.md.
  */
 
+export const CATALOGUE_ICONS = [
+    "activity", "droplet", "shield", "flower", "scan", "baby",
+    "brain", "scissors", "pill", "microscope", "clipboard", "clock",
+] as const;
+export type CatalogueIcon = (typeof CATALOGUE_ICONS)[number];
+
 export interface Treatment {
     readonly slug: string;
     readonly name: string;
+    readonly icon: CatalogueIcon;
     /** Department id from care.ts — this is what makes it bookable. */
     readonly department: string;
     readonly summary: string;
@@ -26,6 +33,7 @@ export interface Treatment {
 export interface AdditionalService {
     readonly slug: string;
     readonly name: string;
+    readonly icon: CatalogueIcon;
     readonly summary: string;
     /** Some of these are walk-in or referral-only rather than bookable. */
     readonly bookable: boolean;
@@ -45,54 +53,63 @@ export interface Article {
 export const TREATMENTS: readonly Treatment[] = [
     {
         slug: "blood-pressure-review",
+        icon: "activity",
         name: "Blood pressure review",
         department: "cardiometabolic",
         summary: "A reading, a look at the trend, and a plan you actually agree with.",
     },
     {
         slug: "diabetes-review",
+        icon: "droplet",
         name: "Diabetes annual review",
         department: "cardiometabolic",
         summary: "Bloods, feet, eyes and medication, in one appointment rather than four.",
     },
     {
         slug: "cervical-screening",
+        icon: "shield",
         name: "Cervical screening",
         department: "womens",
         summary: "Booked with a female clinician as standard, and never rushed.",
     },
     {
         slug: "menopause-review",
+        icon: "flower",
         name: "Menopause review",
         department: "womens",
         summary: "Thirty minutes to go through symptoms, options and what you want from treatment.",
     },
     {
         slug: "contraception",
+        icon: "shield",
         name: "Contraception",
         department: "womens",
         summary: "Including fittings and removals, with time to talk through the choice.",
     },
     {
         slug: "mole-check",
+        icon: "scan",
         name: "Mole and skin check",
         department: "general",
         summary: "Dermatoscope examination, photographed so change can be compared later.",
     },
     {
         slug: "joint-injection",
+        icon: "scissors",
         name: "Joint injection",
         department: "general",
         summary: "For shoulder, knee and small-joint pain, done here rather than in hospital.",
     },
     {
         slug: "childhood-vaccinations",
+        icon: "baby",
         name: "Childhood vaccinations",
         department: "paediatrics",
         summary: "The full schedule, with catch-up appointments if you have fallen behind.",
     },
     {
         slug: "talking-therapy-referral",
+        icon: "brain",
         name: "Talking therapy referral",
         department: "mental-health",
         summary: "A longer appointment first, then a referral we chase rather than hand over.",
@@ -102,36 +119,42 @@ export const TREATMENTS: readonly Treatment[] = [
 export const ADDITIONAL_SERVICES: readonly AdditionalService[] = [
     {
         slug: "imaging",
+        icon: "scan",
         name: "Imaging and X-ray",
         summary: "Referred on site, usually within a week, with results back to us directly.",
         bookable: false,
     },
     {
         slug: "labs",
+        icon: "microscope",
         name: "Labs and phlebotomy",
         summary: "Blood taken here, most results back inside two working days.",
         bookable: true,
     },
     {
         slug: "pharmacy",
+        icon: "pill",
         name: "Prescriptions",
         summary: "Repeat prescriptions issued the same day, sent to the pharmacy you choose.",
         bookable: false,
     },
     {
         slug: "second-opinion",
+        icon: "clipboard",
         name: "Second opinions",
         summary: "A fresh read of a diagnosis or a plan, with your notes gathered for you.",
         bookable: true,
     },
     {
         slug: "urgent-same-day",
+        icon: "clock",
         name: "Same-day urgent slots",
         summary: "Held back each morning for things that cannot wait until next week.",
         bookable: true,
     },
     {
         slug: "occupational-health",
+        icon: "clipboard",
         name: "Occupational health",
         summary: "Fitness-to-work assessments and reports, usually for an employer.",
         bookable: true,

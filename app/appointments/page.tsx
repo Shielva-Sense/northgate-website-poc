@@ -140,6 +140,9 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 Ring us before 10am and ask for a same-day slot — we hold some back
                                 each morning for exactly this.
                             </p>
+                            <Link className={styles.action} href="/#book">
+                                Or request one online
+                            </Link>
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>This week</p>

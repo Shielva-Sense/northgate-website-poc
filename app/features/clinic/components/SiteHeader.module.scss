@@ -44,7 +44,7 @@
     margin-left: auto;
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-5);
     white-space: nowrap;
 }
 
@@ -52,7 +52,7 @@
    for six labels, a phone number and a button. Tighten rather than wrap. */
 @media (max-width: 1180px) {
     .nav {
-        gap: var(--space-3);
+        gap: var(--space-4);
     }
 
     .navLink {
