@@ -61,11 +61,15 @@
 }
 
 /* ── filters ──────────────────────────────────── */
+/* A column, not a wrapping row. As a row the "Filter" heading became the
+   first flex item and Department sat beside it, so the label read as a
+   sibling of the facets rather than a heading over them — and each facet
+   then wrapped at a width decided by whatever preceded it. */
 .filters {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: var(--space-4) var(--space-5);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
     padding: var(--space-5);
     background: var(--color-bg-subtle);
     border-radius: var(--radius-lg);
@@ -88,6 +92,7 @@
     padding: 0;
     margin: 0;
     min-width: 0;
+    width: 100%;
 }
 
 .facetLegend {
@@ -141,7 +146,7 @@
 }
 
 .toggle {
-    align-self: flex-end;
+    align-self: flex-start;
 }
 
 /* ── results bar ──────────────────────────────── */
