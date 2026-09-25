@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, Phone, Siren, X } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { Logo } from "@/app/components/ui/Logo";
+import { ThemeMenu } from "./ThemeMenu";
 
 import { useBrand } from "../BrandContext";
 import styles from "./SiteHeader.module.scss";
@@ -29,11 +30,14 @@ export function SiteHeader(): React.JSX.Element {
     return (
         <header className={styles.head}>
             <div className={`wrap ${styles.bar}`}>
-                <Link href="#top" className={styles.logo}>
+                {/* "/" not "#top": a bare hash goes nowhere from /services or
+                    /urgent-care, so the brand looked dead on every inner page.
+                    The home page still scrolls to the top from here. */}
+                <Link href="/" className={styles.logo}>
                     <Logo size={38} />
                     <span>
-                        Northgate
-                        <small>Family Health</small>
+                        {brand.short}
+                        <small>{brand.kicker}</small>
                     </span>
                 </Link>
 
@@ -43,6 +47,14 @@ export function SiteHeader(): React.JSX.Element {
                             {link.label}
                         </a>
                     ))}
+                    {/* Deliberately outside LINKS: it is not a peer of "Services",
+                        and someone who needs it is scanning for red, not reading
+                        a nav. Kept at five links so the bar stays uncramped. */}
+                    <Link className={styles.urgent} href="/urgent-care">
+                        <Siren size={15} aria-hidden="true" />
+                        Urgent care
+                    </Link>
+                    <ThemeMenu />
                     <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
                         {brand.phone}
@@ -75,6 +87,15 @@ export function SiteHeader(): React.JSX.Element {
                                 {link.label}
                             </a>
                         ))}
+                        <Link
+                            className={styles.urgent}
+                            href="/urgent-care"
+                            onClick={() => setOpen(false)}
+                        >
+                            <Siren size={15} aria-hidden="true" />
+                            Urgent care
+                        </Link>
+                        <ThemeMenu />
                         <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />
                             {brand.phone}

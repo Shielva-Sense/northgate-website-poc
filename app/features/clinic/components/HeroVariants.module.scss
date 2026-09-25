@@ -281,9 +281,13 @@
 }
 
 /* ── editorial ────────────────────────────────── */
+/* The top padding used to be ~110px, which — with a 68px headline, the lede
+   and the buttons — pushed the film about 900px down the page. On a laptop the
+   first screen was cream and nothing else, and the one thing this template is
+   built around was never seen. */
 .editorial {
     background: var(--color-sand-100);
-    padding: calc(var(--space-9) * 1.15) 0 0;
+    padding: var(--space-7) 0 0;
     text-align: center;
 }
 
@@ -293,7 +297,7 @@
 }
 
 .h1Edit {
-    font-size: clamp(38px, 6vw, 68px);
+    font-size: clamp(34px, 4.6vw, 56px);
     line-height: 1.04;
     text-wrap: balance;
 }
@@ -310,7 +314,7 @@
 }
 
 .editShotWrap {
-    margin-top: var(--space-8);
+    margin-top: var(--space-6);
 }
 
 .editShot {
@@ -319,6 +323,11 @@
     box-shadow: var(--shadow-lg);
     transform: translate3d(0, var(--parallax, 0px), 0);
     will-change: transform;
+    /* The box moved here from .editImg: an <img> brought its own intrinsic
+       height, a <video> sized at height:100% would collapse to nothing.
+       16:9 rather than 21:9 — the letterbox strip read as decoration, and the
+       point of this template is that the film is the content. */
+    aspect-ratio: 16 / 9;
 }
 
 .editImg {

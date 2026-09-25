@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, CalendarCheck, Loader2, Phone } from "lucide-react";
-import { Field, Input, Select, Textarea } from "@/app/components/ui/Field";
+import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
 import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
@@ -30,6 +30,20 @@ const PATIENT_OPTIONS: readonly ChoiceOption<PatientType>[] = [
 const URGENCY_OPTIONS: readonly ChoiceOption<Urgency>[] = (
     Object.keys(URGENCY_LABELS) as Urgency[]
 ).map((value) => ({ value, label: URGENCY_LABELS[value] }));
+
+const SERVICE_OPTIONS: readonly ChoiceOption<string>[] = [
+    ...SERVICES.map((service) => ({ value: service.slug, label: service.name })),
+    { value: "other", label: "Something else" },
+];
+
+const CLINICIAN_OPTIONS: readonly ChoiceOption<string>[] = [
+    { value: "any", label: "No preference" },
+    ...CLINICIANS.map((person) => ({ value: person.name, label: person.name })),
+];
+
+const WINDOW_OPTIONS: readonly ChoiceOption<TimeWindow>[] = (
+    Object.keys(WINDOW_LABELS) as TimeWindow[]
+).map((value) => ({ value, label: WINDOW_LABELS[value] }));
 
 const CONTACT_OPTIONS: readonly ChoiceOption<ContactMethod>[] = (
     Object.keys(CONTACT_LABELS) as ContactMethod[]
@@ -125,8 +139,9 @@ export function BookingForm(): React.JSX.Element {
             <p className={styles.emergency}>
                 <AlertTriangle size={16} aria-hidden="true" />
                 <span>
-                    If this is a medical emergency, call {brand.emergencyNumber} or go to
-                    your nearest emergency department. Do not use this form.
+                    If this is a medical emergency, come straight to our emergency
+                    department — open 24 hours, no appointment needed — or ring our
+                    A&amp;E line on {brand.aeLine}. Do not use this form.
                 </span>
             </p>
 
@@ -185,64 +200,36 @@ export function BookingForm(): React.JSX.Element {
                 </Field>
             </div>
 
-            <div className={styles.row}>
-                <Field label="What is it for?" required error={errors.service}>
-                    {(id, describedBy) => (
-                        <Select
-                            id={id}
-                            name="service"
-                            value={form.service}
-                            aria-required="true"
-                            aria-invalid={errors.service ? true : undefined}
-                            aria-describedby={describedBy}
-                            onChange={(event) => set("service", event.target.value)}
-                        >
-                            <option value="">Please choose…</option>
-                            {SERVICES.map((service) => (
-                                <option key={service.slug} value={service.slug}>
-                                    {service.name}
-                                </option>
-                            ))}
-                            <option value="other">Something else</option>
-                        </Select>
-                    )}
-                </Field>
+            {/* Chips, not native selects. Every list here is short enough to
+                show in full, and a <select> hides the options behind a tap,
+                truncates the long ones ("No preference — soonest ava…") and
+                looks like a different site on every platform. These are real
+                radios in a real fieldset, so arrow keys and screen-reader
+                grouping work unchanged. */}
+            <ChoiceGroup
+                legend="What is it for?"
+                name="service"
+                value={form.service}
+                options={SERVICE_OPTIONS}
+                onChange={(value) => set("service", value)}
+                error={errors.service}
+            />
 
-                <Field label="Preferred clinician">
-                    {(id) => (
-                        <Select
-                            id={id}
-                            name="clinician"
-                            value={form.clinician}
-                            onChange={(event) => set("clinician", event.target.value)}
-                        >
-                            <option value="any">No preference — soonest available</option>
-                            {CLINICIANS.map((person) => (
-                                <option key={person.name} value={person.name}>
-                                    {person.name} — {person.role}
-                                </option>
-                            ))}
-                        </Select>
-                    )}
-                </Field>
-            </div>
+            <ChoiceGroup
+                legend="Preferred clinician"
+                name="clinician"
+                value={form.clinician}
+                options={CLINICIAN_OPTIONS}
+                onChange={(value) => set("clinician", value)}
+            />
 
-            <Field label="When suits you?">
-                {(id) => (
-                    <Select
-                        id={id}
-                        name="window"
-                        value={form.window}
-                        onChange={(event) => set("window", event.target.value as TimeWindow)}
-                    >
-                        {(Object.keys(WINDOW_LABELS) as TimeWindow[]).map((value) => (
-                            <option key={value} value={value}>
-                                {WINDOW_LABELS[value]}
-                            </option>
-                        ))}
-                    </Select>
-                )}
-            </Field>
+            <ChoiceGroup
+                legend="When suits you?"
+                name="window"
+                value={form.window}
+                options={WINDOW_OPTIONS}
+                onChange={(value) => set("window", value)}
+            />
 
             <ChoiceGroup
                 legend="How soon do you need to be seen?"

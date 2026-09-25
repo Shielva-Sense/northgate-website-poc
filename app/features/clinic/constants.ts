@@ -1,8 +1,10 @@
+import type { Brand } from "./brands";
 import type {
     Accreditation,
     PatientStory,
     Promise_,
     Clinician,
+    SiteKey,
     Facility,
     FaqItem,
     JourneyStep,
@@ -17,19 +19,6 @@ import type {
  * Sample content for a fictional practice. Nothing here describes a real
  * clinic, clinician or patient — it exists to demonstrate the build.
  */
-
-export const CLINIC = {
-    name: "Northgate Family Health",
-    strapline: "See a named doctor this week, not in three",
-    phone: "+44 20 7946 0958",
-    phoneHref: "tel:+442079460958",
-    email: "reception@northgate.example",
-    address: "42 Northgate Street, Manchester, M3 2WY",
-    rating: "4.9",
-    ratingCount: "1,240",
-    emergencyNote:
-        "If this is a medical emergency, call 999 or go to your nearest A&E. Do not use this form.",
-} as const;
 
 /** Rotating reassurance. Short enough to read in a glance at the top of the page. */
 export const ANNOUNCEMENTS: readonly string[] = [
@@ -67,7 +56,7 @@ export const CLINICIANS: readonly Clinician[] = [
         years: 24,
         registration: "GMC 3•••421",
         languages: ["English"],
-        site: "Northgate Street",
+        site: "main",
         nextSlot: { day: "Tomorrow", time: "09:20" },
         photo: "/img/team/whitfield.jpg",
     },
@@ -84,7 +73,7 @@ export const CLINICIANS: readonly Clinician[] = [
         years: 16,
         registration: "GMC 6•••095",
         languages: ["English", "Hindi", "Tamil"],
-        site: "Northgate Street",
+        site: "main",
         nextSlot: { day: "Tomorrow", time: "14:00" },
         photo: "/img/team/nandakumar.jpg",
     },
@@ -101,7 +90,7 @@ export const CLINICIANS: readonly Clinician[] = [
         years: 12,
         registration: "NMC 1•••7C",
         languages: ["English", "Igbo"],
-        site: "Northgate Street",
+        site: "main",
         nextSlot: { day: "Today", time: "16:45" },
         photo: "/img/team/okonkwo.jpg",
     },
@@ -118,9 +107,92 @@ export const CLINICIANS: readonly Clinician[] = [
         years: 9,
         registration: "NMC 2•••4B",
         languages: ["English", "Portuguese", "Spanish"],
-        site: "Northgate Street",
+        site: "main",
         nextSlot: { day: "Today", time: "17:10" },
         photo: "/img/team/duarte.jpg",
+    },
+    /* No headshot for these yet, so the card renders the designed monogram.
+       A stock face on a named clinician would be a lie about a real person,
+       which is the one thing this page cannot do. */
+    {
+        name: "Dr Ifeoma Bello",
+        role: "Consultant Paediatrician",
+        focus: "Childhood illness, asthma and development",
+        initials: "IB",
+        departments: ["paediatrics"],
+        qualifications: "MBBS, MRCPCH",
+        rating: 4.9,
+        reviews: 268,
+        fee: "£95",
+        years: 17,
+        registration: "GMC 6•••118",
+        languages: ["English", "Yoruba"],
+        site: "main",
+        nextSlot: { day: "Today", time: "15:30" },
+    },
+    {
+        name: "Dr Hannah Sorensen",
+        role: "Women's Health Lead",
+        focus: "Menopause, contraception and gynaecology",
+        initials: "HS",
+        departments: ["womens"],
+        qualifications: "MBChB, MRCGP, DFSRH",
+        rating: 4.8,
+        reviews: 331,
+        fee: "£78",
+        years: 15,
+        registration: "GMC 7•••902",
+        languages: ["English", "Danish"],
+        site: "second",
+        nextSlot: { day: "Tomorrow", time: "10:40" },
+    },
+    {
+        name: "Dr Omar Haddad",
+        role: "GP & Travel Medicine",
+        focus: "Travel risk, vaccination and general practice",
+        initials: "OH",
+        departments: ["travel", "general"],
+        qualifications: "MBBS, MRCGP, DTM&H",
+        rating: 4.7,
+        reviews: 194,
+        fee: "£68",
+        years: 11,
+        registration: "GMC 7•••455",
+        languages: ["English", "Arabic", "French"],
+        site: "second",
+        nextSlot: { day: "Thu 2 Oct", time: "11:20" },
+    },
+    {
+        name: "Ruth Ellery",
+        role: "Clinical Psychologist",
+        focus: "Anxiety, low mood and sleep",
+        initials: "RE",
+        departments: ["mental-health"],
+        qualifications: "DClinPsy, HCPC registered",
+        rating: 4.9,
+        reviews: 142,
+        fee: "£110",
+        years: 13,
+        registration: "HCPC PYL•••27",
+        languages: ["English"],
+        site: "main",
+        nextSlot: { day: "Tomorrow", time: "16:00" },
+    },
+    {
+        name: "Dr Wei Lin Chen",
+        role: "Consultant Cardiologist",
+        focus: "Blood pressure, rhythm and cardiovascular risk",
+        initials: "WC",
+        departments: ["cardiometabolic"],
+        qualifications: "MBBS, MRCP, PhD",
+        rating: 5.0,
+        reviews: 97,
+        fee: "£145",
+        years: 21,
+        registration: "GMC 4•••730",
+        languages: ["English", "Mandarin", "Cantonese"],
+        site: "second",
+        nextSlot: { day: "Fri 3 Oct", time: "09:00" },
     },
 ];
 
@@ -431,3 +503,15 @@ export const PATIENT_STORY: PatientStory = {
     posterAlt:
         "A woman in her thirties sitting on a sofa in a sunlit living room, talking to camera",
 };
+
+/**
+ * A site key rendered as an address.
+ *
+ * The main site is whatever address the tenant resolves to, so it changes with
+ * the host like everything else. The second is a fictional satellite — named
+ * from the practice rather than from a street, because inventing a real street
+ * for an unknown tenant would be a claim about a place that does not exist.
+ */
+export function siteLabel(brand: Brand, key: SiteKey): string {
+    return key === "main" ? brand.address : `${brand.short} — second site`;
+}

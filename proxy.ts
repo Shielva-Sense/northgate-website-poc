@@ -26,6 +26,11 @@ const PUBLIC_PATHS = [
     "/icon",
     "/apple-icon",
     "/manifest.webmanifest",
+    /* Not gated by the invite session on purpose: it enforces its own
+       credentials, which are different ones. The invite login is shared with
+       every prospect being shown the demo, so gating this behind it would let
+       any of them read the others' submissions. */
+    "/api/submissions",
 ];
 
 export default async function proxy(request: NextRequest): Promise<NextResponse> {

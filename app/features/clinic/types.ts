@@ -18,6 +18,9 @@ export const SERVICE_ICONS = [
 ] as const;
 export type ServiceIcon = (typeof SERVICE_ICONS)[number];
 
+/** Which of the practice's addresses a clinician works from. */
+export type SiteKey = "main" | "second";
+
 export interface Clinician {
     readonly name: string;
     readonly role: string;
@@ -33,7 +36,10 @@ export interface Clinician {
     /** What this clinician's appointment costs, answered before it is asked. */
     readonly fee: string;
     readonly languages: readonly string[];
-    readonly site: string;
+    /** A site key, not a label. The label is the tenant's own address, so a
+        hardcoded street name would read as another clinic's on every host
+        except the default one. Resolved with siteLabel(). */
+    readonly site: SiteKey;
     /** Department ids from care.ts. */
     readonly departments: readonly string[];
     /**

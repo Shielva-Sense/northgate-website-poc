@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import { isIndexable } from "./core/seo";
 import { paletteVars, resolveBrand } from "./features/clinic/brands";
@@ -47,18 +48,23 @@ export const viewport: Viewport = {
     initialScale: 1,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
-}: Readonly<{ children: React.ReactNode }>): Promise<React.JSX.Element> {
-    const brand = resolveBrand((await headers()).get("host"));
-
+}: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
     return (
-        <html
-            lang="en"
-            className={`${sans.variable} ${serif.variable}`}
-            style={paletteVars(brand) as React.CSSProperties}
-        >
+        <html lang="en" className={`${sans.variable} ${serif.variable}`}>
             <body>
+                {/* The tenant's palette used to be an inline style on <html>,
+                    which meant the root layout read the Host header and every
+                    route in the app was therefore server-rendered on demand.
+                    Emitting it as a :root block instead lets the whole document
+                    prerender, with only this one element waiting on the host.
+                    Until it arrives the defaults in colors.scss apply, so the
+                    page is never unstyled — only, briefly, the wrong brand for
+                    a tenant that is not on the default palette. */}
+                <Suspense fallback={null}>
+                    <TenantPalette />
+                </Suspense>
                 <a href="#main-content" className="skip-link">
                     Skip to main content
                 </a>
@@ -66,4 +72,21 @@ export default async function RootLayout({
             </body>
         </html>
     );
+}
+
+/** The one uncached read: the Host header, lifted out of the cached scope. */
+async function TenantPalette(): Promise<React.JSX.Element> {
+    const host = (await headers()).get("host") ?? "";
+    return <PaletteStyle host={host} />;
+}
+
+async function PaletteStyle({ host }: { readonly host: string }): Promise<React.JSX.Element> {
+    "use cache";
+    const brand = resolveBrand(host);
+    const declarations = Object.entries(paletteVars(brand))
+        .map(([name, value]) => `${name}:${value}`)
+        .join(";");
+    /* Values come from our own palette table, never from the request — the host
+       only selects which row is used, so there is nothing here to inject. */
+    return <style>{`:root{${declarations}}`}</style>;
 }

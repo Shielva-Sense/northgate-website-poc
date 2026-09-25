@@ -3,12 +3,14 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import {
     AlertTriangle,
+    ArrowRight,
     CalendarCheck,
     ClipboardList,
     CreditCard,
     FileText,
     MapPin,
     Phone,
+    Siren,
     Stethoscope,
     Video,
 } from "lucide-react";
@@ -37,10 +39,26 @@ export default async function Page(): Promise<React.JSX.Element> {
             kicker="Appointments and access"
             title="Every way to get seen"
             lede={`However you would rather do it — online, on the phone, or by walking in. If you are not sure which you need, start with "where to go" below.`}
+            image="/img/reception.jpg"
+            imageAlt="A reception desk with a receptionist looking up, and seating beyond"
         >
             {/* ── ways in ─────────────────────────────────────────── */}
-            <section className={styles.section} aria-labelledby="ways">
+            <section className={`${styles.section} ${styles.first}`} aria-labelledby="ways">
                 <div className="wrap">
+                    <Link className={styles.urgentBanner} href="/urgent-care">
+                        <span className={styles.urgentIco} aria-hidden="true">
+                            <Siren size={22} />
+                        </span>
+                        <span className={styles.urgentText}>
+                            <b>Need to be seen today?</b> Urgent care is walk-in — search what has
+                            happened and come straight in. No slot to pick and no callback to wait
+                            for.
+                        </span>
+                        <span className={styles.urgentGo} aria-hidden="true">
+                            <ArrowRight size={18} />
+                        </span>
+                    </Link>
+
                     <h2 className={styles.h2} id="ways">
                         Ways to book
                     </h2>
@@ -64,8 +82,8 @@ export default async function Page(): Promise<React.JSX.Element> {
                             </span>
                             <h3 className={styles.cardTitle}>Not sure who to see</h3>
                             <p className={styles.cardBody}>
-                                Answer two questions and we will point you at the right department,
-                                then show you who is free.
+                                Tell us who it is for and roughly what is wrong, and we will
+                                point you at the department that usually sees it.
                             </p>
                             <Link className={styles.action} href="/find-a-doctor">
                                 Find a doctor
@@ -125,9 +143,14 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 yourself.
                             </p>
                             <p className={styles.levelDo}>
-                                Call {brand.emergencyNumber} or go to your nearest emergency
-                                department. Do not book here and do not wait for us to ring back.
+                                Come straight to our emergency department — it is open 24 hours
+                                and you do not need an appointment. Ring our A&amp;E line on{" "}
+                                {brand.aeLine} on the way, or {brand.emergencyNumber} for an
+                                ambulance if you cannot travel. Do not book here.
                             </p>
+                            <Link className={styles.action} href="/urgent-care">
+                                A&amp;E and urgent care
+                            </Link>
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>Today or tomorrow</p>
@@ -137,11 +160,11 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 needs looking at, worsening pain.
                             </p>
                             <p className={styles.levelDo}>
-                                Ring us before 10am and ask for a same-day slot — we hold some back
-                                each morning for exactly this.
+                                Come to urgent care — it is walk-in, so there is no slot to wait
+                                for. Tell us you are coming and the desk expects you.
                             </p>
-                            <Link className={styles.action} href="/#book">
-                                Or request one online
+                            <Link className={styles.action} href="/urgent-care">
+                                Go to urgent care
                             </Link>
                         </li>
                         <li className={styles.level}>

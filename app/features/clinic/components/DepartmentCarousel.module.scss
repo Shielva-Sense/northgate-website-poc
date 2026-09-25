@@ -1,0 +1,217 @@
+.section {
+    padding: var(--space-8) 0;
+}
+
+.heading {
+    font-size: clamp(24px, 3.4vw, 34px);
+    margin-bottom: var(--space-5);
+}
+
+/* Full-bleed: the photograph is the section, not a thumbnail inside it. */
+.stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    min-height: 380px;
+    overflow: hidden;
+    background: var(--color-brand-900);
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    /* Only opacity and transform animate, so a slide change never lays out. */
+    transform: scale(1.03);
+    transition:
+        opacity 700ms var(--ease),
+        transform 900ms var(--ease);
+    pointer-events: none;
+}
+
+.slideOn {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        100deg,
+        rgba(var(--color-brand-900-rgb), 0.92) 0%,
+        rgba(var(--color-brand-900-rgb), 0.62) 42%,
+        rgba(var(--color-brand-900-rgb), 0.1) 78%
+    );
+}
+
+.caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-3);
+    color: var(--color-on-brand);
+}
+
+.count {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-on-dark-muted);
+}
+
+.name {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 4.4vw, 48px);
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+}
+
+.summary {
+    font-size: var(--text-lg);
+    color: var(--color-sand-100);
+    max-width: 34rem;
+}
+
+.go {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 48px;
+    padding: 0 var(--space-6);
+    margin-top: var(--space-2);
+    border-radius: var(--radius-full);
+    background: var(--color-on-brand);
+    color: var(--color-brand-900);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform var(--dur) var(--ease);
+}
+
+.go:hover {
+    transform: translate3d(3px, 0, 0);
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(var(--color-surface-rgb), 0.35);
+    border-radius: var(--radius-full);
+    background: rgba(var(--color-brand-900-rgb), 0.55);
+    backdrop-filter: blur(6px);
+    color: var(--color-on-brand);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+}
+
+.arrow:hover {
+    background: rgba(var(--color-brand-900-rgb), 0.85);
+}
+
+.prev {
+    left: var(--space-4);
+}
+
+.next {
+    right: var(--space-4);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-4);
+}
+
+.playPause {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.dots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-2);
+}
+
+.dot {
+    width: 34px;
+    height: 6px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+}
+
+.dotOn {
+    background: var(--color-brand-600);
+}
+
+/* The tap target has to be 44px even though the dot is 6px tall. */
+.dots li {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+}
+
+@media (max-width: 760px) {
+    .stage {
+        aspect-ratio: 4 / 5;
+    }
+
+    .scrim {
+        background: linear-gradient(
+            180deg,
+            rgba(var(--color-brand-900-rgb), 0.35) 0%,
+            rgba(var(--color-brand-900-rgb), 0.9) 62%
+        );
+    }
+
+    .caption {
+        justify-content: flex-end;
+        padding-bottom: var(--space-6);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .slide {
+        transition: opacity 1ms linear;
+        transform: none;
+    }
+
+    .slideOn {
+        transform: none;
+    }
+}

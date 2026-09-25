@@ -2,6 +2,12 @@
     padding: var(--space-8) 0;
 }
 
+/* The page header already supplies the breathing room above this one; a full
+   section pad on top of it read as a gap where something had failed to load. */
+.first {
+    padding-top: var(--space-6);
+}
+
 .alt {
     background: var(--color-sand-100);
 }
@@ -41,10 +47,16 @@
     gap: var(--space-5);
 }
 
+/* Horizontal: icon in its own column, copy in the other. Four narrow vertical
+   tiles gave 253px columns and five-line paragraphs on a 1140px page — all the
+   width went to gutters and the section read as sparse. */
 .card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
+    align-content: start;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -62,14 +74,14 @@
 }
 
 .ico {
-    width: 44px;
-    height: 44px;
+    grid-row: 1 / span 3;
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-md);
     background: var(--color-brand-50);
     color: var(--color-brand-700);
     display: grid;
     place-items: center;
-    margin-bottom: var(--space-2);
 }
 
 .cardTitle {
@@ -82,9 +94,10 @@
 }
 
 .action {
-    margin-top: auto;
-    padding-top: var(--space-4);
+    align-self: end;
+    padding-top: var(--space-2);
     display: inline-block;
+    justify-self: start;
     font-weight: 600;
     color: var(--color-brand-700);
     text-decoration: underline;
@@ -187,11 +200,75 @@
 }
 
 @media (min-width: 1040px) {
-    .cards {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
     .section {
         padding: var(--space-9) 0;
+    }
+
+    .first {
+        padding-top: var(--space-6);
+    }
+}
+
+/* ── urgent banner ────────────────────────────── */
+.urgentBanner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+    padding: var(--space-5) var(--space-6);
+    background: var(--color-danger-50);
+    border: 1px solid var(--color-danger);
+    border-left-width: 5px;
+    border-radius: var(--radius-lg);
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+        transform var(--dur) var(--ease),
+        box-shadow var(--dur) var(--ease);
+}
+
+.urgentBanner:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: var(--shadow-md);
+}
+
+.urgentIco {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--color-danger);
+    color: var(--color-on-danger);
+}
+
+.urgentText {
+    font-size: 15px;
+    max-width: 58rem;
+}
+
+.urgentText b {
+    color: var(--color-danger-900);
+}
+
+.urgentGo {
+    display: grid;
+    place-items: center;
+    color: var(--color-danger);
+    transition: transform var(--dur) var(--ease);
+}
+
+.urgentBanner:hover .urgentGo {
+    transform: translate3d(4px, 0, 0);
+}
+
+@media (max-width: 719px) {
+    .urgentBanner {
+        grid-template-columns: auto 1fr;
+    }
+
+    .urgentGo {
+        display: none;
     }
 }

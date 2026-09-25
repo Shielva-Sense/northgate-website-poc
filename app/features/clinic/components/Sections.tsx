@@ -22,7 +22,7 @@ import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
 import type { Stat } from "../types";
-import { DEPARTMENTS } from "../care";
+import { DepartmentCarousel } from "./DepartmentCarousel";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
 import { ServiceGlyph } from "./ServiceGlyph";
@@ -94,10 +94,6 @@ export function Proof(): React.JSX.Element {
 
 /* ── departments ──────────────────────────────── */
 
-function countIn(departmentId: string): number {
-    return CLINICIANS.filter((person) => person.departments.includes(departmentId)).length;
-}
-
 export function Departments(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
 
@@ -109,39 +105,16 @@ export function Departments(): React.JSX.Element {
                     <h2 className={styles.title}>Find the right team</h2>
                     <p className={styles.lede}>
                         Choose a department to see who staffs it and when they are free. Not sure?{" "}
-                        <Link href="/find-a-doctor">Answer two questions instead.</Link>
+                        <Link href="/find-a-doctor">Let us point you at the right one.</Link>
                     </p>
                 </div>
 
-                <ul className={`${styles.grid} ${styles.grid3}`} role="list">
-                    {DEPARTMENTS.map((department, index) => (
-                        <li
-                            key={department.id}
-                            className={styles.card}
-                            data-reveal=""
-                            style={delay(index)}
-                        >
-                            <h3 className={styles.cardTitle}>{department.name}</h3>
-                            <p className={styles.cardBody}>{department.summary}</p>
-                            <ul className={styles.deptLinks} role="list">
-                                {department.services.map((slug) => {
-                                    const service = SERVICES.find((item) => item.slug === slug);
-                                    if (service === undefined) return null;
-                                    return (
-                                        <li key={slug}>
-                                            <Link href={`/services/${slug}`}>{service.name}</Link>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                            <p className={styles.deptCount}>
-                                {countIn(department.id)}{" "}
-                                {countIn(department.id) === 1 ? "clinician" : "clinicians"}
-                            </p>
-                        </li>
-                    ))}
-                </ul>
             </div>
+
+            {/* Six identical text cards made every department look like the
+                same department. One photograph at a time, filling the section,
+                does the opposite. */}
+            <DepartmentCarousel />
         </section>
     );
 }

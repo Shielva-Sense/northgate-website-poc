@@ -24,3 +24,36 @@
     color: var(--color-text-muted);
     max-width: 44rem;
 }
+
+/* Split hero. Text first in the DOM so it is also first on a phone — the
+   headline is what tells you you are on the right page, not the photograph. */
+.split {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+}
+
+.copy {
+    min-width: 0;
+}
+
+.shot {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.shotImg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 7 / 5;
+    object-fit: cover;
+}
+
+@media (min-width: 900px) {
+    .split {
+        grid-template-columns: 1fr 0.85fr;
+        gap: var(--space-8);
+    }
+}

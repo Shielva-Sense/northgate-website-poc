@@ -30,9 +30,12 @@
     --z-header: 50;
     --z-skip: 100;
 
-    --wrap: 1140px;
+    --wrap: 1280px;
     --font-sans: var(--font-sans-family), system-ui, -apple-system, sans-serif;
     --font-serif: var(--font-serif-family), Georgia, "Times New Roman", serif;
+    /* No webfont is loaded for this — a booking reference only needs the digit
+       alignment and unambiguous 0/O that any system mono already gives. */
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
     /* one place owns motion, so reduced-motion can zero it */
     --ease: cubic-bezier(0.22, 1, 0.36, 1);

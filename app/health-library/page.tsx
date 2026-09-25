@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { resolveBrand } from "@/app/features/clinic/brands";
 import { PageShell } from "@/app/components/layouts/PageShell";
@@ -24,6 +26,8 @@ export default async function Page(): Promise<React.JSX.Element> {
             kicker="Health library"
             title="Written to be read, not to rank"
             lede="Plain-language information about the things we are asked about most. Every article ends with when to stop reading and speak to a person."
+            image="/img/consultation.jpg"
+            imageAlt="A clinician and a patient talking across a desk, both leaning in"
         >
             <section className={styles.section}>
                 <div className="wrap">
@@ -33,16 +37,40 @@ export default async function Page(): Promise<React.JSX.Element> {
                             <ul className={styles.cards} role="list">
                                 {ARTICLES.filter((article) => article.topic === topic).map(
                                     (article) => (
-                                        <li key={article.slug} className={styles.card}>
-                                            <h3 className={styles.cardTitle}>
-                                                <Link href={`/health-library/${article.slug}`}>
-                                                    {article.title}
+                                            <li key={article.slug} className={styles.card}>
+                                                <Link
+                                                    className={styles.cardLink}
+                                                    href={`/health-library/${article.slug}`}
+                                                >
+                                                    <span className={styles.cardShot}>
+                                                        <Image
+                                                            src={article.image}
+                                                            alt=""
+                                                            width={1200}
+                                                            height={800}
+                                                            sizes="(min-width: 720px) 340px, 90vw"
+                                                            className={styles.cardImg}
+                                                        />
+                                                    </span>
+                                                    <span className={styles.cardBodyWrap}>
+                                                        <span className={styles.cardTitle}>
+                                                            {article.title}
+                                                        </span>
+                                                        <span className={styles.cardBody}>
+                                                            {article.summary}
+                                                        </span>
+                                                        <span className={styles.cardGo}>
+                                                            Read this
+                                                            <ArrowRight
+                                                                size={15}
+                                                                aria-hidden="true"
+                                                            />
+                                                        </span>
+                                                    </span>
                                                 </Link>
-                                            </h3>
-                                            <p className={styles.cardBody}>{article.summary}</p>
-                                        </li>
-                                    ),
-                                )}
+                                            </li>
+                                        ),
+                                    )}
                             </ul>
                         </div>
                     ))}

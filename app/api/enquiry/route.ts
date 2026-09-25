@@ -15,7 +15,9 @@ import type { NextRequest } from "next/server";
  *   configured sink and never written to our own logs.
  */
 
-export const runtime = "nodejs";
+/* No `runtime` export: nodejs is the default, and the config is rejected
+   under cacheComponents. This route needs node for crypto.randomUUID and the
+   in-process rate-limit map either way. */
 
 const MAX_BODY_BYTES = 8_000;
 const WINDOW_MS = 10 * 60 * 1000;

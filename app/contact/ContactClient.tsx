@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { ArrowRight, Check, MessageCircle, Phone, ShieldCheck } from "lucide-react";
-import { Field, Input, Select, Textarea } from "@/app/components/ui/Field";
+import { Field, Input, Textarea } from "@/app/components/ui/Field";
+import { ChoiceGroup } from "@/app/components/ui/Choice";
+import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
 import { useBrand } from "@/app/features/clinic/BrandContext";
 import { DEPARTMENTS } from "@/app/features/clinic/care";
 import styles from "./Contact.module.scss";
+
+const ABOUT_OPTIONS: readonly ChoiceOption<string>[] = [
+    { value: "", label: "General enquiry" },
+    ...DEPARTMENTS.map((d) => ({ value: d.name, label: d.name })),
+];
 
 const PHONE_DIGITS = /\d/g;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -179,22 +186,14 @@ export function ContactClient(): React.JSX.Element {
                             )}
                         </Field>
 
-                        <Field label="What is it about">
-                            {(id) => (
-                                <Select
-                                    id={id}
-                                    value={about}
-                                    onChange={(event) => setAbout(event.target.value)}
-                                >
-                                    <option value="">General enquiry</option>
-                                    {DEPARTMENTS.map((department) => (
-                                        <option key={department.id} value={department.name}>
-                                            {department.name}
-                                        </option>
-                                    ))}
-                                </Select>
-                            )}
-                        </Field>
+                        <ChoiceGroup
+                            legend="What is it about"
+                            name="about"
+                            value={about}
+                            options={ABOUT_OPTIONS}
+                            onChange={setAbout}
+                        />
+
 
                         <Field
                             label="Your message"

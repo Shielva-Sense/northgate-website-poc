@@ -253,15 +253,12 @@ function HeroEditorial(): React.JSX.Element {
             </div>
             <div className={`wrap ${styles.editShotWrap}`}>
                 <div className={styles.editShot} ref={shot} data-reveal="" data-reveal-style="wipe">
-                    <Image
-                        src="/img/waiting.jpg"
-                        alt="A sunlit waiting area with soft linen armchairs and a large fig tree"
-                        width={1536}
-                        height={864}
-                        priority
-                        sizes="(min-width: 1140px) 1100px, 100vw"
-                        className={styles.editImg}
-                    />
+                    {/* HeroMedia rather than a second <video>: it already owns the
+                        reduced-motion opt-out, the off-screen pause and the
+                        degrade-to-poster path. The poster is this clip's own
+                        first frame, so a refused autoplay leaves the same
+                        composition rather than a different room. */}
+                    <HeroMedia poster="/img/editorial-poster.jpg" src="/video/editorial.mp4" />
                 </div>
             </div>
         </section>

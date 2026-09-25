@@ -3,12 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, ShieldCheck } from "lucide-react";
-import { Field, Input, Select, Textarea } from "@/app/components/ui/Field";
-import { Checkbox } from "@/app/components/ui/Choice";
+import { Field, Input, Textarea } from "@/app/components/ui/Field";
+import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
+import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
 import { useBrand } from "@/app/features/clinic/BrandContext";
 import { DEPARTMENTS } from "@/app/features/clinic/care";
 import styles from "./Refer.module.scss";
+
+const DEPT_OPTIONS: readonly ChoiceOption<string>[] = [
+    { value: "", label: "Not sure — please triage" },
+    ...DEPARTMENTS.map((d) => ({ value: d.name, label: d.name })),
+];
+
+const URGENCY_OPTIONS: readonly ChoiceOption<string>[] = [
+    { value: "routine", label: "Routine" },
+    { value: "soon", label: "Soon — within a week" },
+    { value: "urgent", label: "Urgent — same working day" },
+];
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -220,36 +232,23 @@ export function ReferClient(): React.JSX.Element {
             <fieldset className={styles.group}>
                 <legend className={styles.legend}>The referral</legend>
                 <div className={styles.pair}>
-                    <Field label="Department">
-                        {(id) => (
-                            <Select
-                                id={id}
-                                value={department}
-                                onChange={(event) => setDepartment(event.target.value)}
-                            >
-                                <option value="">Not sure — please triage</option>
-                                {DEPARTMENTS.map((item) => (
-                                    <option key={item.id} value={item.name}>
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </Select>
-                        )}
-                    </Field>
-                    <Field label="Urgency">
-                        {(id) => (
-                            <Select
-                                id={id}
-                                value={urgency}
-                                onChange={(event) => setUrgency(event.target.value)}
-                            >
-                                <option value="routine">Routine</option>
-                                <option value="soon">Soon — within a week</option>
-                                <option value="urgent">Urgent — same working day</option>
-                            </Select>
-                        )}
-                    </Field>
                 </div>
+                <ChoiceGroup
+                    legend="Department"
+                    name="department"
+                    value={department}
+                    options={DEPT_OPTIONS}
+                    onChange={setDepartment}
+                />
+
+                <ChoiceGroup
+                    legend="Urgency"
+                    name="urgency"
+                    value={urgency}
+                    options={URGENCY_OPTIONS}
+                    onChange={setUrgency}
+                />
+
                 <Field
                     label="Reason for referral"
                     required

@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import type { Brand } from "./brands";
+import { applyTheme, readStoredTheme } from "./theme";
 
 /**
  * The brand is resolved once on the server from the Host header and handed
@@ -18,7 +19,32 @@ export function BrandProvider({
     readonly brand: Brand;
     readonly children: React.ReactNode;
 }): React.JSX.Element {
-    return <BrandCtx.Provider value={brand}>{children}</BrandCtx.Provider>;
+    return (
+        <BrandCtx.Provider value={brand}>
+            <ThemeMemory />
+            {children}
+        </BrandCtx.Provider>
+    );
+}
+
+/**
+ * Re-applies a theme chosen anywhere to every other page.
+ *
+ * A picker writes the variables onto the document it is mounted in, and a
+ * navigation throws that away. Every page goes through BrandProvider, so this
+ * is the one place that covers all of them.
+ *
+ * Deliberately after paint rather than in a blocking inline script — this is a
+ * demo affordance for a prospect clicking through colours, not a user theme
+ * preference, so a one-frame flash of the tenant's real palette is the correct
+ * trade against blocking first paint for every visitor.
+ */
+function ThemeMemory(): null {
+    useEffect(() => {
+        const stored = readStoredTheme();
+        if (stored !== null) applyTheme(stored, false);
+    }, []);
+    return null;
 }
 
 export function useBrand(): Brand {
