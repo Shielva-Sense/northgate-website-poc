@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, Phone, Siren, X } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { Logo } from "@/app/components/ui/Logo";
 
@@ -43,6 +43,13 @@ export function SiteHeader(): React.JSX.Element {
                             {link.label}
                         </a>
                     ))}
+                    {/* Deliberately outside LINKS: it is not a peer of "Services",
+                        and someone who needs it is scanning for red, not reading
+                        a nav. Kept at five links so the bar stays uncramped. */}
+                    <Link className={styles.urgent} href="/urgent-care">
+                        <Siren size={15} aria-hidden="true" />
+                        Urgent care
+                    </Link>
                     <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
                         {brand.phone}
@@ -75,6 +82,14 @@ export function SiteHeader(): React.JSX.Element {
                                 {link.label}
                             </a>
                         ))}
+                        <Link
+                            className={styles.urgent}
+                            href="/urgent-care"
+                            onClick={() => setOpen(false)}
+                        >
+                            <Siren size={15} aria-hidden="true" />
+                            Urgent care
+                        </Link>
                         <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />
                             {brand.phone}

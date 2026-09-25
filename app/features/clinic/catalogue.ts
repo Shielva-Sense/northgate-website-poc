@@ -40,6 +40,12 @@ export interface AdditionalService {
 }
 
 export interface Article {
+    /** Card image. An article owns this rather than inheriting it from its
+        department: departments are fewer than articles, so deriving it put the
+        same photograph on two cards in the same topic. Reuse across topics is
+        fine — those cards never appear side by side. */
+    readonly image: string;
+    readonly imageAlt: string;
     readonly slug: string;
     readonly title: string;
     readonly topic: string;
@@ -164,6 +170,8 @@ export const ADDITIONAL_SERVICES: readonly AdditionalService[] = [
 export const ARTICLES: readonly Article[] = [
     {
         slug: "high-blood-pressure",
+        image: "/img/dept/cardiometabolic.jpg",
+        imageAlt: "A clinic bench with a blood pressure monitor, ECG unit and glucose meter",
         title: "High blood pressure",
         topic: "Heart and circulation",
         summary:
@@ -191,6 +199,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "menopause",
+        image: "/img/dept/womens.jpg",
+        imageAlt: "Two comfortable chairs turned toward each other beside a softly curtained window",
         title: "Menopause and perimenopause",
         topic: "Women's health",
         summary:
@@ -218,6 +228,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "child-fever",
+        image: "/img/dept/paediatrics.jpg",
+        imageAlt: "A bright corner of a clinic with wooden toys, picture books and a child-height chair",
         title: "Fever in children",
         topic: "Child health",
         summary: "Common, usually viral, and occasionally the one thing that should not wait.",
@@ -241,6 +253,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "low-mood-anxiety",
+        image: "/img/dept/mental-health.jpg",
+        imageAlt: "A softly lit room with a deep armchair, a wool throw and a window onto green leaves",
         title: "Low mood and anxiety",
         topic: "Mental health",
         summary: "Extremely common, treatable, and consistently left too long before asking.",
@@ -263,6 +277,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "moles-and-skin-changes",
+        image: "/img/dept/general.jpg",
+        imageAlt: "A tidy consulting-room desk with a stethoscope, notebook and blood pressure cuff",
         title: "Moles and skin changes",
         topic: "Skin",
         summary: "Most changes are harmless. The ones that are not are best caught early.",
@@ -285,6 +301,8 @@ export const ARTICLES: readonly Article[] = [
     },
     {
         slug: "type-2-diabetes",
+        image: "/img/dept/general.jpg",
+        imageAlt: "A tidy consulting-room desk with a stethoscope, notebook and blood pressure cuff",
         title: "Type 2 diabetes",
         topic: "Heart and circulation",
         summary: "Often found on a routine blood test before anyone feels unwell.",

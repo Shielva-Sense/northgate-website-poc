@@ -684,24 +684,29 @@
 }
 
 .detail {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: center;
     gap: var(--space-3);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
     font-size: 15px;
     color: var(--color-text-muted);
 }
 
 /* Phone and email are the two things people tap on a clinic site. */
-.detail a {
-    display: inline-flex;
+/* Every row shares one 44px content box, so the icons line up down a single
+   axis whether the text is one line or three. The tap-target height was on the
+   links only, which pushed their text down while the icon stayed put. */
+.detail a,
+.detail > span {
+    display: flex;
     align-items: center;
     min-height: 44px;
 }
 
 .detail svg {
     flex: none;
-    margin-top: 3px;
+    justify-self: center;
     color: var(--color-brand-600);
 }
 
@@ -1057,30 +1062,4 @@
     text-transform: uppercase;
     color: var(--color-text-subtle);
     margin-top: auto;
-}
-
-/* Always visible, on every page. Marked by an icon and a border as well as
-   colour, because colour alone is not a signal everyone receives. */
-.emergency {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    margin-top: var(--space-7);
-    padding: var(--space-4) var(--space-5);
-    border: 1px solid var(--color-danger);
-    border-left-width: 4px;
-    border-radius: var(--radius-md);
-    background: rgba(var(--color-surface-rgb), 0.06);
-    font-size: var(--text-sm);
-    color: var(--color-sand-100);
-}
-
-.emergency svg {
-    flex: none;
-    margin-top: 2px;
-    color: var(--color-danger);
-}
-
-.emergency b {
-    color: var(--color-on-brand);
 }

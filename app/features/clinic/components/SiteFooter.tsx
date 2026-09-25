@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
 import { SERVICES } from "../constants";
 import { useBrand } from "../BrandContext";
 import styles from "./Sections.module.scss";
@@ -50,15 +49,6 @@ export function SiteFooter(): React.JSX.Element {
                         </ul>
                     </div>
                 </div>
-                <aside className={styles.emergency} aria-label="In an emergency">
-                    <AlertTriangle size={17} aria-hidden="true" />
-                    <p>
-                        <b>In an emergency, call {brand.emergencyNumber}</b> or go to your nearest
-                        emergency department. Do not wait for an appointment and do not wait for us
-                        to call you back.
-                    </p>
-                </aside>
-
                 <div className={styles.footBase}>
                     <span>
                         Sample build for demonstration. Northgate Family Health is a fictional

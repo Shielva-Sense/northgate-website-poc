@@ -156,3 +156,29 @@
         transition: none;
     }
 }
+
+/* Red, bordered and icon-led so it reads as a different kind of link from the
+   nav beside it. Not a button: it navigates, and dressing navigation up as an
+   action is how people end up afraid to click the thing they need. */
+.urgent {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 38px;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-full);
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        background var(--dur) var(--ease),
+        color var(--dur) var(--ease);
+}
+
+.urgent:hover {
+    background: var(--color-danger);
+    color: var(--color-on-danger);
+}
