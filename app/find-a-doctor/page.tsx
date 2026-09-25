@@ -14,7 +14,7 @@ import styles from "./FindDoctor.module.scss";
 export async function generateMetadata(): Promise<Metadata> {
     const brand = resolveBrand((await headers()).get("host"));
     return {
-        title: `Not sure who to see? — ${brand.name}`,
+        title: `Find a doctor — ${brand.name}`,
         description:
             "Tell us what it is about and we will point you at the right department, then show you who is free.",
         alternates: { canonical: `${siteUrl()}/find-a-doctor` },
@@ -37,11 +37,12 @@ export default async function Page(): Promise<React.JSX.Element> {
                             {brand.name}
                         </Link>
                     </p>
-                    <h1 className={styles.h1}>Not sure who to see?</h1>
+                    <h1 className={styles.h1}>Find a doctor</h1>
                     <p className={styles.lede}>
-                        A few short questions — who it is for, where it hurts, how long and how
-                        bad — and we will point you at the department that usually sees it, then
-                        show you who is free. About a minute, and you can go back at any point.
+                        Nine clinicians, what each one costs, the languages they speak and the
+                        next time they are actually free. Filter to what matters to you — or, if
+                        you are not sure who you need, answer a few questions instead and we will
+                        point you at the department that usually sees it.
                     </p>
                     <div className={styles.body}>
                         <FindDoctorClient />

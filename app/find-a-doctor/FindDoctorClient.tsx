@@ -37,9 +37,17 @@ import {
     SYMPTOM_CATEGORIES,
 } from "@/app/features/clinic/triage";
 import type { CategoryIcon, Duration, ForWhom, Severity } from "@/app/features/clinic/triage";
+import { DoctorDirectory } from "./DoctorDirectory";
 import styles from "./FindDoctor.module.scss";
 
 type Stage = "safety" | "who" | "category" | "symptom" | "detail" | "result" | "book" | "emergency";
+
+/* Two ways in. "Browse" is first because it is the common case: most people
+   arriving here know roughly what they need and want to see who is there, what
+   it costs and when. The guided flow is for the minority who genuinely do not
+   know, and burying the directory behind four questions to serve them would be
+   the wrong trade. */
+type Mode = "browse" | "guided";
 
 /* Module scope: rebuilding this map on every render would allocate twelve
    elements per keystroke elsewhere in the tree. */
@@ -86,7 +94,9 @@ const STEPS: readonly { readonly stage: Stage; readonly label: string }[] = [
  */
 export function FindDoctorClient(): React.JSX.Element {
     const brand = useBrand();
+    const [mode, setMode] = useState<Mode>("browse");
     const [stage, setStage] = useState<Stage>("safety");
+    const [preferred, setPreferred] = useState<string | null>(null);
     const [forWhom, setForWhom] = useState<ForWhom>("self");
     const [category, setCategory] = useState<string | null>(null);
     const [symptom, setSymptom] = useState<string | null>(null);
@@ -142,6 +152,45 @@ export function FindDoctorClient(): React.JSX.Element {
         );
     }
 
+    const tabs = (
+        <div className={styles.modes} role="tablist" aria-label="How to find a clinician">
+            <button
+                type="button"
+                role="tab"
+                className={styles.mode}
+                aria-selected={mode === "browse"}
+                onClick={() => setMode("browse")}
+            >
+                Browse our clinicians
+            </button>
+            <button
+                type="button"
+                role="tab"
+                className={styles.mode}
+                aria-selected={mode === "guided"}
+                onClick={() => setMode("guided")}
+            >
+                I&rsquo;m not sure who to see
+            </button>
+        </div>
+    );
+
+    if (mode === "browse" && stage !== "book") {
+        return (
+            <>
+                {tabs}
+                <DoctorDirectory
+                    onBook={(departmentId, clinician) => {
+                        setDirect(departmentId);
+                        setPreferred(clinician);
+                        setSymptom(null);
+                        jump("book");
+                    }}
+                />
+            </>
+        );
+    }
+
     if (stage === "emergency") {
         return (
             <div className={`${styles.panel} ${styles.emergency}`} role="alert">
@@ -175,7 +224,9 @@ export function FindDoctorClient(): React.JSX.Element {
 
     if (stage === "safety") {
         return (
-            <div className={styles.panel}>
+            <>
+                {tabs}
+                <div className={styles.panel}>
                 <h2 className={styles.title}>First, one safety check</h2>
                 <p className={styles.sub}>
                     Does any of this apply right now, to you or the person you are booking for?
@@ -192,8 +243,9 @@ export function FindDoctorClient(): React.JSX.Element {
                     <Button size="lg" onClick={() => jump("who")}>
                         No, none of these
                     </Button>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -420,11 +472,15 @@ export function FindDoctorClient(): React.JSX.Element {
         <>
             <p className={styles.routed}>
                 <Phone size={14} aria-hidden="true" />
-                Booking with <b>{department?.name}</b>.{" "}
+                Booking with <b>{preferred ?? department?.name}</b>
+                {preferred === null ? null : ` · ${department?.name ?? ""}`}.{" "}
                 <button
                     type="button"
                     className={styles.linkish}
-                    onClick={() => jump(direct === null ? "result" : "who")}
+                    onClick={() => {
+                        setPreferred(null);
+                        jump(direct === null ? "result" : "browse" === mode ? "safety" : "who");
+                    }}
                 >
                     Change
                 </button>
