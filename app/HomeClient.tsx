@@ -9,7 +9,6 @@ import {
     Departments,
     Faq,
     Gallery,
-    Hero,
     Journey,
     Pricing,
     Promises,
@@ -18,6 +17,7 @@ import {
     Team,
     Visiting,
 } from "@/app/features/clinic/components/Sections";
+import { Hero } from "@/app/features/clinic/components/HeroVariants";
 import { PatientStory } from "@/app/features/clinic/components/PatientStory";
 import { StickyCta } from "@/app/features/clinic/components/StickyCta";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
@@ -32,7 +32,7 @@ export function HomeClient({ template }: { readonly template: TemplateId }): Rea
        a section may need to know which template it is rendering inside — the
        services heading, for one, must not call a hospital a family practice. */
     const rendered: Readonly<Record<SectionId, React.ReactNode>> = {
-        hero: <Hero />,
+        hero: <Hero template={template} />,
         proof: <Proof />,
         departments: <Departments />,
         team: <Team />,

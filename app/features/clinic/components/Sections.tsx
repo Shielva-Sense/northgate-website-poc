@@ -24,9 +24,7 @@ import {
 } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { BookingForm } from "@/app/features/booking/BookingForm";
-import { LeadCapture } from "@/app/features/booking/LeadCapture";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
-import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
 import type { ServiceIcon, Stat } from "../types";
@@ -34,7 +32,6 @@ import { DEPARTMENTS } from "../care";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
 import { Faq } from "./Faq";
-import { HeroMedia } from "./HeroMedia";
 import { Gallery } from "./Gallery";
 import { useBrand } from "../BrandContext";
 import styles from "./Sections.module.scss";
@@ -48,9 +45,6 @@ const ICONS: Readonly<Record<ServiceIcon, typeof Stethoscope>> = {
     flaskConical: FlaskConical,
 };
 
-/* Stable keys for the fixed five-star row. */
-const STAR_SLOTS = ["one", "two", "three", "four", "five"] as const;
-
 /* Stagger is a data concern, not a style one, so it is set as a CSS variable
    rather than a class per index. */
 function delay(index: number): React.CSSProperties {
@@ -58,90 +52,6 @@ function delay(index: number): React.CSSProperties {
 }
 
 /* ── hero ─────────────────────────────────────── */
-
-export function Hero(): React.JSX.Element {
-    const brand = useBrand();
-    const ref = useReveal<HTMLDivElement>();
-    const back = useParallax<HTMLDivElement>(-0.12);
-
-    return (
-        <section className={styles.hero} id="top">
-            {/* The footage is the argument. Everything else sits on top of it.
-                The still stays as the poster, so this degrades to the previous
-                design rather than to a blank band. */}
-            <div className={styles.heroBack} ref={back} aria-hidden="true">
-                <HeroMedia poster="/img/consultation.jpg" src="/video/hero.mp4" />
-            </div>
-            <div className={styles.heroScrim} aria-hidden="true" />
-
-            <div className={`wrap ${styles.heroGrid}`} ref={ref}>
-                <div className={styles.heroCopy} data-reveal="">
-                    <p className={styles.rating}>
-                        <span className={styles.stars} aria-hidden="true">
-                            {STAR_SLOTS.map((slot) => (
-                                <Star key={slot} size={13} fill="currentColor" strokeWidth={0} />
-                            ))}
-                        </span>
-                        <b>{brand.rating}</b>
-                        from {brand.ratingCount} patient reviews
-                    </p>
-
-                    {/* Each line is masked by its own wrapper and rises out of
-                        it, staggered. data-reveal is per line, not per heading. */}
-                    <h1 className={styles.h1}>
-                        <span className="line-mask">
-                            <span data-reveal="" data-reveal-style="rise">
-                                See a named doctor
-                            </span>
-                        </span>
-                        <span className="line-mask">
-                            <em data-reveal="" data-reveal-style="rise" style={delay(1)}>
-                                this week
-                            </em>
-                        </span>
-                        <span className="line-mask">
-                            <span data-reveal="" data-reveal-style="rise" style={delay(2)}>
-                                not in three
-                            </span>
-                        </span>
-                    </h1>
-                    <p className={styles.heroLede}>
-                        Seven clinicians. Twenty-minute appointments. Every price published on this
-                        page, and a real time confirmed within the hour.
-                    </p>
-
-                    <div className={styles.cta}>
-                        <LinkButton href="#team" size="lg">
-                            Choose your clinician
-                        </LinkButton>
-                        <LinkButton href={brand.phoneHref} variant="onDark" size="lg">
-                            {brand.phone}
-                        </LinkButton>
-                    </div>
-
-                    <ul className={styles.chips} role="list">
-                        <li>
-                            <Check size={14} aria-hidden="true" />
-                            Seen this week, in writing
-                        </li>
-                        <li>
-                            <Check size={14} aria-hidden="true" />
-                            No fee to ask a question
-                        </li>
-                        <li>
-                            <Check size={14} aria-hidden="true" />
-                            Most insurers accepted
-                        </li>
-                    </ul>
-                </div>
-
-                <div className={styles.heroSide} data-reveal="" style={delay(1)}>
-                    <LeadCapture />
-                </div>
-            </div>
-        </section>
-    );
-}
 
 /* ── proof band ───────────────────────────────── */
 
