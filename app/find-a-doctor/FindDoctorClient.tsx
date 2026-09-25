@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, Phone, Stethoscope } from "lucide-react";
+import Image from "next/image";
+import { AlertTriangle, ArrowLeft, ArrowRight, Phone, Stethoscope } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
 import { useBrand } from "@/app/features/clinic/BrandContext";
-import { departmentById, RED_FLAGS, SYMPTOMS } from "@/app/features/clinic/care";
+import { DEPARTMENTS, departmentById, RED_FLAGS, SYMPTOMS } from "@/app/features/clinic/care";
 import styles from "./FindDoctor.module.scss";
 
 type Stage = "safety" | "symptom" | "book" | "emergency";
@@ -28,9 +29,12 @@ export function FindDoctorClient(): React.JSX.Element {
     const brand = useBrand();
     const [stage, setStage] = useState<Stage>("safety");
     const [symptom, setSymptom] = useState<string | null>(null);
+    /* Set when someone picks a department card rather than a symptom. */
+    const [direct, setDirect] = useState<string | null>(null);
 
     const chosen = SYMPTOMS.find((s) => s.id === symptom);
-    const department = chosen === undefined ? undefined : departmentById(chosen.department);
+    const departmentId = direct ?? chosen?.department;
+    const department = departmentId === undefined ? undefined : departmentById(departmentId);
 
     if (stage === "emergency") {
         return (
@@ -94,52 +98,103 @@ export function FindDoctorClient(): React.JSX.Element {
 
     if (stage === "symptom") {
         return (
-            <div className={styles.panel}>
-                <h2 className={styles.title}>What is it about?</h2>
-                <p className={styles.sub}>
-                    Pick the closest. If nothing fits, choose anything and write the detail in the
-                    notes — reception will route it properly.
-                </p>
-                <ul className={styles.symptoms} role="list">
-                    {SYMPTOMS.map((option) => (
-                        <li key={option.id}>
-                            <button
-                                type="button"
-                                className={styles.symptom}
-                                aria-pressed={symptom === option.id}
-                                onClick={() => setSymptom(option.id)}
-                            >
-                                {option.label}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+            <>
+                <div className={styles.panel}>
+                    <h2 className={styles.title}>Browse by department</h2>
+                    <p className={styles.sub}>
+                        Pick the one that sounds closest. You will see who staffs it and when they
+                        are next free.
+                    </p>
+                    <ul className={styles.deptGrid} role="list">
+                        {DEPARTMENTS.map((item) => (
+                            <li key={item.id}>
+                                <button
+                                    type="button"
+                                    className={styles.deptCard}
+                                    onClick={() => {
+                                        setDirect(item.id);
+                                        setSymptom(null);
+                                        setStage("book");
+                                    }}
+                                >
+                                    <span className={styles.deptShot}>
+                                        <Image
+                                            src={item.image}
+                                            alt={item.imageAlt}
+                                            width={1200}
+                                            height={800}
+                                            sizes="(min-width: 760px) 300px, 90vw"
+                                            className={styles.deptImg}
+                                        />
+                                    </span>
+                                    <span className={styles.deptBody}>
+                                        <span className={styles.deptName}>{item.name}</span>
+                                        <span className={styles.deptSummary}>{item.summary}</span>
+                                        <span className={styles.deptGo}>
+                                            See who is available
+                                            <ArrowRight size={15} aria-hidden="true" />
+                                        </span>
+                                    </span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-                {department === undefined ? null : (
-                    <div className={styles.result}>
-                        <p className={styles.resultKicker}>
-                            <Stethoscope size={15} aria-hidden="true" />
-                            Usually seen by
-                        </p>
-                        <h3 className={styles.resultName}>{department.name}</h3>
-                        <p className={styles.resultBody}>{department.summary}</p>
-                        <Button size="lg" onClick={() => setStage("book")}>
-                            See who is available
-                        </Button>
-                    </div>
-                )}
+                <div className={styles.panel}>
+                    <h2 className={styles.title}>Or describe it instead</h2>
+                    <p className={styles.sub}>
+                        Pick the closest. If nothing fits, choose anything and write the detail in
+                        the notes — reception will route it properly.
+                    </p>
+                    <ul className={styles.symptoms} role="list">
+                        {SYMPTOMS.map((option) => (
+                            <li key={option.id}>
+                                <button
+                                    type="button"
+                                    className={styles.symptom}
+                                    aria-pressed={symptom === option.id}
+                                    onClick={() => {
+                                        setSymptom(option.id);
+                                        setDirect(null);
+                                    }}
+                                >
+                                    {option.label}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
 
-                <p className={styles.disclaimer}>
-                    This points you at the right department. It is not medical advice and it is not
-                    a diagnosis — nobody here has assessed you. If you are unsure or it gets worse,
-                    ring us on <a href={brand.phoneHref}>{brand.phone}</a>.
-                </p>
+                    {department === undefined ? null : (
+                        <div className={styles.result}>
+                            <p className={styles.resultKicker}>
+                                <Stethoscope size={15} aria-hidden="true" />
+                                Usually seen by
+                            </p>
+                            <h3 className={styles.resultName}>{department.name}</h3>
+                            <p className={styles.resultBody}>{department.summary}</p>
+                            <Button size="lg" onClick={() => setStage("book")}>
+                                See who is available
+                            </Button>
+                        </div>
+                    )}
 
-                <button type="button" className={styles.back} onClick={() => setStage("safety")}>
-                    <ArrowLeft size={14} aria-hidden="true" />
-                    Back
-                </button>
-            </div>
+                    <p className={styles.disclaimer}>
+                        This points you at the right department. It is not medical advice and it is
+                        not a diagnosis — nobody here has assessed you. If you are unsure or it gets
+                        worse, ring us on <a href={brand.phoneHref}>{brand.phone}</a>.
+                    </p>
+
+                    <button
+                        type="button"
+                        className={styles.back}
+                        onClick={() => setStage("safety")}
+                    >
+                        <ArrowLeft size={14} aria-hidden="true" />
+                        Back
+                    </button>
+                </div>
+            </>
         );
     }
 
@@ -153,7 +208,7 @@ export function FindDoctorClient(): React.JSX.Element {
                 </button>
             </p>
             <AppointmentFlow
-                department={chosen?.department}
+                department={departmentId}
                 serviceName={department?.name}
             />
             <p className={styles.footNote}>

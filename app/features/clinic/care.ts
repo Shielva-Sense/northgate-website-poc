@@ -10,6 +10,9 @@ export interface Department {
     readonly id: string;
     readonly name: string;
     readonly summary: string;
+    /** Card image. Chosen to suggest the room, not the procedure. */
+    readonly image: string;
+    readonly imageAlt: string;
     /** Services (by slug) this department covers. */
     readonly services: readonly string[];
 }
@@ -25,36 +28,48 @@ export interface Slot {
 export const DEPARTMENTS: readonly Department[] = [
     {
         id: "general",
+        image: "/img/dept/general.jpg",
+        imageAlt: "A tidy consulting-room desk with a stethoscope, notebook and blood pressure cuff",
         name: "General medicine",
         summary: "First port of call for anything undifferentiated, and ongoing conditions.",
         services: ["gp", "health-checks", "bloods"],
     },
     {
         id: "womens",
+        image: "/img/dept/womens.jpg",
+        imageAlt: "Two comfortable chairs turned toward each other beside a softly curtained window",
         name: "Women's health",
         summary: "Contraception, menopause, gynaecological symptoms and cervical screening.",
         services: ["gp", "health-checks"],
     },
     {
         id: "paediatrics",
+        image: "/img/dept/paediatrics.jpg",
+        imageAlt: "A bright corner of a clinic with wooden toys, picture books and a child-height chair",
         name: "Child health",
         summary: "Babies and children — illness, feeding, development and vaccinations.",
         services: ["child-health", "vaccinations"],
     },
     {
         id: "mental-health",
+        image: "/img/dept/mental-health.jpg",
+        imageAlt: "A softly lit room with a deep armchair, a wool throw and a window onto green leaves",
         name: "Mental health",
         summary: "Low mood, anxiety, sleep and stress, with longer appointments as standard.",
         services: ["mental-health"],
     },
     {
         id: "cardiometabolic",
+        image: "/img/dept/cardiometabolic.jpg",
+        imageAlt: "A clinic bench with a blood pressure monitor, ECG unit and glucose meter",
         name: "Heart & diabetes",
         summary: "Blood pressure, cholesterol, diabetes review and cardiovascular risk.",
         services: ["health-checks", "bloods", "gp"],
     },
     {
         id: "travel",
+        image: "/img/dept/travel.jpg",
+        imageAlt: "A travel health desk with a journal, a globe, a passport and sealed vaccination packs",
         name: "Travel health",
         summary: "Destination risk assessment, vaccinations and antimalarials.",
         services: ["vaccinations"],

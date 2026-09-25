@@ -15,6 +15,7 @@ itself — Northgate Family Health — is fictional.
 | `recovery.jpg` | Recovery room | Gallery |
 | `exterior.jpg` | Practice exterior | Gallery |
 | `team/*.jpg` | Four clinician portraits | Team section |
+| `dept/*.jpg` | Six department card images | Find a doctor |
 | `story-hannah.jpg` | Patient-story first frame | Story **poster** |
 | `../video/story-hannah.mp4` | Spoken patient story | Story section, click to play |
 
