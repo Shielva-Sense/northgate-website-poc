@@ -140,9 +140,8 @@ export function BookingForm(): React.JSX.Element {
                 <AlertTriangle size={16} aria-hidden="true" />
                 <span>
                     If this is a medical emergency, come straight to our emergency
-                    department — open 24 hours, no appointment needed — or call{" "}
-                    {brand.emergencyNumber} if you cannot travel safely. Do not use
-                    this form.
+                    department — open 24 hours, no appointment needed — or ring our
+                    A&amp;E line on {brand.aeLine}. Do not use this form.
                 </span>
             </p>
 

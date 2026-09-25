@@ -33,13 +33,15 @@ export default async function Page(): Promise<React.JSX.Element> {
                 <div className={`wrap ${styles.page}`}>
                     <p className={styles.routed}>
                         <Link href="/">
-                            <ArrowLeft size={14} aria-hidden="true" /> {brand.name}
+                            <ArrowLeft size={14} aria-hidden="true" />
+                            {brand.name}
                         </Link>
                     </p>
                     <h1 className={styles.h1}>Not sure who to see?</h1>
                     <p className={styles.lede}>
-                        Answer two questions and we will point you at the right department, then
-                        show you who is free. It takes about thirty seconds.
+                        A few short questions — who it is for, where it hurts, how long and how
+                        bad — and we will point you at the department that usually sees it, then
+                        show you who is free. About a minute, and you can go back at any point.
                     </p>
                     <div className={styles.body}>
                         <FindDoctorClient />

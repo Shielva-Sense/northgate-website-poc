@@ -319,6 +319,9 @@
     box-shadow: var(--shadow-lg);
     transform: translate3d(0, var(--parallax, 0px), 0);
     will-change: transform;
+    /* The box moved here from .editImg: an <img> brought its own intrinsic
+       height, a <video> sized at height:100% would collapse to nothing. */
+    aspect-ratio: 21 / 9;
 }
 
 .editImg {

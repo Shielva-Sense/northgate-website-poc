@@ -109,7 +109,7 @@ export function Departments(): React.JSX.Element {
                     <h2 className={styles.title}>Find the right team</h2>
                     <p className={styles.lede}>
                         Choose a department to see who staffs it and when they are free. Not sure?{" "}
-                        <Link href="/find-a-doctor">Answer two questions instead.</Link>
+                        <Link href="/find-a-doctor">Let us point you at the right one.</Link>
                     </p>
                 </div>
 

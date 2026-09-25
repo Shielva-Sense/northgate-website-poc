@@ -53,7 +53,12 @@ export interface Brand {
     readonly city: string;
     readonly country: string;
     readonly currency: string;
+    /** The national ambulance service. A fallback, never the headline: someone
+        who navigated to this hospital's own site came for this hospital. */
     readonly emergencyNumber: string;
+    /** The hospital's own 24-hour A&E line — the number to lead with. */
+    readonly aeLine: string;
+    readonly aeLineHref: string;
     readonly rating: string;
     readonly ratingCount: string;
     readonly palette: Palette;
@@ -123,6 +128,7 @@ const REGISTRY: Readonly<Record<string, Partial<Brand>>> = {
         regulators: UK,
         currency: "£",
         phone: "+44 20 7946 0958",
+        aeLine: "+44 20 7946 0911",
         emergencyNumber: "999",
     },
 };
@@ -188,6 +194,10 @@ export function resolveBrand(host: string | null | undefined): Brand {
         country: override.country ?? "GB",
         currency: override.currency ?? "£",
         emergencyNumber: override.emergencyNumber ?? "999",
+        // Falls back to the main switchboard rather than inventing a second
+        // number: a wrong emergency line is worse than one that is merely busy.
+        aeLine: override.aeLine ?? override.phone ?? "+44 20 7946 0958",
+        aeLineHref: `tel:${(override.aeLine ?? override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
         rating: override.rating ?? "4.9",
         ratingCount: override.ratingCount ?? "1,240",
         palette: override.palette ?? palette,

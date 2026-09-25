@@ -501,3 +501,133 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* The ambulance line. Quieter than the A&E call to action on purpose — it
+   answers "can this person travel?", not "I need this hospital". */
+.ambulance {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-danger);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    max-width: 52rem;
+}
+
+.ambulance a {
+    font-weight: 700;
+    color: var(--color-danger-900);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ── nearest department ───────────────────────────── */
+.nearest {
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-danger);
+}
+
+.nearestTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-danger-900);
+    margin-bottom: var(--space-2);
+}
+
+.nearestLede {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    max-width: 44rem;
+    margin-bottom: var(--space-4);
+}
+
+.nearestControls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-3) var(--space-4);
+}
+
+.nearestOr {
+    padding-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+}
+
+.nearestPostcode {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+}
+
+.nearestPostcode input {
+    max-width: 11rem;
+}
+
+.nearestResult {
+    margin-top: var(--space-5);
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-danger);
+    border-radius: var(--radius-md);
+}
+
+.nearestLabel {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-danger);
+    margin-bottom: var(--space-2);
+}
+
+.nearestName {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    color: var(--color-brand-900);
+    margin-bottom: var(--space-1);
+}
+
+.nearestMeta {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+}
+
+.nearestWarn {
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-warning-50);
+    color: var(--color-warning-900);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.nearestActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+}
+
+.nearestList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.nearestList a {
+    color: var(--color-brand-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

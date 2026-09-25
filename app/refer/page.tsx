@@ -23,6 +23,8 @@ export default function Page(): React.JSX.Element {
             kicker="For clinicians"
             title="Let's share the care"
             lede="Send us a referral and we take it from there: we contact the patient directly to offer a time, and write back to you once they have been seen. Urgent referrals are picked up the same working day."
+            image="/img/treatment.jpg"
+            imageAlt="A treatment room prepared and empty, with equipment neatly stowed"
         >
             <section className={styles.section}>
                 <div className="wrap">

@@ -22,6 +22,8 @@ export default function Page(): React.JSX.Element {
             kicker="Urgent and emergency care"
             title="Something that will not wait"
             lede="Tell us what has happened and we will show you which door to come to. Our emergency department is open 24 hours, and urgent care is walk-in — so there is no slot to choose either way."
+            image="/img/exterior.jpg"
+            imageAlt="The lit entrance of the hospital at dusk, with the way in clearly signed"
         >
             <div className="wrap">
                 <UrgentClient />

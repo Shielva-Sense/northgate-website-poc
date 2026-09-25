@@ -23,6 +23,8 @@ export default function Page(): React.JSX.Element {
             kicker="Contact"
             title="Three ways to reach us"
             lede="Use whichever you would rather. All three reach the same reception desk, and all three are answered by a person."
+            image="/img/waiting.jpg"
+            imageAlt="A quiet waiting area with soft seating, plants and natural light"
         >
             <section className={styles.section}>
                 <div className="wrap">

@@ -267,3 +267,104 @@ export function searchUrgent(query: string): UrgentSearch {
 export function urgentUnitById(id: string): UrgentUnit | undefined {
     return URGENT_UNITS.find((unit) => unit.id === id);
 }
+
+/* ── where to go ───────────────────────────────────────────────────────────
+   A hospital group has more than one front door, and the useful answer to
+   "I need A&E" is *which* one — the nearest open one, with its own number.
+   Sending everyone to the flagship address is how someone drives past a
+   closer department.                                                        */
+
+export interface EmergencySite {
+    readonly id: string;
+    readonly name: string;
+    readonly address: string;
+    readonly lat: number;
+    readonly lng: number;
+    readonly aeLine: string;
+    /** True 24/7 A&E. A minor injuries unit is not a substitute and says so. */
+    readonly full: boolean;
+    readonly hours: string;
+    /** UK outward codes this site is nearest to, for postcode entry. */
+    readonly outwardCodes: readonly string[];
+}
+
+export const EMERGENCY_SITES: readonly EmergencySite[] = [
+    {
+        id: "northgate",
+        name: "Northgate — main emergency department",
+        address: "42 Northgate Street, Manchester, M3 2WY",
+        lat: 53.4839,
+        lng: -2.2446,
+        aeLine: "+44 20 7946 0911",
+        full: true,
+        hours: "24 hours, every day",
+        outwardCodes: ["M1", "M2", "M3", "M4", "M8", "M15", "M60"],
+    },
+    {
+        id: "southbank",
+        name: "Southbank — emergency department",
+        address: "8 Southbank Road, Manchester, M20 4TY",
+        lat: 53.4192,
+        lng: -2.2307,
+        aeLine: "+44 20 7946 0922",
+        full: true,
+        hours: "24 hours, every day",
+        outwardCodes: ["M19", "M20", "M21", "M22", "M33"],
+    },
+    {
+        id: "eastfield",
+        name: "Eastfield — minor injuries unit",
+        address: "119 Eastfield Way, Manchester, M11 3BD",
+        lat: 53.4781,
+        lng: -2.1734,
+        aeLine: "+44 20 7946 0933",
+        full: false,
+        hours: "08:00–22:00, every day",
+        outwardCodes: ["M11", "M12", "M18", "M34", "M43"],
+    },
+];
+
+export interface SiteMatch {
+    readonly site: EmergencySite;
+    /** Straight-line kilometres. Labelled as such — it is not a drive time. */
+    readonly km: number;
+}
+
+/** Haversine. Straight-line only; we never present it as a journey time. */
+function distanceKm(aLat: number, aLng: number, b: EmergencySite): number {
+    const toRad = (deg: number): number => (deg * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(b.lat - aLat);
+    const dLng = toRad(b.lng - aLng);
+    const h =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(aLat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Nearest sites to a coordinate, closest first.
+ *
+ * A minor injuries unit is never returned ahead of a full A&E when the caller
+ * asks for one: being closer does not make it the right door, and arriving at
+ * a unit that cannot treat you costs the time it took to get there.
+ */
+export function nearestSites(lat: number, lng: number, fullOnly: boolean): readonly SiteMatch[] {
+    return EMERGENCY_SITES.filter((site) => (fullOnly ? site.full : true))
+        .map((site) => ({ site, km: distanceKm(lat, lng, site) }))
+        .sort((a, b) => a.km - b.km);
+}
+
+/**
+ * Nearest site by UK postcode, using the outward code only.
+ *
+ * We never geocode a full postcode: the outward code is enough to pick a
+ * hospital, and a full postcode is a person's front door. Returns null rather
+ * than guessing — a wrong emergency department is worse than an honest "we
+ * could not tell, here are all of them".
+ */
+export function siteForPostcode(postcode: string): EmergencySite | null {
+    const outward = postcode.toUpperCase().replace(/[^A-Z0-9]/g, "").match(/^[A-Z]{1,2}\d{1,2}/);
+    if (outward === null) return null;
+    return EMERGENCY_SITES.find((site) => site.outwardCodes.includes(outward[0])) ?? null;
+}

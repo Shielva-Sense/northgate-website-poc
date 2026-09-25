@@ -29,7 +29,10 @@ export function SiteHeader(): React.JSX.Element {
     return (
         <header className={styles.head}>
             <div className={`wrap ${styles.bar}`}>
-                <Link href="#top" className={styles.logo}>
+                {/* "/" not "#top": a bare hash goes nowhere from /services or
+                    /urgent-care, so the brand looked dead on every inner page.
+                    The home page still scrolls to the top from here. */}
+                <Link href="/" className={styles.logo}>
                     <Logo size={38} />
                     <span>
                         Northgate

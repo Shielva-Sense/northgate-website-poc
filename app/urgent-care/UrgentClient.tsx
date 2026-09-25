@@ -21,6 +21,7 @@ import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { useBrand } from "@/app/features/clinic/BrandContext";
 import { searchUrgent, URGENT_UNITS } from "@/app/features/clinic/urgent";
 import type { UrgentUnit } from "@/app/features/clinic/urgent";
+import { NearestEmergency } from "./NearestEmergency";
 import styles from "./Urgent.module.scss";
 
 /**
@@ -146,7 +147,7 @@ export function UrgentClient(): React.JSX.Element {
                 If this could be life-threatening
             </p>
             <h2 className={styles.emergencyTitle} id="emergency-heading">
-                Come straight to A&amp;E, or call {brand.emergencyNumber}
+                Come straight to A&amp;E, or ring us on {brand.aeLine}
             </h2>
             <p className={styles.emergencyBody}>
                 Chest pain or tightness, sudden difficulty breathing, face drooping or slurred
@@ -154,14 +155,10 @@ export function UrgentClient(): React.JSX.Element {
                 thoughts of harming yourself. Our emergency department is open 24 hours and you do
                 not need an appointment. Do not book, and do not wait for us to ring back.
             </p>
-            <p className={styles.emergencyBody}>
-                If you are too unwell to travel safely, call {brand.emergencyNumber} instead — an
-                ambulance starts treating you on the way.
-            </p>
             <div className={styles.emergencyActions}>
-                <a className={styles.emergencyCall} href={`tel:${brand.emergencyNumber}`}>
+                <a className={styles.emergencyCall} href={brand.aeLineHref}>
                     <Phone size={17} aria-hidden="true" />
-                    Call {brand.emergencyNumber}
+                    Call our A&amp;E — {brand.aeLine}
                 </a>
                 <a
                     className={styles.emergencyWay}
@@ -173,6 +170,15 @@ export function UrgentClient(): React.JSX.Element {
                     A&amp;E entrance — {brand.address}
                 </a>
             </div>
+            {/* The ambulance service is the answer to one question only: can
+                this person travel? It is not the answer to "I need help from
+                this hospital", which is why it no longer leads. */}
+            <p className={styles.ambulance}>
+                Cannot travel, or someone is unconscious or struggling to breathe? Call{" "}
+                <a href={`tel:${brand.emergencyNumber}`}>{brand.emergencyNumber}</a> for an
+                ambulance — it starts treating them on the way, and they will be brought to us.
+            </p>
+            <NearestEmergency />
         </aside>
     );
 
@@ -236,17 +242,13 @@ export function UrgentClient(): React.JSX.Element {
                             <p className={styles.stopBody}>
                                 This is not something to join a list for. Come straight to our
                                 emergency department — it is open 24 hours, you do not need an
-                                appointment, and you will be seen ahead of everyone waiting. If
-                                you are too unwell to travel safely, call {brand.emergencyNumber}{" "}
-                                and an ambulance will come to you.
+                                appointment, and you will be seen ahead of everyone waiting. Ring
+                                the A&amp;E line on the way and we will be ready for you.
                             </p>
                             <div className={styles.emergencyActions}>
-                                <a
-                                    className={styles.emergencyCall}
-                                    href={`tel:${brand.emergencyNumber}`}
-                                >
+                                <a className={styles.emergencyCall} href={brand.aeLineHref}>
                                     <Phone size={17} aria-hidden="true" />
-                                    Call {brand.emergencyNumber}
+                                    Call our A&amp;E — {brand.aeLine}
                                 </a>
                                 <a
                                     className={styles.emergencyWay}
@@ -258,6 +260,15 @@ export function UrgentClient(): React.JSX.Element {
                                     A&amp;E entrance — {brand.address}
                                 </a>
                             </div>
+                            <p className={styles.ambulance}>
+                                If they cannot travel, are unconscious or are struggling to
+                                breathe, call{" "}
+                                <a href={`tel:${brand.emergencyNumber}`}>
+                                    {brand.emergencyNumber}
+                                </a>{" "}
+                                for an ambulance instead.
+                            </p>
+                            <NearestEmergency />
                         </div>
                     )}
 
@@ -510,9 +521,14 @@ export function UrgentClient(): React.JSX.Element {
 
                         <p className={styles.doneFoot}>
                             If anything changes while you travel — or it gets worse — ring{" "}
-                            <a href={brand.phoneHref}>{brand.phone}</a>. If it becomes one of the
-                            emergencies listed at the top of this page, call{" "}
-                            {brand.emergencyNumber} instead of coming here.
+                            {sent.unit.kind === "emergency" ? (
+                                <a href={brand.aeLineHref}>{brand.aeLine}</a>
+                            ) : (
+                                <a href={brand.phoneHref}>{brand.phone}</a>
+                            )}
+                            . If you become unable to travel safely, call{" "}
+                            {brand.emergencyNumber} for an ambulance and they will bring you to
+                            us.
                         </p>
 
                         <div className={styles.doneActions}>
