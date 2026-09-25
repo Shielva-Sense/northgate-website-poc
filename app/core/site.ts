@@ -1,6 +1,8 @@
 import "server-only";
 import { brandFromRecord, identifierFromHost } from "@/app/features/clinic/brands";
 import type { Brand } from "@/app/features/clinic/brands";
+import { profileFor } from "@/app/features/clinic/practice-kinds";
+import type { KindProfile } from "@/app/features/clinic/practice-kinds";
 import { siteByIdentifier } from "./site-store";
 import type { SiteRecord } from "./site-store";
 
@@ -20,6 +22,8 @@ export interface Site {
     readonly template: string | null;
     /** Absolute icon URL on the CDN, when the client has a custom one. */
     readonly iconUrl: string | null;
+    /** What this practice actually is, and therefore what the site may claim. */
+    readonly profile: KindProfile;
 }
 
 /**
@@ -49,6 +53,11 @@ export async function siteFromHost(host: string | null | undefined): Promise<Sit
         record,
         brand: brandFromRecord(identifier, record),
         template: record?.template ?? null,
+        /* No record means we do not know what this practice is, and the safe
+           unknown is one without an emergency department — a site that wrongly
+           offers A&E is far worse than one that wrongly omits it. The original
+           Northgate demo is a hospital and keeps its A&E. */
+        profile: profileFor(record?.kind ?? (identifier === "northgate" ? "hospital" : undefined)),
         iconUrl: record?.iconPath ? cdnUrl(record.iconPath) : null,
     };
 }

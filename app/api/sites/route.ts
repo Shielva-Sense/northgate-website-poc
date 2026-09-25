@@ -4,6 +4,7 @@ import { verifyBasic } from "@/app/core/admin-auth";
 import { clientIp, rateLimited } from "@/app/core/intake";
 import { ensureIndexes, listSites, upsertSite } from "@/app/core/site-store";
 import { iconPrefix } from "@/app/core/site";
+import { PRACTICE_KINDS } from "@/app/features/clinic/practice-kinds";
 import type { SiteRecord } from "@/app/core/site-store";
 
 /**
@@ -91,6 +92,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             { status: 422 },
         );
     }
+    const kind = str(b.kind, 40);
+    if (kind !== undefined && !PRACTICE_KINDS.includes(kind as never)) {
+        return NextResponse.json(
+            { error: `kind must be one of: ${PRACTICE_KINDS.join(", ")}` },
+            { status: 422 },
+        );
+    }
+
     const businessName = str(b.businessName, 160);
     if (businessName === undefined) {
         return NextResponse.json({ error: "businessName is required." }, { status: 422 });
@@ -102,7 +111,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
        and a field set to undefined are different things in the stored row. */
     const record: Record<string, string> = { identifier, businessName };
     const optional: readonly [string, number][] = [
-        ["short", 60], ["kicker", 60], ["country", 4], ["city", 80],
+        ["kind", 40], ["short", 60], ["kicker", 60], ["country", 4], ["city", 80],
         ["address", 200], ["phone", 40], ["aeLine", 40], ["emergencyNumber", 10],
         ["email", 160], ["currency", 4], ["theme", 40], ["template", 40],
         ["iconPath", 200], ["leadSource", 200], ["currentSiteProblem", 300],

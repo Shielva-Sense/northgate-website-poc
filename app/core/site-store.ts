@@ -34,6 +34,13 @@ export interface SiteRecord {
     readonly email?: string;
     readonly currency?: string;
 
+    /**
+     * What sort of practice this is — decides which services appear and which
+     * pages exist at all. A dental practice must not be given an emergency
+     * department. See features/clinic/practice-kinds.ts.
+     */
+    readonly kind?: string;
+
     /** A theme id from THEMES; absent means one is derived from the identifier. */
     readonly theme?: string;
     /** A template id; absent means the default running order. */

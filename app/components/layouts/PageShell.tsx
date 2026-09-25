@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Image from "next/image";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
@@ -61,7 +61,8 @@ async function CachedShell({
     children,
 }: ShellProps & { readonly host: string }): Promise<React.JSX.Element> {
     "use cache";
-    const brand = resolveBrand(host);
+    const site = await siteFromHost(host);
+    const brand = site.brand;
 
     return (
         <BrandProvider brand={brand}>
@@ -71,7 +72,7 @@ async function CachedShell({
                 invite build, like the rest of the demo furniture. */}
             {isIndexable() ? null : <DemoBar />}
             <AnnounceBar />
-            <SiteHeader />
+            <SiteHeader hasEmergency={site.profile.hasEmergency} />
             <main id="main-content" tabIndex={-1}>
                 <Head title={title} lede={lede} kicker={kicker} image={image} imageAlt={imageAlt} />
                 {children}

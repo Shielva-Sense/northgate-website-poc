@@ -1,3 +1,4 @@
+import { packFor } from "./countries";
 /**
  * Per-prospect branding, resolved from the hostname.
  *
@@ -225,6 +226,12 @@ export function resolveBrand(host: string | null | undefined): Brand {
     const short = override.short ?? titleCase(slug);
     const palette = PALETTES[hash(slug) % PALETTES.length] ?? TEAL;
 
+    /* Everything a country decides — the emergency number above all. Without
+       this, a clinic in Texas told its patients to call 999. */
+    const pack = packFor(override.country);
+    const phone = override.phone ?? pack.samplePhone;
+    const aeLine = override.aeLine ?? phone;
+
     return {
         slug,
         name,
@@ -232,26 +239,25 @@ export function resolveBrand(host: string | null | undefined): Brand {
         kicker: override.kicker ?? "Health",
         monogram: (override.monogram ?? short.charAt(0)).toUpperCase(),
         strapline: override.strapline ?? "See a named doctor this week, not in three",
-        phone: override.phone ?? "+44 20 7946 0958",
-        phoneHref: `tel:${(override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
-        whatsapp:
-            override.whatsapp ??
-            (override.phone ?? "+44 20 7946 0958").replace(/\D/g, ""),
+        phone,
+        phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
+        whatsapp: override.whatsapp ?? phone.replace(/\D/g, ""),
         email: override.email ?? `reception@${slug}.example`,
-        address: override.address ?? `1 High Street, ${override.city ?? "Manchester"}`,
-        city: override.city ?? "Manchester",
-        country: override.country ?? "GB",
-        currency: override.currency ?? "£",
-        emergencyNumber: override.emergencyNumber ?? "999",
+        address: override.address ?? `1 High Street, ${override.city ?? pack.defaultCity}`,
+        city: override.city ?? pack.defaultCity,
+        country: override.country ?? pack.code,
+        currency: override.currency ?? pack.currency,
+        emergencyNumber: override.emergencyNumber ?? pack.emergencyNumber,
         // Falls back to the main switchboard rather than inventing a second
         // number: a wrong emergency line is worse than one that is merely busy.
-        aeLine: override.aeLine ?? override.phone ?? "+44 20 7946 0958",
-        aeLineHref: `tel:${(override.aeLine ?? override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
+        aeLine,
+        aeLineHref: `tel:${aeLine.replace(/[^+\d]/g, "")}`,
         rating: override.rating ?? "4.9",
         ratingCount: override.ratingCount ?? "1,240",
         palette: override.palette ?? palette,
-        // Absent unless the market is known. Never invent a regulator.
-        regulators: override.regulators ?? null,
+        // From the country pack, and null for a market we have not checked —
+        // never invent a regulator.
+        regulators: override.regulators ?? pack.regulators,
     };
 }
 
