@@ -8,7 +8,8 @@ import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
-import { BookingForm } from "@/app/features/booking/BookingForm";
+import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
+import { DEPARTMENTS } from "@/app/features/clinic/care";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
 import { useBrand } from "@/app/features/clinic/BrandContext";
@@ -17,6 +18,9 @@ import styles from "./Service.module.scss";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
     const brand = useBrand();
+    /* A service maps to one or more departments; the first is the one that
+       normally runs it, and it pre-filters the clinician list. */
+    const department = DEPARTMENTS.find((d) => d.services.includes(service.slug));
     const ref = useReveal<HTMLDivElement>();
     const others = SERVICES.filter((item) => item.slug !== service.slug);
 
@@ -92,7 +96,11 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
 
                             <h2 className={styles.h2}>Who you would see</h2>
                             <ul className={styles.people} role="list">
-                                {CLINICIANS.map((person) => (
+                                {CLINICIANS.filter((person) =>
+                                    department === undefined
+                                        ? true
+                                        : person.departments.includes(department.id),
+                                ).map((person) => (
                                     <li key={person.name}>
                                         <b>{person.name}</b>
                                         <span>{person.role}</span>
@@ -114,8 +122,17 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                         </div>
 
                         <section className={styles.book} id="book" data-reveal="">
-                            <h2 className={styles.h2}>Request a {service.name.toLowerCase()} appointment</h2>
-                            <BookingForm />
+                            <h2 className={styles.h2}>
+                                Book a {service.name.toLowerCase()} appointment
+                            </h2>
+                            <p className={styles.bookSub}>
+                                Pick who you would like to see, then choose from their real
+                                availability. No phone queue.
+                            </p>
+                            <AppointmentFlow
+                                department={department?.id}
+                                serviceName={service.name}
+                            />
                         </section>
                     </div>
                 </article>

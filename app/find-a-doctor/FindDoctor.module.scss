@@ -1,0 +1,199 @@
+.panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.title {
+    font-size: var(--text-xl);
+}
+
+.sub {
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+    margin-top: calc(var(--space-3) * -1);
+}
+
+.flags {
+    margin: 0;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-2);
+}
+
+/* ── symptoms ─────────────────────────────────── */
+.symptoms {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.symptom {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+        border-color var(--dur) var(--ease),
+        background-color var(--dur) var(--ease),
+        color var(--dur) var(--ease);
+}
+
+.symptom:hover {
+    border-color: var(--color-brand-600);
+}
+
+/* Selection is carried by weight and border as well as colour. */
+.symptom[aria-pressed="true"] {
+    background: var(--color-brand-900);
+    border-color: var(--color-brand-900);
+    color: var(--color-on-brand);
+    font-weight: 600;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--color-brand-50);
+    border: 1px solid var(--color-brand-100);
+}
+
+.resultKicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-600);
+}
+
+.resultName {
+    font-size: var(--text-xl);
+}
+
+.resultBody {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.disclaimer {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+}
+
+.back,
+.linkish {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: var(--text-sm);
+    color: var(--color-brand-600);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+/* ── emergency ────────────────────────────────── */
+.emergency {
+    border-color: var(--color-danger);
+    border-width: 2px;
+}
+
+.emergencyMark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-danger);
+    color: var(--color-on-brand);
+}
+
+.emergencyTitle {
+    font-size: clamp(22px, 3vw, 28px);
+    color: var(--color-danger);
+}
+
+.emergencyBody {
+    color: var(--color-text-muted);
+}
+
+.emergencyActions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin: var(--space-2) 0;
+}
+
+/* ── routed banner ────────────────────────────── */
+.routed {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.routed svg {
+    color: var(--color-brand-600);
+}
+
+.footNote {
+    margin-top: var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+}
+
+/* ── page shell ───────────────────────────────── */
+.page {
+    padding: var(--space-7) 0 var(--space-9);
+}
+
+.h1 {
+    font-size: clamp(32px, 5vw, 46px);
+    margin-bottom: var(--space-3);
+}
+
+.lede {
+    color: var(--color-text-muted);
+    max-width: 38rem;
+    margin-bottom: var(--space-6);
+}
+
+.body {
+    max-width: 46rem;
+}

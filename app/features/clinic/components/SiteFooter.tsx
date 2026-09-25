@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { SERVICES } from "../constants";
 import { useBrand } from "../BrandContext";
@@ -24,7 +26,7 @@ export function SiteFooter(): React.JSX.Element {
                         <ul className={styles.footList}>
                             {SERVICES.slice(0, 4).map((service) => (
                                 <li key={service.slug}>
-                                    <a href="#services">{service.name}</a>
+                                    <Link href="/#services">{service.name}</Link>
                                 </li>
                             ))}
                         </ul>
@@ -33,16 +35,16 @@ export function SiteFooter(): React.JSX.Element {
                         <p className={styles.footHead}>Practice</p>
                         <ul className={styles.footList}>
                             <li>
-                                <a href="#team">Our team</a>
+                                <Link href="/#team">Our team</Link>
                             </li>
                             <li>
-                                <a href="#visiting">Opening hours</a>
+                                <Link href="/#visiting">Opening hours</Link>
                             </li>
                             <li>
-                                <a href="#faq">Questions</a>
+                                <Link href="/#faq">Questions</Link>
                             </li>
                             <li>
-                                <a href="#book">Book</a>
+                                <Link href="/#book">Book</Link>
                             </li>
                         </ul>
                     </div>

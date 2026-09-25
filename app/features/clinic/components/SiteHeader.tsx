@@ -9,12 +9,14 @@ import { Logo } from "@/app/components/ui/Logo";
 import { useBrand } from "../BrandContext";
 import styles from "./SiteHeader.module.scss";
 
+/* Absolute, not bare hashes: these have to work from /privacy and /services/*
+   as well as from the home page. */
 const LINKS = [
-    { href: "#team", label: "Doctors" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#facilities", label: "The practice" },
-    { href: "#story", label: "Patient stories" },
-    { href: "#faq", label: "Questions" },
+    { href: "/#team", label: "Doctors" },
+    { href: "/find-a-doctor", label: "Not sure who to see?" },
+    { href: "/#pricing", label: "Pricing" },
+    { href: "/#facilities", label: "The practice" },
+    { href: "/#faq", label: "Questions" },
 ] as const;
 
 export function SiteHeader(): React.JSX.Element {

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
     Baby,
     Brain,
@@ -29,6 +30,7 @@ import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
 import type { ServiceIcon, Stat } from "../types";
+import { DEPARTMENTS } from "../care";
 import { Faq } from "./Faq";
 import { HeroMedia } from "./HeroMedia";
 import { Gallery } from "./Gallery";
@@ -184,6 +186,60 @@ export function Proof(): React.JSX.Element {
                             <ShieldCheck size={15} aria-hidden="true" />
                             <b>{item.label}</b>
                             <span>{item.detail}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </section>
+    );
+}
+
+/* ── departments ──────────────────────────────── */
+
+export function Departments(): React.JSX.Element {
+    const ref = useReveal<HTMLDivElement>();
+
+    return (
+        <section className={`${styles.section} ${styles.alt}`} id="departments">
+            <div className="wrap" ref={ref}>
+                <div className={styles.head} data-reveal="">
+                    <p className={styles.kicker}>Departments</p>
+                    <h2 className={styles.title}>Find the right team</h2>
+                    <p className={styles.lede}>
+                        Choose a department to see who staffs it and when they are free. Not sure?{" "}
+                        <Link href="/find-a-doctor">Answer two questions instead.</Link>
+                    </p>
+                </div>
+
+                <ul className={`${styles.grid} ${styles.grid3}`} role="list">
+                    {DEPARTMENTS.map((department, index) => (
+                        <li
+                            key={department.id}
+                            className={styles.card}
+                            data-reveal=""
+                            style={delay(index)}
+                        >
+                            <h3 className={styles.cardTitle}>{department.name}</h3>
+                            <p className={styles.cardBody}>{department.summary}</p>
+                            <ul className={styles.deptLinks} role="list">
+                                {department.services.map((slug) => {
+                                    const service = SERVICES.find((item) => item.slug === slug);
+                                    if (service === undefined) return null;
+                                    return (
+                                        <li key={slug}>
+                                            <Link href={`/services/${slug}`}>{service.name}</Link>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                            <p className={styles.deptCount}>
+                                {
+                                    CLINICIANS.filter((person) =>
+                                        person.departments.includes(department.id),
+                                    ).length
+                                }{" "}
+                                clinicians
+                            </p>
                         </li>
                     ))}
                 </ul>

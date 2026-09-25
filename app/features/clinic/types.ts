@@ -34,6 +34,8 @@ export interface Clinician {
     readonly fee: string;
     readonly languages: readonly string[];
     readonly site: string;
+    /** Department ids from care.ts. */
+    readonly departments: readonly string[];
     /**
      * A concrete next opening. Showing a real time converts far better than
      * "contact us", because it answers the only question a worried patient has.

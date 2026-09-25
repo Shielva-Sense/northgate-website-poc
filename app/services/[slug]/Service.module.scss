@@ -153,3 +153,8 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.bookSub {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-5);
+}

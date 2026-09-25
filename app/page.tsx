@@ -4,6 +4,7 @@ import { HomeClient } from "./HomeClient";
 import { JsonLd } from "./components/JsonLd";
 import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
 import { resolveBrand } from "./features/clinic/brands";
+import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
 
 export function generateMetadata(): Metadata {
@@ -22,13 +23,23 @@ export function generateMetadata(): Metadata {
 }
 
 /** Server shell. All interactivity lives in HomeClient. */
-export default async function Page(): Promise<React.JSX.Element> {
+type Props = {
+    readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function Page({ searchParams }: Props): Promise<React.JSX.Element> {
     const brand = resolveBrand((await headers()).get("host"));
+    /* ?template= lets a client click through all four on one URL. A prospect's
+       own subdomain pins a default instead, so the link you send them opens on
+       the one you chose for them. */
+    const requested = (await searchParams).template;
+    const asked = Array.isArray(requested) ? requested[0] : requested;
+    const template = isTemplateId(asked) ? asked : DEFAULT_TEMPLATE;
     return (
         <BrandProvider brand={brand}>
             <JsonLd data={clinicJsonLd(brand)} />
             <JsonLd data={faqJsonLd()} />
-            <HomeClient />
+            <HomeClient template={template} />
         </BrandProvider>
     );
 }
