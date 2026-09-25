@@ -191,7 +191,7 @@ function titleCase(slug: string): string {
 /**
  * The site identifier carried by the host.
  *
- * `app.<identifier>.shielva.ai` is the shape the site farm uses, so the label
+ * `<identifier>.shielva.ai` is the shape the site farm uses, so the label
  * after a leading "app." is the one that identifies the client. A plain
  * `<identifier>.shielva.ai` still works, which keeps every existing link alive.
  */

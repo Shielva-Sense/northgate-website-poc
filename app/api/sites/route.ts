@@ -29,6 +29,23 @@ const DENY = {
 /** Subdomain-safe: this becomes a host label, so it cannot carry a dot. */
 const IDENTIFIER = /^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/;
 
+/**
+ * Labels a prospect site may not take.
+ *
+ * A site lives at `<identifier>.shielva.ai`, the same namespace the platform's
+ * own hostnames use. An explicit DNS record always beats the wildcard, so a
+ * site named "api" could not actually intercept traffic — but it would be a row
+ * promising a URL that will never reach it, and the confusion is worth more
+ * than the twelve lines it costs to refuse.
+ */
+const RESERVED = new Set([
+    "www", "api", "app", "arc", "login", "signin", "auth", "identity", "gateway",
+    "vault", "speech", "voice", "sip", "livekit", "presence", "cms", "cdn",
+    "mail", "smtp", "notifications", "billing", "docs", "status", "admin",
+    "grafana", "prometheus", "sonarqube", "nexus", "argocd", "devops", "sales",
+    "company", "shielva", "northgate-website-poc",
+]);
+
 function str(v: unknown, max: number): string | undefined {
     if (typeof v !== "string") return undefined;
     const t = v.trim().slice(0, max);
@@ -62,7 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             count: sites.length,
             sites: sites.map((s) => ({
                 ...s,
-                url: `https://app.${s.identifier}.shielva.ai`,
+                url: `https://${s.identifier}.shielva.ai`,
                 iconPrefix: iconPrefix(s.identifier),
             })),
         },
@@ -89,6 +106,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!IDENTIFIER.test(identifier)) {
         return NextResponse.json(
             { error: "identifier must be 3-40 chars, a-z 0-9 and hyphens, and is used as a subdomain." },
+            { status: 422 },
+        );
+    }
+    if (RESERVED.has(identifier)) {
+        return NextResponse.json(
+            { error: `"${identifier}" is a reserved hostname and cannot be used as a site identifier.` },
             { status: 422 },
         );
     }
@@ -134,7 +157,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({
         ok: true,
         identifier,
-        url: `https://app.${identifier}.shielva.ai`,
+        url: `https://${identifier}.shielva.ai`,
         iconPrefix: iconPrefix(identifier),
     });
 }

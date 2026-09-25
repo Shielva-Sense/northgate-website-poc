@@ -15,7 +15,7 @@ import type { Collection, Db } from "mongodb";
  */
 
 export interface SiteRecord {
-    /** The subdomain label. `app.<identifier>.shielva.ai` resolves here. */
+    /** The subdomain label. `<identifier>.shielva.ai` resolves here. */
     readonly identifier: string;
 
     readonly businessName: string;
