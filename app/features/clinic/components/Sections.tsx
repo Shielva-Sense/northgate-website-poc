@@ -27,22 +27,12 @@ import { LeadCapture } from "@/app/features/booking/LeadCapture";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import {
-    ACCREDITATIONS,
-    CLINIC,
-    CLINICIANS,
-    FAQS,
-    JOURNEY,
-    OPENING,
-    PACKAGES,
-    PROMISES,
-    SERVICES,
-    STATS,
-} from "../constants";
+import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
 import type { ServiceIcon, Stat } from "../types";
 import { Faq } from "./Faq";
 import { HeroMedia } from "./HeroMedia";
 import { Gallery } from "./Gallery";
+import { useBrand } from "../BrandContext";
 import styles from "./Sections.module.scss";
 
 const ICONS: Readonly<Record<ServiceIcon, typeof Stethoscope>> = {
@@ -66,6 +56,7 @@ function delay(index: number): React.CSSProperties {
 /* ── hero ─────────────────────────────────────── */
 
 export function Hero(): React.JSX.Element {
+    const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
     const back = useParallax<HTMLDivElement>(-0.12);
 
@@ -87,8 +78,8 @@ export function Hero(): React.JSX.Element {
                                 <Star key={slot} size={13} fill="currentColor" strokeWidth={0} />
                             ))}
                         </span>
-                        <b>{CLINIC.rating}</b>
-                        from {CLINIC.ratingCount} patient reviews
+                        <b>{brand.rating}</b>
+                        from {brand.ratingCount} patient reviews
                     </p>
 
                     {/* Each line is masked by its own wrapper and rises out of
@@ -119,8 +110,8 @@ export function Hero(): React.JSX.Element {
                         <LinkButton href="#team" size="lg">
                             Choose your clinician
                         </LinkButton>
-                        <LinkButton href={CLINIC.phoneHref} variant="onDark" size="lg">
-                            {CLINIC.phone}
+                        <LinkButton href={brand.phoneHref} variant="onDark" size="lg">
+                            {brand.phone}
                         </LinkButton>
                     </div>
 
@@ -162,6 +153,19 @@ function StatValue({ stat }: { stat: Stat }): React.JSX.Element {
 
 export function Proof(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    const brand = useBrand();
+    /* Naming a regulator the client's country does not have is a fabricated
+       credential, not a placeholder. Where the market is unknown, claim only
+       things that are true anywhere. */
+    const accreditations =
+        brand.regulators === null
+            ? ([
+                  { label: "Registered", detail: "All clinicians licensed to practise" },
+                  { label: "Insured", detail: "Full medical indemnity cover" },
+                  { label: "Audited", detail: "Infection control reviewed yearly" },
+                  { label: "ISO 27001", detail: "Patient records held to standard" },
+              ] as const)
+            : ACCREDITATIONS;
 
     return (
         <section className={styles.proof} aria-label="Practice at a glance">
@@ -175,7 +179,7 @@ export function Proof(): React.JSX.Element {
                     ))}
                 </ul>
                 <ul className={styles.accred} role="list" data-reveal="" style={delay(4)}>
-                    {ACCREDITATIONS.map((item) => (
+                    {accreditations.map((item) => (
                         <li key={item.label}>
                             <ShieldCheck size={15} aria-hidden="true" />
                             <b>{item.label}</b>
@@ -192,6 +196,7 @@ export function Proof(): React.JSX.Element {
 
 export function Team(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    const brand = useBrand();
 
     return (
         <section className={styles.section} id="team">
@@ -252,7 +257,9 @@ export function Team(): React.JSX.Element {
                                 </p>
                                 <p className={styles.meta}>
                                     <ShieldCheck size={13} aria-hidden="true" />
-                                    {person.registration}
+                                    {brand.regulators === null
+                                        ? "Registered clinician"
+                                        : person.registration}
                                 </p>
 
                                 <p className={styles.slot}>
@@ -464,6 +471,7 @@ export function Journey(): React.JSX.Element {
 /* ── visiting ─────────────────────────────────── */
 
 export function Visiting(): React.JSX.Element {
+    const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
 
     return (
@@ -499,15 +507,15 @@ export function Visiting(): React.JSX.Element {
                         <h3 className={styles.cardTitle}>Getting here</h3>
                         <p className={styles.detail}>
                             <MapPin size={18} aria-hidden="true" />
-                            <span>{CLINIC.address}</span>
+                            <span>{brand.address}</span>
                         </p>
                         <p className={styles.detail}>
                             <Phone size={18} aria-hidden="true" />
-                            <a href={CLINIC.phoneHref}>{CLINIC.phone}</a>
+                            <a href={brand.phoneHref}>{brand.phone}</a>
                         </p>
                         <p className={styles.detail}>
                             <Mail size={18} aria-hidden="true" />
-                            <a href={`mailto:${CLINIC.email}`}>{CLINIC.email}</a>
+                            <a href={`mailto:${brand.email}`}>{brand.email}</a>
                         </p>
                         <p className={styles.detail}>
                             <Clock size={18} aria-hidden="true" />

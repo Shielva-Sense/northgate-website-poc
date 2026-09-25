@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
+import { headers } from "next/headers";
 import { isIndexable } from "./core/seo";
+import { paletteVars, resolveBrand } from "./features/clinic/brands";
 import "./globals.scss";
 
 /* Inter for everything you read: the most neutral, most legible UI face there
@@ -23,17 +25,21 @@ const serif = Source_Serif_4({
     display: "swap",
 });
 
-export const metadata: Metadata = {
-    title: {
-        default: "Northgate Family Health — Same-week appointments",
-        template: "%s",
-    },
-    description:
-        "See a named doctor this week, not in three. Seven clinicians, twenty-minute appointments and every price published.",
-    // One source of truth with robots.ts: while the invite gate is on, a
-    // crawler only ever gets the login page, so nothing here may be indexed.
-    robots: isIndexable() ? undefined : { index: false, follow: false },
-};
+/** Title and description follow the hostname, so each prospect's demo is theirs. */
+export async function generateMetadata(): Promise<Metadata> {
+    const brand = resolveBrand((await headers()).get("host"));
+    return {
+        title: {
+            default: `${brand.name} - same-week appointments`,
+            template: "%s",
+        },
+        description:
+            "See a named doctor this week, not in three. Twenty-minute appointments and every price published.",
+        // One source of truth with robots.ts: while the invite gate is on, a
+        // crawler only ever gets the login page, so nothing here may be indexed.
+        robots: isIndexable() ? undefined : { index: false, follow: false },
+    };
+}
 
 export const viewport: Viewport = {
     themeColor: "#0b3b3c",
@@ -41,11 +47,17 @@ export const viewport: Viewport = {
     initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
-}: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
+}: Readonly<{ children: React.ReactNode }>): Promise<React.JSX.Element> {
+    const brand = resolveBrand((await headers()).get("host"));
+
     return (
-        <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+        <html
+            lang="en"
+            className={`${sans.variable} ${serif.variable}`}
+            style={paletteVars(brand) as React.CSSProperties}
+        >
             <body>
                 <a href="#main-content" className="skip-link">
                     Skip to main content

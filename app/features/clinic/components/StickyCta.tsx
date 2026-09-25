@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
-import { CLINIC } from "../constants";
+
+import { useBrand } from "../BrandContext";
 import styles from "./StickyCta.module.scss";
 
 /**
@@ -13,6 +14,7 @@ import styles from "./StickyCta.module.scss";
  * pointing at, and hidden again over the booking section for the same reason.
  */
 export function StickyCta(): React.JSX.Element | null {
+    const brand = useBrand();
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -49,10 +51,10 @@ export function StickyCta(): React.JSX.Element | null {
         <aside className={styles.bar} aria-label="Book an appointment">
             <p className={styles.text}>
                 <b>Seen this week</b>
-                <span>{CLINIC.ratingCount} reviews, rated {CLINIC.rating}</span>
+                <span>{brand.ratingCount} reviews, rated {brand.rating}</span>
             </p>
             <div className={styles.actions}>
-                <a className={styles.tel} href={CLINIC.phoneHref} aria-label="Call the practice">
+                <a className={styles.tel} href={brand.phoneHref} aria-label="Call the practice">
                     <Phone size={16} aria-hidden="true" />
                 </a>
                 <LinkButton href="#book">Book</LinkButton>

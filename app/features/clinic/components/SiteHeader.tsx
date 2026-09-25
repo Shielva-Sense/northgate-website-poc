@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Menu, Phone, X } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { Logo } from "@/app/components/ui/Logo";
-import { CLINIC } from "../constants";
+
+import { useBrand } from "../BrandContext";
 import styles from "./SiteHeader.module.scss";
 
 const LINKS = [
@@ -17,6 +18,7 @@ const LINKS = [
 ] as const;
 
 export function SiteHeader(): React.JSX.Element {
+    const brand = useBrand();
     const [open, setOpen] = useState(false);
 
     return (
@@ -36,9 +38,9 @@ export function SiteHeader(): React.JSX.Element {
                             {link.label}
                         </a>
                     ))}
-                    <a className={styles.tel} href={CLINIC.phoneHref}>
+                    <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
-                        {CLINIC.phone}
+                        {brand.phone}
                     </a>
                     <LinkButton href="#book">Book</LinkButton>
                 </nav>
@@ -68,9 +70,9 @@ export function SiteHeader(): React.JSX.Element {
                                 {link.label}
                             </a>
                         ))}
-                        <a className={styles.tel} href={CLINIC.phoneHref}>
+                        <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />
-                            {CLINIC.phone}
+                            {brand.phone}
                         </a>
                         <LinkButton href="#book">Book an appointment</LinkButton>
                     </nav>

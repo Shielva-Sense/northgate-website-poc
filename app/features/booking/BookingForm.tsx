@@ -7,7 +7,7 @@ import { Field, Input, Select, Textarea } from "@/app/components/ui/Field";
 import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
 import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
-import { CLINIC, CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
+import { CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
 import { CONTACT_LABELS, EMPTY_FORM, URGENCY_LABELS, URGENT_NOTICE, WINDOW_LABELS } from "./constants";
 import { hasErrors, validate } from "./validate";
 import type {
@@ -19,6 +19,7 @@ import type {
     TimeWindow,
     Urgency,
 } from "./types";
+import { useBrand } from "@/app/features/clinic/BrandContext";
 import styles from "./BookingForm.module.scss";
 
 const PATIENT_OPTIONS: readonly ChoiceOption<PatientType>[] = [
@@ -35,6 +36,7 @@ const CONTACT_OPTIONS: readonly ChoiceOption<ContactMethod>[] = (
 ).map((value) => ({ value, label: CONTACT_LABELS[value] }));
 
 export function BookingForm(): React.JSX.Element {
+    const brand = useBrand();
     const [form, setForm] = useState<BookingFormValues>(EMPTY_FORM);
     const [errors, setErrors] = useState<BookingErrors>({});
     const [state, setState] = useState<SubmitState>("idle");
@@ -122,7 +124,10 @@ export function BookingForm(): React.JSX.Element {
         <form className={styles.card} onSubmit={handleSubmit} noValidate>
             <p className={styles.emergency}>
                 <AlertTriangle size={16} aria-hidden="true" />
-                <span>{CLINIC.emergencyNote}</span>
+                <span>
+                    If this is a medical emergency, call {brand.emergencyNumber} or go to
+                    your nearest emergency department. Do not use this form.
+                </span>
             </p>
 
             <ChoiceGroup
@@ -300,7 +305,6 @@ export function BookingForm(): React.JSX.Element {
                 </p>
 
             ) : null}
-
 
             <Button
                 type="submit"

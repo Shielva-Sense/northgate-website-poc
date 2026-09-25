@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { HomeClient } from "./HomeClient";
 import { JsonLd } from "./components/JsonLd";
 import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
+import { resolveBrand } from "./features/clinic/brands";
+import { BrandProvider } from "./features/clinic/BrandContext";
 
 export function generateMetadata(): Metadata {
     const canonical = siteUrl();
@@ -19,12 +22,13 @@ export function generateMetadata(): Metadata {
 }
 
 /** Server shell. All interactivity lives in HomeClient. */
-export default function Page(): React.JSX.Element {
+export default async function Page(): Promise<React.JSX.Element> {
+    const brand = resolveBrand((await headers()).get("host"));
     return (
-        <>
-            <JsonLd data={clinicJsonLd()} />
+        <BrandProvider brand={brand}>
+            <JsonLd data={clinicJsonLd(brand)} />
             <JsonLd data={faqJsonLd()} />
             <HomeClient />
-        </>
+        </BrandProvider>
     );
 }

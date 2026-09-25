@@ -1,18 +1,20 @@
 import type { MetadataRoute } from "next";
-import { CLINIC } from "@/app/features/clinic/constants";
+import { headers } from "next/headers";
+import { resolveBrand } from "@/app/features/clinic/brands";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+    const brand = resolveBrand((await headers()).get("host"));
     return {
-        name: CLINIC.name,
-        short_name: "Northgate",
+        name: brand.name,
+        short_name: brand.short,
         description:
-            "See a named doctor this week. Appointments, opening hours and booking for Northgate Family Health.",
+            `See a named doctor this week. Appointments, opening hours and booking for ${brand.name}.`,
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
-        theme_color: "#0b3b3c",
+        theme_color: brand.palette.brand900,
         icons: [
-            { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
+            { src: "/icon", sizes: "64x64", type: "image/png" },
             { src: "/apple-icon", sizes: "180x180", type: "image/png" },
         ],
     };

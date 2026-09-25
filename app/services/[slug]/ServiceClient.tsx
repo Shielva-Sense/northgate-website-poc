@@ -10,11 +10,13 @@ import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
 import { BookingForm } from "@/app/features/booking/BookingForm";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { CLINIC, CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
+import { CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
+import { useBrand } from "@/app/features/clinic/BrandContext";
 import type { Service } from "@/app/features/clinic/types";
 import styles from "./Service.module.scss";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
+    const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
     const others = SERVICES.filter((item) => item.slug !== service.slug);
 
@@ -30,7 +32,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                         <nav aria-label="Breadcrumb" className={styles.crumb}>
                             <Link href="/">
                                 <ArrowLeft size={14} aria-hidden="true" />
-                                {CLINIC.name}
+                                {brand.name}
                             </Link>
                         </nav>
 
@@ -45,8 +47,8 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                                 <LinkButton href="#book" size="lg">
                                     Request an appointment
                                 </LinkButton>
-                                <LinkButton href={CLINIC.phoneHref} variant="ghost" size="lg">
-                                    {CLINIC.phone}
+                                <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
+                                    {brand.phone}
                                 </LinkButton>
                             </div>
                         </div>

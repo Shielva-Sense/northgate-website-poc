@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CLINIC } from "@/app/features/clinic/constants";
+import { headers } from "next/headers";
+import { resolveBrand } from "@/app/features/clinic/brands";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import styles from "./Privacy.module.scss";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+    const brand = resolveBrand((await headers()).get("host"));
     return {
-        title: `Privacy notice — ${CLINIC.name}`,
+        title: `Privacy notice — ${brand.name}`,
         description:
             "How this practice collects, uses and stores the information you give us, including health information.",
         alternates: { canonical: `${siteUrl()}/privacy` },
@@ -22,12 +24,13 @@ export function generateMetadata(): Metadata {
  * This is a template. The practice must have it reviewed before going live and
  * fill in the bracketed values.
  */
-export default function Page(): React.JSX.Element {
+export default async function Page(): Promise<React.JSX.Element> {
+    const brand = resolveBrand((await headers()).get("host"));
     return (
         <main id="main-content" tabIndex={-1} className={styles.page}>
             <div className="wrap">
                 <p className={styles.crumb}>
-                    <Link href="/">Back to {CLINIC.name}</Link>
+                    <Link href="/">Back to {brand.name}</Link>
                 </p>
 
                 <h1 className={styles.h1}>Privacy notice</h1>
@@ -44,8 +47,8 @@ export default function Page(): React.JSX.Element {
 
                 <h2 className={styles.h2}>Who is responsible</h2>
                 <p>
-                    {CLINIC.name}, {CLINIC.address}, is the data controller. Our data protection
-                    officer can be reached at {CLINIC.email}. Our ICO registration number is
+                    {brand.name}, {brand.address}, is the data controller. Our data protection
+                    officer can be reached at {brand.email}. Our ICO registration number is
                     [registration number].
                 </p>
 
@@ -87,13 +90,13 @@ export default function Page(): React.JSX.Element {
                 <p>
                     Appointment requests that do not become appointments are deleted after [x]
                     months. If you become a patient, the request joins your medical record and is
-                    kept for the period set by the NHS Records Management Code of Practice.
+                    kept for the period set by {brand.regulators?.retentionAuthority ?? "the applicable medical records retention rules in your jurisdiction"}.
                 </p>
 
                 <h2 className={styles.h2}>Your rights</h2>
                 <p>
                     You can ask for a copy of what we hold, ask us to correct it, ask us to delete
-                    it, object to how we use it, or withdraw consent. Write to {CLINIC.email} and
+                    it, object to how we use it, or withdraw consent. Write to {brand.email} and
                     we will answer within one month. If you are unhappy with our answer you can
                     complain to the Information Commissioner&rsquo;s Office at ico.org.uk, or ring
                     them on 0303 123 1113.

@@ -1,4 +1,5 @@
-import { CLINIC, CLINICIANS, FAQS, OPENING, SERVICES } from "@/app/features/clinic/constants";
+import { CLINICIANS, FAQS, OPENING, SERVICES } from "@/app/features/clinic/constants";
+import type { Brand } from "@/app/features/clinic/brands";
 
 /**
  * Canonical origin. Read from the environment so the same build can be served
@@ -29,22 +30,21 @@ const HOURS_SPEC = [
     { days: ["Saturday"], opens: "09:00", closes: "13:00" },
 ] as const;
 
-export function clinicJsonLd(): Record<string, unknown> {
+export function clinicJsonLd(brand: Brand): Record<string, unknown> {
     const url = siteUrl();
     return {
         "@context": "https://schema.org",
         "@type": "MedicalClinic",
         "@id": `${url}/#clinic`,
-        name: CLINIC.name,
+        name: brand.name,
         url,
-        telephone: CLINIC.phone,
-        email: CLINIC.email,
+        telephone: brand.phone,
+        email: brand.email,
         address: {
             "@type": "PostalAddress",
-            streetAddress: "42 Northgate Street",
-            addressLocality: "Manchester",
-            postalCode: "M3 2WY",
-            addressCountry: "GB",
+            streetAddress: brand.address,
+            addressLocality: brand.city,
+            addressCountry: brand.country,
         },
         openingHoursSpecification: HOURS_SPEC.map((entry) => ({
             "@type": "OpeningHoursSpecification",
@@ -54,8 +54,8 @@ export function clinicJsonLd(): Record<string, unknown> {
         })),
         aggregateRating: {
             "@type": "AggregateRating",
-            ratingValue: CLINIC.rating,
-            reviewCount: CLINIC.ratingCount.replace(/,/g, ""),
+            ratingValue: brand.rating,
+            reviewCount: brand.ratingCount.replace(/,/g, ""),
         },
         availableService: SERVICES.map((service) => ({
             "@type": "MedicalProcedure",
@@ -70,7 +70,7 @@ export function clinicJsonLd(): Record<string, unknown> {
             knowsLanguage: person.languages,
         })),
         // OPENING is the copy shown on the page; keep the two from drifting.
-        description: `${CLINIC.name}. ${OPENING.map((d) => `${d.day}: ${d.hours}`).join(". ")}.`,
+        description: `${brand.name}. ${OPENING.map((d) => `${d.day}: ${d.hours}`).join(". ")}.`,
     };
 }
 

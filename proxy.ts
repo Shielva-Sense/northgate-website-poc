@@ -23,7 +23,7 @@ import { SESSION_COOKIE, verifyToken } from "@/app/core/session";
 const PUBLIC_PATHS = [
     "/login",
     "/api/login",
-    "/icon.svg",
+    "/icon",
     "/apple-icon",
     "/manifest.webmanifest",
 ];

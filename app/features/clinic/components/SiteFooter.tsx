@@ -1,20 +1,22 @@
 import Link from "next/link";
-import { CLINIC, SERVICES } from "../constants";
+import { SERVICES } from "../constants";
+import { useBrand } from "../BrandContext";
 import styles from "./Sections.module.scss";
 
 export function SiteFooter(): React.JSX.Element {
+    const brand = useBrand();
     return (
         <footer className={styles.foot}>
             <div className="wrap">
                 <div className={styles.footGrid}>
                     <div>
-                        <p className={styles.footHead}>{CLINIC.name}</p>
-                        <p>{CLINIC.address}</p>
+                        <p className={styles.footHead}>{brand.name}</p>
+                        <p>{brand.address}</p>
                         <p>
-                            <a href={CLINIC.phoneHref}>{CLINIC.phone}</a>
+                            <a href={brand.phoneHref}>{brand.phone}</a>
                         </p>
                         <p>
-                            <a href={`mailto:${CLINIC.email}`}>{CLINIC.email}</a>
+                            <a href={`mailto:${brand.email}`}>{brand.email}</a>
                         </p>
                     </div>
                     <div>
