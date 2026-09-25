@@ -7,6 +7,8 @@ import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
+import { DemoBar } from "@/app/features/clinic/components/DemoBar";
+import { isIndexable } from "@/app/core/seo";
 import styles from "./PageShell.module.scss";
 
 interface ShellProps {
@@ -64,6 +66,10 @@ async function CachedShell({
     return (
         <BrandProvider brand={brand}>
             <ScrollProgress />
+            {/* The colour switcher has to be reachable from whatever page a
+                prospect happens to be on, not only the home page. Gated on the
+                invite build, like the rest of the demo furniture. */}
+            {isIndexable() ? null : <DemoBar />}
             <AnnounceBar />
             <SiteHeader />
             <main id="main-content" tabIndex={-1}>

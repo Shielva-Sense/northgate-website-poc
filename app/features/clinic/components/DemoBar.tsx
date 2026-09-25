@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Layers } from "lucide-react";
 import { TEMPLATES } from "../templates";
 import type { TemplateId } from "../templates";
+import { DemoThemes } from "./DemoThemes";
 import styles from "./DemoBar.module.scss";
 
 /**
@@ -15,7 +16,13 @@ import styles from "./DemoBar.module.scss";
  * Plain links rather than a client component: switching is a server render, so
  * this needs no JavaScript and cannot break the page it sits on.
  */
-export function DemoBar({ active }: { readonly active: TemplateId }): React.JSX.Element {
+export function DemoBar({
+    active,
+}: {
+    /** Absent on inner pages: the layout switch is a home-page concern, the
+        colour switch is not, and the bar has to appear on both. */
+    readonly active?: TemplateId | undefined;
+} = {}): React.JSX.Element {
     return (
         <aside className={styles.bar} aria-label="Demo layout switcher">
             <span className={styles.label}>
@@ -36,6 +43,9 @@ export function DemoBar({ active }: { readonly active: TemplateId }): React.JSX.
                     </li>
                 ))}
             </ul>
+
+            <DemoThemes />
+
             <Link href="/templates" className={styles.compare} prefetch={false}>
                 Compare all
             </Link>

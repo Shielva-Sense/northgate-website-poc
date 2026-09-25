@@ -69,3 +69,87 @@
 }
 
 
+
+/* ── colours ──────────────────────────────────── */
+.themes {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-left: var(--space-4);
+    margin-left: var(--space-2);
+    border-left: 1px solid rgba(var(--color-surface-rgb), 0.18);
+}
+
+.swatches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.swatch {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid rgba(var(--color-surface-rgb), 0.3);
+    border-radius: var(--radius-full);
+    background: none;
+    cursor: pointer;
+    transition:
+        transform var(--dur) var(--ease),
+        border-color var(--dur) var(--ease);
+}
+
+.swatch:hover {
+    transform: scale(1.14);
+    border-color: var(--color-on-brand);
+}
+
+.swatch[aria-pressed="true"] {
+    border-color: var(--color-on-brand);
+    box-shadow: 0 0 0 2px rgba(var(--color-surface-rgb), 0.35);
+}
+
+.swatchInk {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+}
+
+.swatchTick {
+    position: absolute;
+    color: var(--color-on-brand);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+@media (max-width: 860px) {
+    .themes {
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* .compare is a link style; a <button> carries the UA's own background and
+   border, which rendered as a white block on the dark bar. */
+.resetTheme {
+    padding: 0 var(--space-2);
+    min-height: 24px;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--text-xs);
+    color: var(--color-brand-100);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+    cursor: pointer;
+}
