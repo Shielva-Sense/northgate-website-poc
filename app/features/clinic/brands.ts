@@ -187,6 +187,22 @@ function titleCase(slug: string): string {
  * A bare host, an IP or localhost has no meaningful prefix, so those fall back
  * to the default brand rather than rendering a clinic called "localhost".
  */
+/**
+ * The site identifier carried by the host.
+ *
+ * `app.<identifier>.shielva.ai` is the shape the site farm uses, so the label
+ * after a leading "app." is the one that identifies the client. A plain
+ * `<identifier>.shielva.ai` still works, which keeps every existing link alive.
+ */
+export function identifierFromHost(host: string | null | undefined): string {
+    const first = slugFromHost(host);
+    if (first !== "app") return first;
+    const name = (host ?? "").split(":")[0]?.toLowerCase() ?? "";
+    const parts = name.split(".");
+    const second = parts[1] ?? "";
+    return second.replace(/[^a-z0-9-_]/g, "").slice(0, 40) || DEFAULT_SLUG;
+}
+
 export function slugFromHost(host: string | null | undefined): string {
     if (!host) return DEFAULT_SLUG;
     const name = host.split(":")[0]?.toLowerCase() ?? "";
@@ -263,4 +279,63 @@ export function paletteVarsFor(p: Palette): Record<string, string> {
         "--color-accent-rgb": rgb(p.accent),
         "--color-accent-700": p.accent700,
     };
+}
+
+/**
+ * A brand built from a stored site record, falling back to what the identifier
+ * alone can derive.
+ *
+ * The record only has to carry what differs from the default. A row with a
+ * name and an address produces a complete, coherent site; every unset field
+ * still resolves to something sensible rather than an empty string on a page a
+ * prospect is looking at.
+ */
+export function brandFromRecord(
+    identifier: string,
+    record: SiteOverrides | null,
+): Brand {
+    const base = resolveBrand(identifier);
+    if (record === null) return base;
+
+    const name = record.businessName ?? base.name;
+    const short = record.short ?? name.split(" ")[0] ?? base.short;
+    const theme = record.theme === undefined ? undefined : THEMES.find((t) => t.id === record.theme);
+    const phone = record.phone ?? base.phone;
+    const aeLine = record.aeLine ?? record.phone ?? base.aeLine;
+
+    return {
+        ...base,
+        name,
+        short,
+        kicker: record.kicker ?? base.kicker,
+        monogram: short.charAt(0).toUpperCase(),
+        city: record.city ?? base.city,
+        country: record.country ?? base.country,
+        address: record.address ?? base.address,
+        email: record.email ?? base.email,
+        currency: record.currency ?? base.currency,
+        emergencyNumber: record.emergencyNumber ?? base.emergencyNumber,
+        phone,
+        phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
+        whatsapp: phone.replace(/\D/g, ""),
+        aeLine,
+        aeLineHref: `tel:${aeLine.replace(/[^+\d]/g, "")}`,
+        palette: theme?.palette ?? base.palette,
+    };
+}
+
+/** The subset of a site record that shapes the brand. */
+export interface SiteOverrides {
+    readonly businessName?: string;
+    readonly short?: string;
+    readonly kicker?: string;
+    readonly country?: string;
+    readonly city?: string;
+    readonly address?: string;
+    readonly phone?: string;
+    readonly aeLine?: string;
+    readonly emergencyNumber?: string;
+    readonly email?: string;
+    readonly currency?: string;
+    readonly theme?: string;
 }

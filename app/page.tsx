@@ -3,13 +3,13 @@ import { headers } from "next/headers";
 import { HomeClient } from "./HomeClient";
 import { JsonLd } from "./components/JsonLd";
 import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
-import { resolveBrand } from "./features/clinic/brands";
+import { siteFromHost } from "./core/site";
 import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
 import { DemoBar } from "./features/clinic/components/DemoBar";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     const canonical = siteUrl();
     return {
         alternates: { canonical },
@@ -30,7 +30,7 @@ type Props = {
 };
 
 export default async function Page({ searchParams }: Props): Promise<React.JSX.Element> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     /* ?template= lets a client click through all four on one URL. A prospect's
        own subdomain pins a default instead, so the link you send them opens on
        the one you chose for them. */

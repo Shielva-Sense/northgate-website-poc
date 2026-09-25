@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "./core/site";
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         name: brand.name,
         short_name: brand.short,

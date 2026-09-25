@@ -1,0 +1,24 @@
+/* Above everything, including the sticky header. It cannot be scrolled past
+   into irrelevance, because the claim it makes applies to the whole page. */
+.ribbon {
+    position: relative;
+    z-index: calc(var(--z-header) + 1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-warning-50);
+    border-bottom: 2px solid var(--color-warning);
+    color: var(--color-warning-900);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+}
+
+.ribbon b {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    white-space: nowrap;
+}

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
 import { FindDoctorClient } from "./FindDoctorClient";
 import styles from "./FindDoctor.module.scss";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `Find a doctor — ${brand.name}`,
         description:

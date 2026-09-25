@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
 import { UrgentClient } from "./UrgentClient";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `Urgent care — walk in today | ${brand.name}`,
         description:

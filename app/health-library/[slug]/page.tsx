@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
-import { resolveBrand } from "@/app/features/clinic/brands";
+import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
 import { ARTICLES, articleBySlug } from "@/app/features/clinic/catalogue";
 import { departmentById } from "@/app/features/clinic/care";
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { slug } = await params;
     const article = articleBySlug(slug);
     if (article === undefined) return { title: "Not found" };
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: `${article.title} — ${brand.name}`,
         description: article.summary,

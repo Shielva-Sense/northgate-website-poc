@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { headers } from "next/headers";
-import { resolveBrand } from "./features/clinic/brands";
+import { siteFromHost } from "./core/site";
 import { markSvg } from "./features/clinic/mark";
 
 /** Apple touch icon, same mark and palette. iOS applies its own rounding, so
@@ -9,7 +9,7 @@ export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
 export default async function AppleIcon(): Promise<ImageResponse> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return new ImageResponse(
         (
             <img

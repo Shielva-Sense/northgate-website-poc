@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { headers } from "next/headers";
-import { resolveBrand } from "./features/clinic/brands";
+import { siteFromHost } from "./core/site";
 import { markSvg } from "./features/clinic/mark";
 
 /**
@@ -14,7 +14,19 @@ export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
 
 export default async function Icon(): Promise<ImageResponse> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
+
+    /* A client who has uploaded their own mark gets it; the CDN copy is public
+       precisely because a favicon request carries no credentials. Everyone
+       else gets the monogram drawn from their own palette, which is still
+       theirs — never a generic placeholder. */
+    if (site.iconUrl !== null) {
+        return new ImageResponse(
+            (<img width={size.width} height={size.height} src={site.iconUrl} alt="" />),
+            size,
+        );
+    }
     return new ImageResponse(
         (
             <img

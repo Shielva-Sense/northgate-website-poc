@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { Suspense } from "react";
 import { headers } from "next/headers";
+import { siteFromHost } from "./core/site";
+import { DemoRibbon } from "./features/clinic/components/DemoRibbon";
 import { isIndexable } from "./core/seo";
 import { paletteVars, resolveBrand } from "./features/clinic/brands";
 import "./globals.scss";
@@ -28,7 +30,7 @@ const serif = Source_Serif_4({
 
 /** Title and description follow the hostname, so each prospect's demo is theirs. */
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = resolveBrand((await headers()).get("host"));
+    const brand = (await siteFromHost((await headers()).get("host"))).brand;
     return {
         title: {
             default: `${brand.name} - same-week appointments`,
@@ -65,6 +67,9 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                     <TenantPalette />
                 </Suspense>
+                <Suspense fallback={null}>
+                    <ProposalNotice />
+                </Suspense>
                 <a href="#main-content" className="skip-link">
                     Skip to main content
                 </a>
@@ -89,4 +94,10 @@ async function PaletteStyle({ host }: { readonly host: string }): Promise<React.
     /* Values come from our own palette table, never from the request — the host
        only selects which row is used, so there is nothing here to inject. */
     return <style>{`:root{${declarations}}`}</style>;
+}
+
+/** Reads the host to name the clinic; lives behind Suspense like the palette. */
+async function ProposalNotice(): Promise<React.JSX.Element> {
+    const site = await siteFromHost((await headers()).get("host"));
+    return <DemoRibbon name={site.brand.name} />;
 }
