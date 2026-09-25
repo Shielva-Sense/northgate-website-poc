@@ -6,6 +6,7 @@ import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
 import { resolveBrand } from "./features/clinic/brands";
 import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
+import { DemoBar } from "./features/clinic/components/DemoBar";
 
 export function generateMetadata(): Metadata {
     const canonical = siteUrl();
@@ -40,6 +41,8 @@ export default async function Page({ searchParams }: Props): Promise<React.JSX.E
             <JsonLd data={clinicJsonLd(brand)} />
             <JsonLd data={faqJsonLd()} />
             <HomeClient template={template} />
+            {/* Sales control: only while this is an invite-only preview. */}
+            {isIndexable() ? null : <DemoBar active={template} />}
         </BrandProvider>
     );
 }
