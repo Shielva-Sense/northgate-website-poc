@@ -39,7 +39,7 @@ export function SiteHeader({
                     /urgent-care, so the brand looked dead on every inner page.
                     The home page still scrolls to the top from here. */}
                 <Link href="/" className={styles.logo}>
-                    <Logo size={38} />
+                    <Logo size={38} mark={brand.mark} />
                     <span>
                         {brand.short}
                         <small>{brand.kicker}</small>

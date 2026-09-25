@@ -48,16 +48,23 @@ export async function siteFromHost(host: string | null | undefined): Promise<Sit
     const identifier = identifierFromHost(host);
     const record = await siteByIdentifier(identifier);
 
+    /* Decided once, then handed to everything that depends on it.
+       Resolving it twice let the two answers drift: the profile special-cased
+       the Northgate demo to a hospital while the brand fell back to a general
+       practice, so the site offered an emergency department under a logo drawn
+       for a GP surgery.
+
+       No record means we do not know what this practice is, and the safe
+       unknown is one without an emergency department — a site that wrongly
+       offers A&E is far worse than one that wrongly omits it. */
+    const profile = profileFor(record?.kind ?? (identifier === "northgate" ? "hospital" : undefined));
+
     return {
         identifier,
         record,
-        brand: brandFromRecord(identifier, record),
+        brand: brandFromRecord(identifier, record, profile.kind),
         template: record?.template ?? null,
-        /* No record means we do not know what this practice is, and the safe
-           unknown is one without an emergency department — a site that wrongly
-           offers A&E is far worse than one that wrongly omits it. The original
-           Northgate demo is a hospital and keeps its A&E. */
-        profile: profileFor(record?.kind ?? (identifier === "northgate" ? "hospital" : undefined)),
+        profile,
         iconUrl: record?.iconPath ? cdnUrl(record.iconPath) : null,
     };
 }

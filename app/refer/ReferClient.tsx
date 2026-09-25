@@ -7,14 +7,17 @@ import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
 import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
-import { useBrand } from "@/app/features/clinic/BrandContext";
-import { DEPARTMENTS } from "@/app/features/clinic/care";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import styles from "./Refer.module.scss";
 
-const DEPT_OPTIONS: readonly ChoiceOption<string>[] = [
-    { value: "", label: "Not sure — please triage" },
-    ...DEPARTMENTS.map((d) => ({ value: d.name, label: d.name })),
-];
+/* Built from this practice's own departments rather than a module constant,
+   which froze one clinic's list onto every site on the farm. */
+function deptOptions(departments: readonly { readonly name: string }[]): readonly ChoiceOption<string>[] {
+    return [
+        { value: "", label: "Not sure — please triage" },
+        ...departments.map((d) => ({ value: d.name, label: d.name })),
+    ];
+}
 
 const URGENCY_OPTIONS: readonly ChoiceOption<string>[] = [
     { value: "routine", label: "Routine" },
@@ -41,6 +44,7 @@ type Errors = Partial<Record<
  */
 export function ReferClient(): React.JSX.Element {
     const brand = useBrand();
+    const { departments } = useContent();
     const [referrerName, setReferrerName] = useState("");
     const [referrerPractice, setReferrerPractice] = useState("");
     const [referrerEmail, setReferrerEmail] = useState("");
@@ -237,7 +241,7 @@ export function ReferClient(): React.JSX.Element {
                     legend="Department"
                     name="department"
                     value={department}
-                    options={DEPT_OPTIONS}
+                    options={deptOptions(departments)}
                     onChange={setDepartment}
                 />
 

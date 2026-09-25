@@ -284,3 +284,30 @@ a.row:hover {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* ── appointment types, grouped by department ────────────────── */
+
+.apptGroup {
+    margin-top: var(--space-6);
+}
+
+.apptDept {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    letter-spacing: 0.01em;
+}
+
+/* Sits between the name and the chevron. `auto` rather than a fixed width so
+   a long price ("AED 1,250") is never clipped, and tabular figures so a
+   column of prices lines up on the decimal. */
+.rowPrice {
+    flex: 0 0 auto;
+    margin-left: var(--space-4);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}

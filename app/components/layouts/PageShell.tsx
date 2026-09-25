@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { siteFromHost } from "@/app/core/site";
+import { contentFor } from "@/app/features/clinic/content";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
@@ -63,9 +64,10 @@ async function CachedShell({
     "use cache";
     const site = await siteFromHost(host);
     const brand = site.brand;
+    const content = contentFor(site.profile, brand);
 
     return (
-        <BrandProvider brand={brand}>
+        <BrandProvider brand={brand} profile={site.profile} content={content}>
             <ScrollProgress />
             {/* The colour switcher has to be reachable from whatever page a
                 prospect happens to be on, not only the home page. Gated on the

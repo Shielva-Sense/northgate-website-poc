@@ -1,4 +1,8 @@
 import { packFor } from "./countries";
+import { markFor } from "./mark";
+import type { MarkId } from "./mark";
+import { DEFAULT_KIND } from "./practice-kinds";
+import type { PracticeKind } from "./practice-kinds";
 /**
  * Per-prospect branding, resolved from the hostname.
  *
@@ -64,6 +68,8 @@ export interface Brand {
     readonly ratingCount: string;
     readonly palette: Palette;
     readonly regulators: Regulators | null;
+    /** Which logo mark this practice draws. Follows the trade, then the slug. */
+    readonly mark: MarkId;
 }
 
 /* Curated, healthcare-appropriate palettes. Picked deterministically from the
@@ -219,7 +225,10 @@ export function slugFromHost(host: string | null | undefined): string {
 
 export const DEFAULT_SLUG = "northgate";
 
-export function resolveBrand(host: string | null | undefined): Brand {
+export function resolveBrand(
+    host: string | null | undefined,
+    kind: PracticeKind = DEFAULT_KIND,
+): Brand {
     const slug = slugFromHost(host);
     const override = REGISTRY[slug] ?? {};
     const name = override.name ?? `${titleCase(slug)} Health`;
@@ -258,6 +267,9 @@ export function resolveBrand(host: string | null | undefined): Brand {
         // From the country pack, and null for a market we have not checked —
         // never invent a regulator.
         regulators: override.regulators ?? pack.regulators,
+        // The trade picks the candidates, the slug picks between them. A
+        // dental practice must not be handed a stethoscope.
+        mark: markFor(kind, slug),
     };
 }
 
@@ -299,8 +311,12 @@ export function paletteVarsFor(p: Palette): Record<string, string> {
 export function brandFromRecord(
     identifier: string,
     record: SiteOverrides | null,
+    /* Passed in rather than re-read from the record: the caller has already
+       resolved it through profileFor(), which applies the fallbacks. Deriving
+       it a second time here is how the mark and the profile came to disagree. */
+    kind: PracticeKind = DEFAULT_KIND,
 ): Brand {
-    const base = resolveBrand(identifier);
+    const base = resolveBrand(identifier, kind);
     if (record === null) return base;
 
     const name = record.businessName ?? base.name;
@@ -344,4 +360,6 @@ export interface SiteOverrides {
     readonly email?: string;
     readonly currency?: string;
     readonly theme?: string;
+    /** A PracticeKind. Decides the logo mark, and much else besides. */
+    readonly kind?: string;
 }

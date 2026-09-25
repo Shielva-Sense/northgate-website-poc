@@ -1,6 +1,15 @@
+import { markShapes } from "@/app/features/clinic/mark";
+import type { Ink, MarkId } from "@/app/features/clinic/mark";
+
 type Props = {
     /** Rendered size in px. The mark is drawn on a 64 grid and scales cleanly. */
     readonly size?: number | undefined;
+    /**
+     * Which mark to draw. Comes from the brand, which derives it from the
+     * practice's trade and then its identifier — a dentist gets a tooth, a vet
+     * a paw. Defaulted so a caller outside a branded tree still renders.
+     */
+    readonly mark?: MarkId | undefined;
     /**
      * Decorative by default: the wordmark next to it already names the practice,
      * so announcing it twice is noise. Pass a title only where the mark stands
@@ -9,16 +18,26 @@ type Props = {
     readonly title?: string | undefined;
 };
 
+const STROKE: Readonly<Record<Ink, string>> = {
+    on: "var(--color-on-brand, #ffffff)",
+    accent: "var(--color-brand-500, #1d8f91)",
+};
+
 /**
- * Northgate's mark: a gateway arch — the "gate" in the name — with a care cross
- * held in its opening.
+ * The practice's mark.
+ *
+ * This used to draw one hardcoded gateway arch, which meant every client on
+ * the farm opened with the same icon however carefully the rest of the site
+ * was made their own — the single loudest tell that a page is a template. The
+ * geometry now comes from mark.ts, shared with the favicon so the two cannot
+ * drift.
  *
  * Drawn as strokes on a 64 grid with round caps so it stays legible when it is
  * shrunk to a 16px favicon, which is the size that decides whether a mark
- * works. The tile and the mark are separate paths so the same geometry can be
+ * works. The tile and the mark are separate shapes so the same geometry can be
  * reused on a dark tile here and in flat colour elsewhere.
  */
-export function Logo({ size = 40, title }: Props): React.JSX.Element {
+export function Logo({ size = 40, mark = "gateway", title }: Props): React.JSX.Element {
     return (
         <svg
             width={size}
@@ -30,22 +49,31 @@ export function Logo({ size = 40, title }: Props): React.JSX.Element {
             aria-label={title}
         >
             <rect width="64" height="64" rx="15" fill="var(--color-brand-900, #0b3b3c)" />
-            {/* the gateway */}
-            <path
-                d="M19 48V31a13 13 0 0 1 26 0v17"
-                fill="none"
-                stroke="var(--color-on-brand, #ffffff)"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-            />
-            {/* the care cross, sitting in the opening */}
-            <path
-                d="M32 29v10M27 34h10"
-                fill="none"
-                stroke="var(--color-brand-500, #1d8f91)"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-            />
+            {markShapes(mark).map((shape, index) =>
+                shape.s === "circle" ? (
+                    <circle
+                        /* Index is stable here: the shapes of a mark are a fixed
+                           literal array, never reordered, filtered or appended to. */
+                        key={index}
+                        cx={shape.cx}
+                        cy={shape.cy}
+                        r={shape.r}
+                        fill="none"
+                        stroke={STROKE[shape.ink]}
+                        strokeWidth={shape.w}
+                    />
+                ) : (
+                    <path
+                        key={index}
+                        d={shape.d}
+                        fill="none"
+                        stroke={STROKE[shape.ink]}
+                        strokeWidth={shape.w}
+                        strokeLinecap={shape.cap === true ? "round" : undefined}
+                        strokeLinejoin={shape.join === true ? "round" : undefined}
+                    />
+                ),
+            )}
         </svg>
     );
 }
