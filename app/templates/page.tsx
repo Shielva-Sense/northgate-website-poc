@@ -6,6 +6,7 @@ import { isIndexable } from "@/app/core/seo";
 import { resolveBrand } from "@/app/features/clinic/brands";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
+import { ThemePicker } from "@/app/features/clinic/components/ThemePicker";
 import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
 import styles from "./Templates.module.scss";
 
@@ -13,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     const brand = resolveBrand((await headers()).get("host"));
     return {
         title: `Choose a layout — ${brand.name}`,
-        description: "Four running orders for the same site. Pick the one that fits the practice.",
+        description:
+            "Four running orders and eight palettes for the same site. Pick what fits the practice.",
         // Never index the chooser: it is a sales surface, not a page for patients.
         robots: { index: false, follow: false },
     };
@@ -31,7 +33,7 @@ export default async function Page(): Promise<React.JSX.Element> {
                         <Layers size={15} aria-hidden="true" />
                         Layouts
                     </p>
-                    <h1 className={styles.h1}>Same site, four running orders</h1>
+                    <h1 className={styles.h1}>Same site, your layout and your colours</h1>
                     <p className={styles.lede}>
                         Every layout below is the same build — the same booking flow, the same
                         content, the same code. What changes is what a visitor meets first, which
@@ -106,6 +108,10 @@ export default async function Page(): Promise<React.JSX.Element> {
                             </li>
                         ))}
                     </ul>
+
+                    {/* Layout and colour are the two things a practice actually
+                        wants to choose, so they belong on the same page. */}
+                    <ThemePicker />
 
                     <p className={styles.note}>
                         {indexable

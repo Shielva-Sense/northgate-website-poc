@@ -74,38 +74,71 @@ const TEAL: Palette = {
     brand100: "#d9eded", brand50: "#f1f8f8", accent: "#e07a3f", accent700: "#b4491c",
 };
 
-const PALETTES: readonly Palette[] = [
-    TEAL,
+/* Named, because a clinic choosing its colours needs to point at one. The
+   order is also the fallback order for an unknown host. */
+export interface Theme {
+    readonly id: string;
+    readonly name: string;
+    /** What it suits — a chooser without this is just swatches. */
+    readonly note: string;
+    readonly palette: Palette;
+}
+
+export const THEMES: readonly Theme[] = [
+    { id: "teal", name: "Clinical teal", note: "The default. Calm, reads as medical without being cold.", palette: TEAL },
     {
-        brand900: "#10243f", brand700: "#1b3f6b", brand600: "#245287",
-        brand500: "#2f66a5", brand100: "#dbe6f3", brand50: "#f2f6fb",
-        accent: "#d98324", accent700: "#a8570f",
+        id: "navy", name: "Trust navy", note: "Institutional and established — hospitals and larger groups.",
+        palette: {
+            brand900: "#10243f", brand700: "#1b3f6b", brand600: "#245287",
+            brand500: "#2f66a5", brand100: "#dbe6f3", brand50: "#f2f6fb",
+            accent: "#d98324", accent700: "#a8570f",
+        },
     },
     {
-        brand900: "#1b3324", brand700: "#2c5540", brand600: "#3a6f53", brand500: "#478967",
-        brand100: "#dcebe2", brand50: "#f2f8f4", accent: "#c9762f", accent700: "#9c4f14",
+        id: "forest", name: "Forest green", note: "Warmer and more natural — wellbeing and family practice.",
+        palette: {
+            brand900: "#1b3324", brand700: "#2c5540", brand600: "#3a6f53", brand500: "#478967",
+            brand100: "#dcebe2", brand50: "#f2f8f4", accent: "#c9762f", accent700: "#9c4f14",
+        },
     },
     {
-        brand900: "#2c1f3d", brand700: "#453160", brand600: "#5a417c", brand500: "#6f5296",
-        brand100: "#e6dff0", brand50: "#f7f4fb", accent: "#c4643f", accent700: "#963f1d",
+        id: "plum", name: "Quiet plum", note: "Distinctive without shouting — aesthetics and women's health.",
+        palette: {
+            brand900: "#2c1f3d", brand700: "#453160", brand600: "#5a417c", brand500: "#6f5296",
+            brand100: "#e6dff0", brand50: "#f7f4fb", accent: "#c4643f", accent700: "#963f1d",
+        },
     },
     {
-        brand900: "#27313a", brand700: "#3d4d5c", brand600: "#4f6478", brand500: "#617a91",
-        brand100: "#e0e6ec", brand50: "#f4f7f9", accent: "#c2703c", accent700: "#944a18",
+        id: "slate", name: "Slate", note: "Understated and neutral — specialist and referral-led clinics.",
+        palette: {
+            brand900: "#27313a", brand700: "#3d4d5c", brand600: "#4f6478", brand500: "#617a91",
+            brand100: "#e0e6ec", brand50: "#f4f7f9", accent: "#c2703c", accent700: "#944a18",
+        },
     },
     {
-        brand900: "#3a2018", brand700: "#5c352a", brand600: "#77463a", brand500: "#8f594b",
-        brand100: "#eee0db", brand50: "#faf5f3", accent: "#3f7f7a", accent700: "#1d5551",
+        id: "clay", name: "Warm clay", note: "Soft and human — dentistry, physio and smaller practices.",
+        palette: {
+            brand900: "#3a2018", brand700: "#5c352a", brand600: "#77463a", brand500: "#8f594b",
+            brand100: "#eee0db", brand50: "#faf5f3", accent: "#3f7f7a", accent700: "#1d5551",
+        },
     },
     {
-        brand900: "#122e2a", brand700: "#1d4a44", brand600: "#276059", brand500: "#31766d",
-        brand100: "#d9ebe8", brand50: "#f1f8f7", accent: "#d1762f", accent700: "#a04d12",
+        id: "pine", name: "Deep pine", note: "Darker and more formal than teal, same clinical read.",
+        palette: {
+            brand900: "#122e2a", brand700: "#1d4a44", brand600: "#276059", brand500: "#31766d",
+            brand100: "#d9ebe8", brand50: "#f1f8f7", accent: "#d1762f", accent700: "#a04d12",
+        },
     },
     {
-        brand900: "#1f2b45", brand700: "#33456c", brand600: "#435a8b", brand500: "#546ea6",
-        brand100: "#dee4f0", brand50: "#f3f5fa", accent: "#cf7541", accent700: "#a04a1a",
+        id: "indigo", name: "Soft indigo", note: "Modern and calm — diagnostics and digital-first clinics.",
+        palette: {
+            brand900: "#1f2b45", brand700: "#33456c", brand600: "#435a8b", brand500: "#546ea6",
+            brand100: "#dee4f0", brand50: "#f3f5fa", accent: "#cf7541", accent700: "#a04a1a",
+        },
     },
 ];
+
+export const PALETTES: readonly Palette[] = THEMES.map((t) => t.palette);
 
 const UK: Regulators = {
     doctor: "GMC",
@@ -208,7 +241,11 @@ export function resolveBrand(host: string | null | undefined): Brand {
 
 /** The palette as CSS custom properties, for injection on the document root. */
 export function paletteVars(brand: Brand): Record<string, string> {
-    const p = brand.palette;
+    return paletteVarsFor(brand.palette);
+}
+
+/** The single owner of the hex -> CSS custom property mapping. */
+export function paletteVarsFor(p: Palette): Record<string, string> {
     const rgb = (hex: string): string => {
         const v = hex.replace("#", "");
         return [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16)).join(", ");
