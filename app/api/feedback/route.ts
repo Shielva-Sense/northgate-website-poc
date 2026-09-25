@@ -11,6 +11,7 @@ import {
 } from "@/app/core/intake";
 import { QUESTION_IDS } from "@/app/features/feedback/questions";
 import { appendSubmission } from "@/app/core/feedback-store";
+import { line, sendSubmission } from "@/app/core/mailer";
 
 /**
  * Prospect feedback and discovery intake.
@@ -140,14 +141,51 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // or unset, the answers still have to survive somewhere readable.
     await appendSubmission(payload);
 
+    /* Email is the real destination here: there is no CRM behind this
+       deployment, so a webhook alone would mean nobody ever reads this. */
+    const mail = await sendSubmission(
+        `Website feedback — ${payload.practice || payload.name || "a prospect"} (${reference})`,
+        [
+            `A prospect submitted feedback from the demo site.`,
+            ``,
+            line("Reference", reference),
+            line("Name", payload.name),
+            line("Practice", payload.practice),
+            line("Email", payload.email),
+            line("Phone", payload.phone),
+            ``,
+            `They were looking at:`,
+            line("  Layout", payload.template),
+            line("  Colours", payload.theme),
+            line("  Site", payload.host),
+            ``,
+            `Page ratings:`,
+            ...payload.ratings.map(
+                (r) => `  ${r.path} — ${r.rating}/5${r.note === "" ? "" : ` — ${r.note}`}`,
+            ),
+            ``,
+            `Answers:`,
+            ...Object.entries(payload.answers).map(([key, value]) => `  ${line(key, value)}`),
+            ``,
+            `Received ${payload.receivedAt}`,
+        ].filter((row) => row !== undefined),
+    );
+
     const sink = process.env.FEEDBACK_WEBHOOK_URL ?? process.env.ENQUIRY_WEBHOOK_URL;
     if (sink === undefined || sink === "") {
         // Accept so the journey is testable, and say plainly that nothing was
         // delivered — never imply it arrived.
-        console.warn(`[feedback ${reference}] no sink configured — accepted but NOT delivered`);
-        return NextResponse.json({ ok: true, delivered: false, reference }, { status: 202 });
+        if (!mail.sent) {
+            console.warn(`[feedback ${reference}] no webhook and no mail — stored only`);
+        }
+        return NextResponse.json(
+            { ok: true, delivered: mail.sent, reference },
+            { status: mail.sent ? 200 : 202 },
+        );
     }
 
-    const delivered = await deliver(sink, JSON.stringify(payload), reference, "feedback");
+    const posted = await deliver(sink, JSON.stringify(payload), reference, "feedback");
+    // Delivered if it reached anyone at all — the webhook or the inbox.
+    const delivered = posted || mail.sent;
     return NextResponse.json({ ok: true, delivered, reference }, { status: delivered ? 200 : 202 });
 }
