@@ -16,8 +16,13 @@
 import { RED_FLAGS } from "./care";
 import type { SymptomOption } from "./care";
 
+export type UnitKind = "emergency" | "urgent";
+
 export interface UrgentUnit {
     readonly id: string;
+    /** "emergency" is our own A&E: 24 hours, no appointment, never a queue
+        position. Everything else is a walk-in list you can join. */
+    readonly kind: UnitKind;
     readonly name: string;
     readonly summary: string;
     /** Printed on the card. Sending someone to the wrong door costs them an hour. */
@@ -31,7 +36,39 @@ export interface UrgentUnit {
 
 export const URGENT_UNITS: readonly UrgentUnit[] = [
     {
+        id: "emergency-department",
+        kind: "emergency",
+        name: "Emergency department (A&E)",
+        summary:
+            "Our own emergency department, open every hour of every day. Serious injury, severe pain, breathing difficulty, chest pain, collapse, heavy bleeding. Come straight in — you do not need an appointment and you are never turned away.",
+        notFor:
+            "Nothing. If you are not sure whether it is serious enough, come anyway — that judgement is ours to make, not yours.",
+        hours: "24 hours, every day",
+        wait: "Seen immediately if life-threatening",
+        matches: [
+            "emergency",
+            "a&e",
+            "ae",
+            "accident",
+            "casualty",
+            "er",
+            "999",
+            "ambulance",
+            "serious",
+            "severe",
+            "collapse",
+            "collapsed",
+            "unconscious",
+            "overdose",
+            "poisoning",
+            "head injury",
+            "seizure",
+            "fit",
+        ],
+    },
+    {
         id: "urgent-care",
+        kind: "urgent",
         name: "Urgent care — walk in",
         summary:
             "Fevers, suspected infections, urine infections, rashes, sickness and diarrhoea, anything that has got worse over a day or two.",
@@ -62,6 +99,7 @@ export const URGENT_UNITS: readonly UrgentUnit[] = [
     },
     {
         id: "minor-injuries",
+        kind: "urgent",
         name: "Minor injuries",
         summary:
             "Cuts that may need closing, sprains, suspected simple fractures, burns and scalds, bites and stings. X-ray on site.",
@@ -92,6 +130,7 @@ export const URGENT_UNITS: readonly UrgentUnit[] = [
     },
     {
         id: "same-day-gp",
+        kind: "urgent",
         name: "Same-day GP",
         summary:
             "A doctor today for something that will not wait for a routine appointment — worsening pain, a symptom you want looked at now, medication that is not working.",
@@ -117,6 +156,7 @@ export const URGENT_UNITS: readonly UrgentUnit[] = [
     },
     {
         id: "child-urgent",
+        kind: "urgent",
         name: "Urgent child health",
         summary:
             "A child who is unwell today — fever, rash, breathing that worries you, not feeding or not themselves. Children are seen ahead of the general queue.",
@@ -140,6 +180,7 @@ export const URGENT_UNITS: readonly UrgentUnit[] = [
     },
     {
         id: "mental-health-urgent",
+        kind: "urgent",
         name: "Urgent mental health",
         summary:
             "Same-day assessment when things have become unmanageable — a crisis in mood, anxiety or sleep. Longer appointment, no rush at the door.",
@@ -199,11 +240,18 @@ export function searchUrgent(query: string): UrgentSearch {
         const terms = RED_FLAG_TERMS[flag.id] ?? [];
         const haystack = [normalise(flag.label), ...terms.map(normalise)];
         if (haystack.some((term) => term.length > 0 && q.includes(term))) {
+            /* No bookable unit, and no form. The emergency department is not
+               returned as an option to weigh up — it is returned because it is
+               where this person is going, and they need the door and the
+               ambulance number, not a list. */
             return { redFlag: flag, units: [] };
         }
     }
 
     const hits = URGENT_UNITS.filter((unit) => {
+        // A&E always survives a search. Someone typing "cut" at 3am should see
+        // the one door that is definitely open.
+        if (unit.kind === "emergency") return true;
         const haystack = [unit.name, unit.summary, ...unit.matches].map(normalise);
         // Match on any word of two or more characters, so "cut hand" finds
         // minor injuries even though that exact phrase appears nowhere.

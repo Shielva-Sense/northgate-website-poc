@@ -141,9 +141,14 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 yourself.
                             </p>
                             <p className={styles.levelDo}>
-                                Call {brand.emergencyNumber} or go to your nearest emergency
-                                department. Do not book here and do not wait for us to ring back.
+                                Come straight to our emergency department — it is open 24 hours
+                                and you do not need an appointment. If you are too unwell to
+                                travel, call {brand.emergencyNumber}. Do not book here and do not
+                                wait for us to ring back.
                             </p>
+                            <Link className={styles.action} href="/urgent-care">
+                                A&amp;E and urgent care
+                            </Link>
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>Today or tomorrow</p>

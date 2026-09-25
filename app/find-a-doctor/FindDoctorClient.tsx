@@ -44,8 +44,10 @@ export function FindDoctorClient(): React.JSX.Element {
                 </span>
                 <h2 className={styles.emergencyTitle}>Please do not book an appointment</h2>
                 <p className={styles.emergencyBody}>
-                    What you have described needs to be seen now, not at the next free slot. Call{" "}
-                    <b>{brand.emergencyNumber}</b> or go to your nearest emergency department.
+                    What you have described needs to be seen now, not at the next free slot. Come
+                    straight to <b>our emergency department</b> — it is open 24 hours and you do
+                    not need an appointment. If you are too unwell to travel safely, call{" "}
+                    <b>{brand.emergencyNumber}</b> and an ambulance will come to you.
                 </p>
                 <p className={styles.emergencyBody}>
                     If you would rather speak to us first, ring the practice on{" "}
@@ -55,6 +57,9 @@ export function FindDoctorClient(): React.JSX.Element {
                 <div className={styles.emergencyActions}>
                     <LinkButton href={`tel:${brand.emergencyNumber}`} size="lg">
                         Call {brand.emergencyNumber}
+                    </LinkButton>
+                    <LinkButton href="/urgent-care" variant="ghost" size="lg">
+                        A&amp;E and urgent care
                     </LinkButton>
                     <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
                         Ring the practice

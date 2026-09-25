@@ -21,7 +21,7 @@ export default function Page(): React.JSX.Element {
         <PageShell
             kicker="Urgent and emergency care"
             title="Something that will not wait"
-            lede="Tell us what has happened and we will show you which door to come to. Urgent care is walk-in, so there is no slot to choose — you are added to today's list and seen in turn."
+            lede="Tell us what has happened and we will show you which door to come to. Our emergency department is open 24 hours, and urgent care is walk-in — so there is no slot to choose either way."
         >
             <div className="wrap">
                 <UrgentClient />

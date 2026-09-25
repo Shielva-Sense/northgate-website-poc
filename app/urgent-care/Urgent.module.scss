@@ -55,6 +55,25 @@
     background: var(--color-danger-700);
 }
 
+.emergencyActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+}
+
+.emergencyWay {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--color-danger-900);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 /* Focus target for stage changes — not visible, but focusable. */
 .stageTop {
     scroll-margin-top: 96px;
@@ -287,8 +306,50 @@
 }
 
 .unitGo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
     margin-top: auto;
     padding-top: var(--space-2);
+}
+
+/* A&E is not a peer of the walk-in lists beside it. It carries the danger
+   border so it is found by someone scanning in a hurry, not read for. */
+.unitEmergency {
+    border-color: var(--color-danger);
+    border-left: 5px solid var(--color-danger);
+}
+
+.unitEmergency:hover {
+    border-color: var(--color-danger);
+}
+
+.unitEmergency .unitName {
+    color: var(--color-danger-900);
+}
+
+.openNow {
+    flex: none;
+    padding: 4px var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-danger);
+    color: var(--color-on-danger);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* The "not for" note is a caution on a walk-in list, but on A&E it is the
+   opposite — an invitation — so it should not be shouted in red. */
+.unitEmergency .notFor {
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
+}
+
+.unitEmergency .notFor svg {
+    color: var(--color-text-subtle);
 }
 
 /* ── no matches ────────────────────────────────────── */

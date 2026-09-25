@@ -50,6 +50,7 @@ interface Sent {
 
 export function UrgentClient(): React.JSX.Element {
     const brand = useBrand();
+    const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(brand.address)}`;
     const [query, setQuery] = useState("");
     const [stage, setStage] = useState<Stage>("find");
     const [unit, setUnit] = useState<UrgentUnit | null>(null);
@@ -134,6 +135,10 @@ export function UrgentClient(): React.JSX.Element {
         }
     }
 
+    /* We have an emergency department, so this panel points at our own front
+       door as well as at the ambulance service. Telling a reader on a hospital
+       website to find "your nearest emergency department" was nonsense — they
+       are already on the site of one. */
     const emergency = (
         <aside className={styles.emergency} role="note" aria-labelledby="emergency-heading">
             <p className={styles.emergencyTag}>
@@ -141,18 +146,33 @@ export function UrgentClient(): React.JSX.Element {
                 If this could be life-threatening
             </p>
             <h2 className={styles.emergencyTitle} id="emergency-heading">
-                Do not use this page — call {brand.emergencyNumber}
+                Come straight to A&amp;E, or call {brand.emergencyNumber}
             </h2>
             <p className={styles.emergencyBody}>
                 Chest pain or tightness, sudden difficulty breathing, face drooping or slurred
                 speech, bleeding that will not stop, a baby under three months with a fever, or
-                thoughts of harming yourself. An ambulance starts treating you on the way. A queue
-                does not.
+                thoughts of harming yourself. Our emergency department is open 24 hours and you do
+                not need an appointment. Do not book, and do not wait for us to ring back.
             </p>
-            <a className={styles.emergencyCall} href={`tel:${brand.emergencyNumber}`}>
-                <Phone size={17} aria-hidden="true" />
-                Call {brand.emergencyNumber}
-            </a>
+            <p className={styles.emergencyBody}>
+                If you are too unwell to travel safely, call {brand.emergencyNumber} instead — an
+                ambulance starts treating you on the way.
+            </p>
+            <div className={styles.emergencyActions}>
+                <a className={styles.emergencyCall} href={`tel:${brand.emergencyNumber}`}>
+                    <Phone size={17} aria-hidden="true" />
+                    Call {brand.emergencyNumber}
+                </a>
+                <a
+                    className={styles.emergencyWay}
+                    href={directions}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <MapPin size={16} aria-hidden="true" />
+                    A&amp;E entrance — {brand.address}
+                </a>
+            </div>
         </aside>
     );
 
@@ -199,7 +219,7 @@ export function UrgentClient(): React.JSX.Element {
 
                     <p className={styles.live} role="status">
                         {result.redFlag !== null
-                            ? "That needs emergency services, not this page."
+                            ? "That needs our emergency department now, not this page."
                             : `${result.units.length} of ${URGENT_UNITS.length} showing`}
                     </p>
 
@@ -214,18 +234,30 @@ export function UrgentClient(): React.JSX.Element {
                             </p>
                             <p className={styles.stopWhat}>{result.redFlag.label}</p>
                             <p className={styles.stopBody}>
-                                This is not something to queue for, and we would rather send you
-                                somewhere else than have you sit in our waiting room. Call{" "}
-                                {brand.emergencyNumber} now, or go straight to your nearest
-                                emergency department.
+                                This is not something to join a list for. Come straight to our
+                                emergency department — it is open 24 hours, you do not need an
+                                appointment, and you will be seen ahead of everyone waiting. If
+                                you are too unwell to travel safely, call {brand.emergencyNumber}{" "}
+                                and an ambulance will come to you.
                             </p>
-                            <a
-                                className={styles.emergencyCall}
-                                href={`tel:${brand.emergencyNumber}`}
-                            >
-                                <Phone size={17} aria-hidden="true" />
-                                Call {brand.emergencyNumber}
-                            </a>
+                            <div className={styles.emergencyActions}>
+                                <a
+                                    className={styles.emergencyCall}
+                                    href={`tel:${brand.emergencyNumber}`}
+                                >
+                                    <Phone size={17} aria-hidden="true" />
+                                    Call {brand.emergencyNumber}
+                                </a>
+                                <a
+                                    className={styles.emergencyWay}
+                                    href={directions}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <MapPin size={16} aria-hidden="true" />
+                                    A&amp;E entrance — {brand.address}
+                                </a>
+                            </div>
                         </div>
                     )}
 
@@ -244,10 +276,25 @@ export function UrgentClient(): React.JSX.Element {
                     ) : (
                         <ul className={styles.units} role="list">
                             {result.units.map((item) => (
-                                <li className={styles.unit} key={item.id}>
+                                <li
+                                    className={`${styles.unit} ${
+                                        item.kind === "emergency" ? styles.unitEmergency : ""
+                                    }`}
+                                    key={item.id}
+                                >
                                     <div className={styles.unitHead}>
                                         <h3 className={styles.unitName}>{item.name}</h3>
-                                        <span className={styles.walkIn}>Walk in</span>
+                                        <span
+                                            className={
+                                                item.kind === "emergency"
+                                                    ? styles.openNow
+                                                    : styles.walkIn
+                                            }
+                                        >
+                                            {item.kind === "emergency"
+                                                ? "Open now · 24h"
+                                                : "Walk in"}
+                                        </span>
                                     </div>
                                     <p className={styles.cardBody}>{item.summary}</p>
                                     <dl className={styles.meta}>
@@ -262,7 +309,9 @@ export function UrgentClient(): React.JSX.Element {
                                             <dt>
                                                 <Timer size={14} aria-hidden="true" />
                                                 <span className="visually-hidden">
-                                                    Typical wait
+                                                    {item.kind === "emergency"
+                                                        ? "How you are seen"
+                                                        : "Typical wait"}
                                                 </span>
                                             </dt>
                                             <dd>{item.wait}</dd>
@@ -274,8 +323,21 @@ export function UrgentClient(): React.JSX.Element {
                                     </p>
                                     <div className={styles.unitGo}>
                                         <Button onClick={() => choose(item)}>
-                                            Tell them I am coming
+                                            {item.kind === "emergency"
+                                                ? "Tell A&E I am coming"
+                                                : "Tell them I am coming"}
                                         </Button>
+                                        {item.kind === "emergency" ? (
+                                            <a
+                                                className={styles.mapLink}
+                                                href={directions}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                <MapPin size={15} aria-hidden="true" />
+                                                Directions
+                                            </a>
+                                        ) : null}
                                     </div>
                                 </li>
                             ))}
@@ -294,9 +356,9 @@ export function UrgentClient(): React.JSX.Element {
                         {unit.name}
                     </h2>
                     <p className={styles.lede}>
-                        Four details and you are on the list. There is no time to choose — you are
-                        added to today&rsquo;s queue and seen in turn, sooner if a clinician judges
-                        you need to be.
+                        {unit.kind === "emergency"
+                            ? "Come now — you do not need to fill this in first, and nothing here affects whether you are seen. It only lets the department know you are on your way."
+                            : "Four details and you are on the list. There is no time to choose — you are added to today\u2019s queue and seen in turn, sooner if a clinician judges you need to be."}
                     </p>
 
                     <div className={styles.form}>
@@ -373,7 +435,11 @@ export function UrgentClient(): React.JSX.Element {
                                 void submit();
                             }}
                         >
-                            {sending ? "Adding you…" : "Put me on the urgent list"}
+                            {sending
+                                ? "Sending…"
+                                : unit.kind === "emergency"
+                                  ? "Let A&E know I am coming"
+                                  : "Put me on the urgent list"}
                         </Button>
                     </div>
                 </section>
@@ -386,17 +452,30 @@ export function UrgentClient(): React.JSX.Element {
                             <CheckCircle2 size={28} />
                         </span>
                         <h2 className={styles.h2} id="done-heading">
-                            You are on the urgent list
+                            {sent.unit.kind === "emergency"
+                                ? "A&E knows you are coming"
+                                : "You are on the urgent list"}
                         </h2>
                         <p className={styles.lede}>
-                            {sent.unit.name} is expecting you{" "}
-                            {sent.arrival === "now"
-                                ? "now"
-                                : sent.arrival === "hour"
-                                  ? "within the hour"
-                                  : "later today"}
-                            . Come to the main entrance and give your name at the desk — there is
-                            nothing to print and nothing to show.
+                            {sent.unit.kind === "emergency" ? (
+                                <>
+                                    Come straight to the emergency department entrance and give
+                                    your name. You do not need an appointment, and you will be
+                                    assessed on arrival — the order people are seen in is decided
+                                    by how unwell they are, never by who arrived first.
+                                </>
+                            ) : (
+                                <>
+                                    {sent.unit.name} is expecting you{" "}
+                                    {sent.arrival === "now"
+                                        ? "now"
+                                        : sent.arrival === "hour"
+                                          ? "within the hour"
+                                          : "later today"}
+                                    . Come to the main entrance and give your name at the desk —
+                                    there is nothing to print and nothing to show.
+                                </>
+                            )}
                         </p>
 
                         <dl className={styles.receipt}>
@@ -405,8 +484,12 @@ export function UrgentClient(): React.JSX.Element {
                                 <dd className={styles.ref}>{sent.reference}</dd>
                             </div>
                             <div className={styles.receiptRow}>
-                                <dt>Typical wait</dt>
-                                <dd>{sent.unit.wait}</dd>
+                                <dt>{sent.unit.kind === "emergency" ? "Seen" : "Typical wait"}</dt>
+                                <dd>
+                                    {sent.unit.kind === "emergency"
+                                        ? "By clinical need, not arrival order"
+                                        : sent.unit.wait}
+                                </dd>
                             </div>
                             <div className={styles.receiptRow}>
                                 <dt>Where</dt>
