@@ -1,0 +1,188 @@
+.section {
+    padding: var(--space-8) 0;
+}
+
+.topic {
+    margin-bottom: var(--space-8);
+}
+
+.topicTitle {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    font-family: var(--font-sans);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-5);
+}
+
+.cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    transition:
+        border-color var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+}
+
+.card:hover {
+    border-color: var(--color-brand-600);
+    transform: translate3d(0, -3px, 0);
+}
+
+.cardTitle {
+    font-size: var(--text-lg);
+}
+
+.cardTitle a {
+    text-decoration: none;
+    color: var(--color-brand-900);
+}
+
+.cardTitle a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.cardBody {
+    color: var(--color-text-subtle);
+    font-size: 15px;
+}
+
+/* ── article ──────────────────────────────────── */
+.articleWrap {
+    display: grid;
+    gap: var(--space-7);
+    align-items: start;
+}
+
+.article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 42rem;
+}
+
+.h2 {
+    font-size: clamp(21px, 2.8vw, 27px);
+    margin-bottom: var(--space-3);
+}
+
+.body {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+/* Loud on purpose. This is the part that matters. */
+.redFlags {
+    border: 2px solid var(--color-danger);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    background: var(--color-surface);
+}
+
+.redTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xl);
+    color: var(--color-danger);
+    margin-bottom: var(--space-4);
+}
+
+.redFlags ul {
+    margin: 0;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--color-text);
+}
+
+.disclaimer {
+    font-size: var(--text-sm);
+    color: var(--color-text-subtle);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-5);
+}
+
+/* ── aside ────────────────────────────────────── */
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background: var(--color-brand-50);
+    border: 1px solid var(--color-brand-100);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    position: sticky;
+    top: 96px;
+}
+
+.asideKicker {
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-600);
+}
+
+.asideTitle {
+    font-size: var(--text-xl);
+}
+
+.asideCta {
+    margin-top: var(--space-3);
+    display: inline-block;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-full);
+    background: var(--color-brand-600);
+    color: var(--color-on-brand);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    text-align: center;
+    text-decoration: none;
+}
+
+.asideCta:hover {
+    background: var(--color-brand-700);
+}
+
+.asideBack {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-brand-700);
+}
+
+@media (min-width: 720px) {
+    .cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1040px) {
+    .section {
+        padding: var(--space-9) 0;
+    }
+
+    .articleWrap {
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: var(--space-8);
+    }
+}

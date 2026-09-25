@@ -1,0 +1,106 @@
+.section {
+    padding: var(--space-8) 0;
+}
+
+.grid {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+}
+
+.route {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    transition:
+        border-color var(--dur) var(--ease),
+        transform var(--dur) var(--ease),
+        box-shadow var(--dur) var(--ease);
+}
+
+a.route:hover {
+    border-color: var(--color-brand-600);
+    transform: translate3d(0, -4px, 0);
+    box-shadow: var(--shadow-md);
+}
+
+.routeIco,
+.doneIco {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: grid;
+    place-items: center;
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    margin-bottom: var(--space-2);
+}
+
+.doneIco {
+    border-radius: 50%;
+    background: var(--color-brand-100);
+}
+
+/* WhatsApp gets its own tint so the three routes are told apart by more than
+   an icon, without importing the brand's own green. */
+.whatsapp .routeIco {
+    background: var(--color-brand-100);
+}
+
+.routeTitle {
+    font-size: var(--text-xl);
+}
+
+.routeBody {
+    color: var(--color-text-muted);
+    font-size: 15px;
+}
+
+.routeAction {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    font-weight: 600;
+    color: var(--color-brand-700);
+}
+
+.routeNote {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+}
+
+.routeNote svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--color-brand-600);
+}
+
+.formCard form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.failed {
+    font-size: var(--text-sm);
+    color: var(--color-danger);
+}
+
+@media (min-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr 1fr 1.25fr;
+    }
+}

@@ -12,11 +12,12 @@ import styles from "./SiteHeader.module.scss";
 /* Absolute, not bare hashes: these have to work from /privacy and /services/*
    as well as from the home page. */
 const LINKS = [
+    { href: "/services", label: "Services" },
     { href: "/#team", label: "Doctors" },
-    { href: "/find-a-doctor", label: "Not sure who to see?" },
-    { href: "/#pricing", label: "Pricing" },
-    { href: "/#facilities", label: "The practice" },
-    { href: "/#faq", label: "Questions" },
+    { href: "/find-a-doctor", label: "Find a doctor" },
+    { href: "/health-library", label: "Health library" },
+    { href: "/appointments", label: "Appointments" },
+    { href: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader(): React.JSX.Element {

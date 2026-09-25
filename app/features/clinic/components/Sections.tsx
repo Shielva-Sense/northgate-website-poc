@@ -31,6 +31,8 @@ import { useReveal } from "@/app/core/hooks/useReveal";
 import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
 import type { ServiceIcon, Stat } from "../types";
 import { DEPARTMENTS } from "../care";
+import { templateById } from "../templates";
+import type { TemplateId } from "../templates";
 import { Faq } from "./Faq";
 import { HeroMedia } from "./HeroMedia";
 import { Gallery } from "./Gallery";
@@ -196,6 +198,10 @@ export function Proof(): React.JSX.Element {
 
 /* ── departments ──────────────────────────────── */
 
+function countIn(departmentId: string): number {
+    return CLINICIANS.filter((person) => person.departments.includes(departmentId)).length;
+}
+
 export function Departments(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
 
@@ -233,12 +239,8 @@ export function Departments(): React.JSX.Element {
                                 })}
                             </ul>
                             <p className={styles.deptCount}>
-                                {
-                                    CLINICIANS.filter((person) =>
-                                        person.departments.includes(department.id),
-                                    ).length
-                                }{" "}
-                                clinicians
+                                {countIn(department.id)}{" "}
+                                {countIn(department.id) === 1 ? "clinician" : "clinicians"}
                             </p>
                         </li>
                     ))}
@@ -403,19 +405,17 @@ export function Pricing(): React.JSX.Element {
 
 /* ── services ─────────────────────────────────── */
 
-export function Services(): React.JSX.Element {
+export function Services({ template }: { readonly template: TemplateId }): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    const { servicesTitle, servicesLede } = templateById(template);
 
     return (
         <section className={styles.section} id="services">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
                     <p className={styles.kicker}>What we do</p>
-                    <h2 className={styles.title}>Everything a family practice should cover</h2>
-                    <p className={styles.lede}>
-                        If you are not sure which one you need, choose the closest and say so in the
-                        notes. We would rather sort it out than have you guess.
-                    </p>
+                    <h2 className={styles.title}>{servicesTitle}</h2>
+                    <p className={styles.lede}>{servicesLede}</p>
                 </div>
 
                 <ul className={`${styles.grid} ${styles.grid3}`} role="list">

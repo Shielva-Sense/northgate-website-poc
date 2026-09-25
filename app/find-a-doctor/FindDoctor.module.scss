@@ -179,8 +179,11 @@
 }
 
 /* ── page shell ───────────────────────────────── */
+/* Vertical only. This class shares an element with .wrap, and the padding
+   shorthand would zero .wrap's horizontal gutter and jam the text to the edge. */
 .page {
-    padding: var(--space-7) 0 var(--space-9);
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-9);
 }
 
 .h1 {

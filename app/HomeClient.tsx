@@ -21,45 +21,44 @@ import {
 import { PatientStory } from "@/app/features/clinic/components/PatientStory";
 import { StickyCta } from "@/app/features/clinic/components/StickyCta";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
-import { templateById } from "@/app/features/clinic/templates";
+import { designVars, templateById } from "@/app/features/clinic/templates";
 import type { SectionId, TemplateId } from "@/app/features/clinic/templates";
-
-/**
- * Every section the site has, keyed by id. The template decides which appear
- * and in what order; nothing here knows about templates, so adding a section
- * is one entry here plus one id in a template.
- */
-const SECTIONS: Readonly<Record<SectionId, React.ReactNode>> = {
-    hero: <Hero />,
-    proof: <Proof />,
-    departments: <Departments />,
-    team: <Team />,
-    pricing: <Pricing />,
-    gallery: <Gallery />,
-    promises: <Promises />,
-    journey: <Journey />,
-    story: <PatientStory />,
-    services: <Services />,
-    visiting: <Visiting />,
-    faq: <Faq />,
-    book: <Booking />,
-};
 
 export function HomeClient({ template }: { readonly template: TemplateId }): React.JSX.Element {
     const { sections } = templateById(template);
 
+    /* Every section the site has, keyed by id. The template decides which
+       appear and in what order. Built here rather than at module scope because
+       a section may need to know which template it is rendering inside — the
+       services heading, for one, must not call a hospital a family practice. */
+    const rendered: Readonly<Record<SectionId, React.ReactNode>> = {
+        hero: <Hero />,
+        proof: <Proof />,
+        departments: <Departments />,
+        team: <Team />,
+        pricing: <Pricing />,
+        gallery: <Gallery />,
+        promises: <Promises />,
+        journey: <Journey />,
+        story: <PatientStory />,
+        services: <Services template={template} />,
+        visiting: <Visiting />,
+        faq: <Faq />,
+        book: <Booking />,
+    };
+
     return (
-        <>
+        <div data-template={template} style={designVars(template) as React.CSSProperties}>
             <ScrollProgress />
             <AnnounceBar />
             <SiteHeader />
             <main id="main-content" tabIndex={-1}>
                 {sections.map((id) => (
-                    <Fragment key={id}>{SECTIONS[id]}</Fragment>
+                    <Fragment key={id}>{rendered[id]}</Fragment>
                 ))}
             </main>
             <SiteFooter />
             <StickyCta />
-        </>
+        </div>
     );
 }

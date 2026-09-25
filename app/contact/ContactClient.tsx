@@ -1,0 +1,236 @@
+"use client";
+
+import { useState } from "react";
+import { ArrowRight, Check, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { Field, Input, Select, Textarea } from "@/app/components/ui/Field";
+import { Button } from "@/app/components/ui/Button";
+import { useBrand } from "@/app/features/clinic/BrandContext";
+import { DEPARTMENTS } from "@/app/features/clinic/care";
+import styles from "./Contact.module.scss";
+
+const PHONE_DIGITS = /\d/g;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/** Prefilled so the first message says something useful, not "hi". */
+const WHATSAPP_OPENER =
+    "Hello, I would like to ask about an appointment. My name is ";
+
+export function ContactClient(): React.JSX.Element {
+    const brand = useBrand();
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [about, setAbout] = useState("");
+    const [message, setMessage] = useState("");
+    const [errors, setErrors] = useState<{ name?: string; phone?: string; message?: string }>({});
+    const [busy, setBusy] = useState(false);
+    const [failed, setFailed] = useState<string | null>(null);
+    const [sent, setSent] = useState(false);
+
+    const waHref = `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(WHATSAPP_OPENER)}`;
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
+        const found: { name?: string; phone?: string; message?: string } = {};
+        if (name.trim().length < 2) found.name = "Please tell us your name.";
+        const digits = phone.match(PHONE_DIGITS)?.length ?? 0;
+        if (digits < 7 && !EMAIL.test(email.trim())) {
+            found.phone = "We need a phone number or an email address to reply to.";
+        }
+        if (message.trim().length < 5) found.message = "Tell us briefly what it is about.";
+        setErrors(found);
+        if (Object.keys(found).length > 0) {
+            document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+            return;
+        }
+
+        setBusy(true);
+        setFailed(null);
+        try {
+            const response = await fetch("/api/enquiry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    fullName: name,
+                    phone,
+                    email,
+                    service: about === "" ? "General enquiry" : about,
+                    urgency: "routine",
+                    notes: message,
+                    consent: true,
+                }),
+            });
+            if (!response.ok) {
+                const body: unknown = await response.json().catch(() => null);
+                setFailed(
+                    typeof body === "object" && body !== null && "error" in body
+                        ? String((body as Record<string, unknown>).error)
+                        : "We could not send that. Please ring us instead.",
+                );
+                setBusy(false);
+                return;
+            }
+            setSent(true);
+        } catch {
+            setFailed("We could not reach the practice. Please ring us instead.");
+        }
+        setBusy(false);
+    }
+
+    return (
+        <div className={styles.grid}>
+            {/* WhatsApp */}
+            <a className={`${styles.route} ${styles.whatsapp}`} href={waHref} target="_blank" rel="noopener noreferrer">
+                <span className={styles.routeIco} aria-hidden="true">
+                    <MessageCircle size={22} />
+                </span>
+                <h2 className={styles.routeTitle}>WhatsApp</h2>
+                <p className={styles.routeBody}>
+                    Best for quick questions, moving an appointment, or asking whether you need one
+                    at all. Answered during opening hours.
+                </p>
+                <span className={styles.routeAction}>
+                    Message us
+                    <ArrowRight size={16} aria-hidden="true" />
+                </span>
+                <span className={styles.routeNote}>
+                    Opens WhatsApp. Please do not send clinical photographs or test results here.
+                </span>
+            </a>
+
+            {/* Phone */}
+            <a className={styles.route} href={brand.phoneHref}>
+                <span className={styles.routeIco} aria-hidden="true">
+                    <Phone size={22} />
+                </span>
+                <h2 className={styles.routeTitle}>Call us</h2>
+                <p className={styles.routeBody}>
+                    Reception answers in person. Best if it is urgent, if you would rather talk, or
+                    if you need a same-day slot — ring before 10am for those.
+                </p>
+                <span className={styles.routeAction}>
+                    {brand.phone}
+                    <ArrowRight size={16} aria-hidden="true" />
+                </span>
+                <span className={styles.routeNote}>
+                    If it is an emergency, call {brand.emergencyNumber} instead.
+                </span>
+            </a>
+
+            {/* Form */}
+            <div className={`${styles.route} ${styles.formCard}`}>
+                {sent ? (
+                    <>
+                        <span className={styles.doneIco} aria-hidden="true">
+                            <Check size={22} />
+                        </span>
+                        <h2 className={styles.routeTitle} role="status">
+                            Thank you, {name.trim().split(" ")[0]}
+                        </h2>
+                        <p className={styles.routeBody}>
+                            We have your message. During opening hours we reply the same day, and
+                            first thing the next morning otherwise.
+                        </p>
+                    </>
+                ) : (
+                    <form onSubmit={(event) => void handleSubmit(event)} noValidate>
+                        <h2 className={styles.routeTitle}>Send a message</h2>
+                        <p className={styles.routeBody}>
+                            Best if it is not urgent and you would rather write it down.
+                        </p>
+
+                        <Field label="Your name" required error={errors.name}>
+                            {(id, describedBy) => (
+                                <Input
+                                    id={id}
+                                    autoComplete="name"
+                                    value={name}
+                                    aria-invalid={errors.name ? true : undefined}
+                                    aria-describedby={describedBy}
+                                    onChange={(event) => setName(event.target.value)}
+                                />
+                            )}
+                        </Field>
+
+                        <Field label="Phone" error={errors.phone}>
+                            {(id, describedBy) => (
+                                <Input
+                                    id={id}
+                                    type="tel"
+                                    inputMode="tel"
+                                    autoComplete="tel"
+                                    value={phone}
+                                    aria-invalid={errors.phone ? true : undefined}
+                                    aria-describedby={describedBy}
+                                    onChange={(event) => setPhone(event.target.value)}
+                                />
+                            )}
+                        </Field>
+
+                        <Field label="Email">
+                            {(id) => (
+                                <Input
+                                    id={id}
+                                    type="email"
+                                    autoComplete="email"
+                                    value={email}
+                                    onChange={(event) => setEmail(event.target.value)}
+                                />
+                            )}
+                        </Field>
+
+                        <Field label="What is it about">
+                            {(id) => (
+                                <Select
+                                    id={id}
+                                    value={about}
+                                    onChange={(event) => setAbout(event.target.value)}
+                                >
+                                    <option value="">General enquiry</option>
+                                    {DEPARTMENTS.map((department) => (
+                                        <option key={department.id} value={department.name}>
+                                            {department.name}
+                                        </option>
+                                    ))}
+                                </Select>
+                            )}
+                        </Field>
+
+                        <Field
+                            label="Your message"
+                            required
+                            error={errors.message}
+                            help="Only what you are comfortable writing down."
+                        >
+                            {(id, describedBy) => (
+                                <Textarea
+                                    id={id}
+                                    rows={4}
+                                    value={message}
+                                    aria-invalid={errors.message ? true : undefined}
+                                    aria-describedby={describedBy}
+                                    onChange={(event) => setMessage(event.target.value)}
+                                />
+                            )}
+                        </Field>
+
+                        {failed === null ? null : (
+                            <p className={styles.failed} role="alert">
+                                {failed}
+                            </p>
+                        )}
+
+                        <Button type="submit" fullWidth size="lg" disabled={busy}>
+                            {busy ? "Sending…" : "Send message"}
+                        </Button>
+
+                        <p className={styles.routeNote}>
+                            <ShieldCheck size={14} aria-hidden="true" />
+                            Used to answer you and nothing else. Never passed on.
+                        </p>
+                    </form>
+                )}
+            </div>
+        </div>
+    );
+}

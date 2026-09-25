@@ -46,6 +46,8 @@ export interface Brand {
     readonly strapline: string;
     readonly phone: string;
     readonly phoneHref: string;
+    /** Digits only, no plus or spaces — wa.me rejects anything else. */
+    readonly whatsapp: string;
     readonly email: string;
     readonly address: string;
     readonly city: string;
@@ -177,6 +179,9 @@ export function resolveBrand(host: string | null | undefined): Brand {
         strapline: override.strapline ?? "See a named doctor this week, not in three",
         phone: override.phone ?? "+44 20 7946 0958",
         phoneHref: `tel:${(override.phone ?? "+44 20 7946 0958").replace(/[^+\d]/g, "")}`,
+        whatsapp:
+            override.whatsapp ??
+            (override.phone ?? "+44 20 7946 0958").replace(/\D/g, ""),
         email: override.email ?? `reception@${slug}.example`,
         address: override.address ?? `1 High Street, ${override.city ?? "Manchester"}`,
         city: override.city ?? "Manchester",

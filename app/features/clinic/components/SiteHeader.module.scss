@@ -31,6 +31,7 @@
 
 .logo small {
     display: block;
+    white-space: nowrap;
     font-weight: 400;
     font-size: 11px;
     letter-spacing: 0.09em;
@@ -43,7 +44,26 @@
     margin-left: auto;
     display: flex;
     align-items: center;
-    gap: var(--space-5);
+    gap: var(--space-4);
+    white-space: nowrap;
+}
+
+/* Between the tablet breakpoint and a roomy desktop there is not enough width
+   for six labels, a phone number and a button. Tighten rather than wrap. */
+@media (max-width: 1180px) {
+    .nav {
+        gap: var(--space-3);
+    }
+
+    .navLink {
+        font-size: 14px;
+    }
+
+    /* The number is the least useful thing here: the Book button is beside it
+       and the footer carries it. Dropped first when space runs out. */
+    .tel {
+        display: none;
+    }
 }
 
 /* Scoped to the class, not `.nav a`. A bare descendant selector also hit the
@@ -54,6 +74,7 @@
     text-decoration: none;
     font-size: 15px;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .navLink:hover {

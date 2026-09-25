@@ -42,8 +42,8 @@
     gap: var(--space-2);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-6);
+    border-radius: var(--t-radius, var(--radius-lg));
+    padding: var(--space-5);
     transition:
         border-color var(--dur) var(--ease),
         transform var(--dur) var(--ease),
@@ -64,6 +64,9 @@
 }
 
 .name {
+    font-family: var(--t-display, var(--font-serif));
+    font-weight: var(--t-display-weight, 600);
+    letter-spacing: var(--t-display-tracking, -0.02em);
     font-size: var(--text-xl);
 }
 
@@ -80,39 +83,107 @@
 .orderLabel {
     margin-top: var(--space-3);
     font-size: var(--text-xs);
-    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+    line-height: 1.5;
+}
+
+/* ── miniature ────────────────────────────────── */
+/* A scaled-down drawing of the page, in this template's own corner radius so
+   the card shows the design instead of describing it. */
+.preview {
+    border-radius: var(--t-radius, 12px);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-brand-50);
+    margin-bottom: var(--space-4);
+}
+
+.previewChrome {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 9px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.previewChrome span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+}
+
+.previewBody {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 9px;
+    min-height: 132px;
+}
+
+.band {
+    display: block;
+    height: 11px;
+    border-radius: var(--t-radius-sm, 4px);
+    background: var(--color-brand-100);
+}
+
+/* The first band is the hero: taller, and in the brand colour, so the running
+   order is legible at a glance. */
+.band[data-first] {
+    height: 40px;
+    background: var(--color-brand-900);
+}
+
+.band[data-band="departments"],
+.band[data-band="services"] {
+    height: 20px;
+    background: var(--color-brand-500);
+}
+
+.band[data-band="story"],
+.band[data-band="gallery"] {
+    height: 16px;
+    background: var(--color-accent);
+}
+
+.band[data-band="pricing"] {
+    height: 18px;
+    background: var(--color-brand-600);
+}
+
+.specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: var(--space-3) 0 0;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.specs div {
+    display: flex;
+    flex-direction: column;
+}
+
+.specs dt {
+    font-size: 10px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-text-subtle);
 }
 
-.order {
-    list-style: none;
+.specs dd {
     margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    color: var(--color-text);
 }
 
-.order li::after {
-    content: " ·";
-    color: var(--color-border-strong);
-}
-
-.order li:last-child::after {
-    content: "";
-}
-
-.more {
-    color: var(--color-text-subtle);
-    font-style: italic;
-}
-
-.preview {
-    margin-top: auto;
-    padding-top: var(--space-5);
+.cta {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
@@ -121,7 +192,7 @@
     text-decoration: none;
 }
 
-.preview:hover {
+.cta:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -136,5 +207,11 @@
 @media (min-width: 720px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1160px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
     }
 }

@@ -366,6 +366,26 @@ export const FAQS: readonly FaqItem[] = [
             "Most major insurers are accepted. Give us the policy number when you book and we will check cover and tell you what, if anything, you will be asked to pay before your appointment rather than after it.",
     },
     {
+        question: "Can I message you on WhatsApp?",
+        answer:
+            "Yes, and it is often the quickest route for a short question or to move an appointment. It is answered by reception during opening hours, not by a bot. Please do not send clinical photographs or test results that way — it is not the right place for them, and we will ask you to bring them in instead.",
+    },
+    {
+        question: "Can another clinician refer a patient to you?",
+        answer:
+            "Yes. There is a referral form for GPs, consultants, dentists and other clinicians, and we contact the patient directly to arrange a time rather than sending it back through you. We write back once they have been seen. Urgent referrals are picked up the same working day.",
+    },
+    {
+        question: "Do you offer video appointments?",
+        answer:
+            "For reviews, results and anything that does not need examining, yes. Book as you normally would and ask for video in the notes. If it turns out you need to be seen in person, we will say so rather than make do.",
+    },
+    {
+        question: "How do I get a copy of my records?",
+        answer:
+            "Write to us and we will answer within one month, free of charge. You can also ask us to correct something you think is wrong. What we hold and why is set out in full in our privacy notice.",
+    },
+    {
         question: "What if I need to cancel?",
         answer:
             "Reply to the confirmation message. Cancelling frees the slot for someone else automatically, which is why we ask rather than rely on no-shows.",
