@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    /* Every route was `ƒ` — server-rendered on demand — because each page reads
+       the Host header to resolve the tenant's brand, and reading headers() opts
+       a segment out of static generation. Cache Components lets the shell
+       prerender and the host-dependent part be cached per host instead. */
+    cacheComponents: true,
     // Standalone, not static export: middleware cannot run on a static export,
     // and the invite gate is middleware.
     output: "standalone",
