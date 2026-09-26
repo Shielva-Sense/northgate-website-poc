@@ -28,6 +28,7 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
 import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
 import { redFlagsFor } from "@/app/features/clinic/care";
+import { triageFor } from "@/app/features/clinic/content";
 import {
     CATEGORISED_SYMPTOMS,
     DURATIONS,
@@ -95,6 +96,8 @@ const STEPS: readonly { readonly stage: Stage; readonly label: string }[] = [
 export function FindDoctorClient(): React.JSX.Element {
     const brand = useBrand();
     const profile = useProfile();
+    const isVet = profile.kind === "veterinary";
+    const triage = triageFor(profile.kind);
     const { departments } = useContent();
     const [mode, setMode] = useState<Mode>("browse");
     const [stage, setStage] = useState<Stage>("safety");
@@ -202,22 +205,25 @@ export function FindDoctorClient(): React.JSX.Element {
                 </span>
                 <h2 className={styles.emergencyTitle}>Please do not book an appointment</h2>
                 <p className={styles.emergencyBody}>
-                    What you have described needs to be seen now, not at the next free slot. Come
-                    straight to <b>our emergency department</b> — it is open 24 hours and you do
-                    not need an appointment. Ring our A&amp;E line on <b>{brand.aeLine}</b> on the
-                    way and we will be ready for you.
+                    {/* The red flags are now the trade's own, so this panel is
+                        what an owner sees after choosing "hard swollen tummy,
+                        retching". It told them to come to a 24-hour emergency
+                        department and to call an ambulance for their dog. */}
+                    {triage.emergencyAdvice(brand.aeLine, brand.emergencyNumber)}
                 </p>
-                <p className={styles.emergencyBody}>
-                    If you cannot travel safely, or someone is unconscious or struggling to
-                    breathe, call <b>{brand.emergencyNumber}</b> for an ambulance instead — they
-                    will be brought to us.
-                </p>
+                {isVet ? null : (
+                    <p className={styles.emergencyBody}>
+                        If you cannot travel safely, or someone is unconscious or struggling to
+                        breathe, call <b>{brand.emergencyNumber}</b> for an ambulance instead — they
+                        will be brought to us.
+                    </p>
+                )}
                 <div className={styles.emergencyActions}>
                     <LinkButton href={brand.aeLineHref} size="lg">
-                        Call our A&amp;E — {brand.aeLine}
+                        {isVet ? "Ring us" : "Call our A&E"} — {brand.aeLine}
                     </LinkButton>
                     <LinkButton href="/urgent-care" variant="ghost" size="lg">
-                        A&amp;E and urgent care
+                        {isVet ? "Urgent and out-of-hours" : "A&E and urgent care"}
                     </LinkButton>
                 </div>
                 {backButton("safety", "None of these apply after all")}
