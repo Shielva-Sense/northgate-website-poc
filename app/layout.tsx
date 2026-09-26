@@ -36,8 +36,12 @@ export async function generateMetadata(): Promise<Metadata> {
             default: `${brand.name} - same-week appointments`,
             template: "%s",
         },
-        description:
-            "See a named doctor this week, not in three. Twenty-minute appointments and every price published.",
+        /* The strapline, which is per trade. The comment above said the
+           description followed the hostname; the title did and this did not,
+           so every veterinary and dental demo shared a general practice's
+           "See a named doctor this week" in its search result and in the
+           preview card of every link anyone pasted. */
+        description: `${brand.strapline}. Every price published, and a real time confirmed.`,
         // One source of truth with robots.ts: while the invite gate is on, a
         // crawler only ever gets the login page, so nothing here may be indexed.
         robots: isIndexable() ? undefined : { index: false, follow: false },
