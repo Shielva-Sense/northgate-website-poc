@@ -32,7 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page(): Promise<React.JSX.Element> {
-    const brand = (await siteFromHost((await headers()).get("host"))).brand;
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
+    const profile = site.profile;
 
     return (
         <PageShell
@@ -142,41 +144,69 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 a baby under three months with a fever, or thoughts of harming
                                 yourself.
                             </p>
-                            <p className={styles.levelDo}>
-                                Come straight to our emergency department — it is open 24 hours
-                                and you do not need an appointment. Ring our A&amp;E line on{" "}
-                                {brand.aeLine} on the way, or {brand.emergencyNumber} for an
-                                ambulance if you cannot travel. Do not book here.
-                            </p>
-                            <Link className={styles.action} href="/urgent-care">
-                                A&amp;E and urgent care
-                            </Link>
+                            {profile.hasEmergency ? (
+                                <>
+                                    <p className={styles.levelDo}>
+                                        Come straight to our emergency department — it is open 24
+                                        hours and you do not need an appointment. Ring our
+                                        emergency line on {brand.aeLine} on the way, or{" "}
+                                        {brand.emergencyNumber} for an ambulance if you cannot
+                                        travel. Do not book here.
+                                    </p>
+                                    <Link className={styles.action} href="/urgent-care">
+                                        Emergency and urgent care
+                                    </Link>
+                                </>
+                            ) : (
+                                /* A practice without an emergency department must never
+                                   invite someone having a stroke to travel to it. The
+                                   correct advice is the ambulance service and the nearest
+                                   hospital, and saying so plainly is the whole point of
+                                   this card. */
+                                <p className={styles.levelDo}>
+                                    We are not an emergency service. Call{" "}
+                                    {brand.emergencyNumber} for an ambulance, or go straight to
+                                    your nearest hospital emergency department. Do not wait to
+                                    hear back from us, and do not book here.
+                                </p>
+                            )}
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>Today or tomorrow</p>
                             <h3 className={styles.cardTitle}>Urgent, but not an emergency</h3>
                             <p className={styles.cardBody}>
-                                A fever that is not settling, a suspected infection, a wound that
-                                needs looking at, worsening pain.
+                                Pain that is getting worse, a suspected infection, swelling, or
+                                something that has changed since yesterday.
                             </p>
-                            <p className={styles.levelDo}>
-                                Come to urgent care — it is walk-in, so there is no slot to wait
-                                for. Tell us you are coming and the desk expects you.
-                            </p>
-                            <Link className={styles.action} href="/urgent-care">
-                                Go to urgent care
-                            </Link>
+                            {profile.hasEmergency ? (
+                                <>
+                                    <p className={styles.levelDo}>
+                                        Come to urgent care — it is walk-in, so there is no slot
+                                        to wait for. Tell us you are coming and the desk expects
+                                        you.
+                                    </p>
+                                    <Link className={styles.action} href="/urgent-care">
+                                        Go to urgent care
+                                    </Link>
+                                </>
+                            ) : (
+                                <p className={styles.levelDo}>
+                                    Ring us on {brand.phone} and say it is urgent. We hold slots
+                                    back each day for exactly this, and reception can tell you
+                                    straight away whether you need to be seen elsewhere.
+                                </p>
+                            )}
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>This week</p>
                             <h3 className={styles.cardTitle}>Routine</h3>
                             <p className={styles.cardBody}>
-                                Reviews, ongoing conditions, contraception, screening, vaccinations,
-                                anything you have been meaning to get looked at.
+                                Check-ups, reviews, ongoing treatment, and anything you have been
+                                meaning to get looked at.
                             </p>
                             <p className={styles.levelDo}>
-                                Book online and choose your clinician. Most routine appointments
-                                are within the same week.
+                                Book online and choose your {profile.clinician}. Most routine{" "}
+                                {profile.visit}s are within the same week.
                             </p>
                         </li>
                     </ul>

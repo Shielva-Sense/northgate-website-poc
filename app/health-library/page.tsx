@@ -6,7 +6,8 @@ import { ArrowRight } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
-import { ARTICLES, ARTICLE_TOPICS } from "@/app/features/clinic/catalogue";
+import { contentFor } from "@/app/features/clinic/content";
+import { EmptyLibrary } from "./EmptyLibrary";
 import styles from "./Library.module.scss";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,6 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page(): Promise<React.JSX.Element> {
+    const site = await siteFromHost((await headers()).get("host"));
+    const { articles } = contentFor(site.profile, site.brand, site.overrides);
+    /* Topics come from the articles this practice actually has, not from the
+       full built-in list — otherwise a dental site printed six empty headings
+       above nothing. */
+    const topics = [...new Set(articles.map((article) => article.topic))];
+
     return (
         <PageShell
             kicker="Health library"
@@ -31,11 +39,12 @@ export default async function Page(): Promise<React.JSX.Element> {
         >
             <section className={styles.section}>
                 <div className="wrap">
-                    {ARTICLE_TOPICS.map((topic) => (
+                    {articles.length === 0 ? <EmptyLibrary /> : null}
+                    {topics.map((topic) => (
                         <div key={topic} className={styles.topic}>
                             <h2 className={styles.topicTitle}>{topic}</h2>
                             <ul className={styles.cards} role="list">
-                                {ARTICLES.filter((article) => article.topic === topic).map(
+                                {articles.filter((article) => article.topic === topic).map(
                                     (article) => (
                                             <li key={article.slug} className={styles.card}>
                                                 <Link
