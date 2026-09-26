@@ -1,6 +1,8 @@
 import "server-only";
 import { MongoClient } from "mongodb";
 import type { Collection, Db } from "mongodb";
+import type { ContentOverrides } from "@/app/features/clinic/content";
+import type { CustomPage } from "@/app/features/clinic/pages";
 
 /**
  * The site registry.
@@ -51,6 +53,30 @@ export interface SiteRecord {
      * Absent means the generated monogram is used instead.
      */
     readonly iconPath?: string;
+
+    /**
+     * This clinic's own services, departments, prices, team and price cards.
+     *
+     * Anything set here replaces the trade default wholesale. It is how a real
+     * practice's researched service list reaches the page without a build —
+     * the point of the registry. Prices are in this clinic's own currency.
+     */
+    readonly content?: ContentOverrides;
+
+    /**
+     * Extra pages, created from outside.
+     *
+     * Each is rendered at /<slug> by a catch-all route, so a clinic can be
+     * given a page the template never had without a deploy.
+     */
+    readonly pages?: readonly CustomPage[];
+
+    /** Overrides what the trade says this practice may claim. */
+    readonly hasEmergency?: boolean;
+    readonly hasDepartments?: boolean;
+    readonly hasHealthLibrary?: boolean;
+    /** One line for the hero, in this clinic's own words. */
+    readonly strapline?: string;
 
     /** Where the lead came from, what is wrong with their current site. */
     readonly leadSource?: string;

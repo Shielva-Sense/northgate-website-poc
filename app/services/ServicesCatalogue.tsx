@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { siteFromHost } from "@/app/core/site";
 import { CatalogueGlyph } from "@/app/features/clinic/components/CatalogueGlyph";
-import { contentFor, priceLabel } from "@/app/features/clinic/content";
+import { contentFor, formatPrice } from "@/app/features/clinic/content";
 import styles from "./Index.module.scss";
 
 /**
@@ -39,8 +39,8 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
     "use cache";
     const site = await siteFromHost(host);
     const brand = site.brand;
-    const { departments, treatments, additionalServices, appointmentTypes, clinicians } =
-        contentFor(site.profile, brand);
+    const { departments, treatments, additionalServices, appointmentTypes, clinicians, priceMode } =
+        contentFor(site.profile, brand, site.overrides);
 
     return (
         <>
@@ -223,7 +223,7 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
                                                     </span>
                                                 </span>
                                                 <span className={styles.rowPrice}>
-                                                    {priceLabel(brand, type.price)}
+                                                    {formatPrice(brand, type.price, priceMode)}
                                                 </span>
                                                 <ArrowRight size={16} aria-hidden="true" />
                                             </Link>

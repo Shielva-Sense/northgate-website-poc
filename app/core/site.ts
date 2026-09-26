@@ -2,6 +2,8 @@ import "server-only";
 import { brandFromRecord, identifierFromHost } from "@/app/features/clinic/brands";
 import type { Brand } from "@/app/features/clinic/brands";
 import { profileFor } from "@/app/features/clinic/practice-kinds";
+import type { ContentOverrides } from "@/app/features/clinic/content";
+import type { CustomPage } from "@/app/features/clinic/pages";
 import type { KindProfile } from "@/app/features/clinic/practice-kinds";
 import { siteByIdentifier } from "./site-store";
 import type { SiteRecord } from "./site-store";
@@ -24,6 +26,10 @@ export interface Site {
     readonly iconUrl: string | null;
     /** What this practice actually is, and therefore what the site may claim. */
     readonly profile: KindProfile;
+    /** This clinic's own content, where it has supplied any. */
+    readonly overrides: ContentOverrides | null;
+    /** Extra pages this clinic has been given. */
+    readonly pages: readonly CustomPage[];
 }
 
 /**
@@ -57,7 +63,24 @@ export async function siteFromHost(host: string | null | undefined): Promise<Sit
        No record means we do not know what this practice is, and the safe
        unknown is one without an emergency department — a site that wrongly
        offers A&E is far worse than one that wrongly omits it. */
-    const profile = profileFor(record?.kind ?? (identifier === "northgate" ? "hospital" : undefined));
+    const base = profileFor(record?.kind ?? (identifier === "northgate" ? "hospital" : undefined));
+
+    /* A row may contradict its own trade — a dental practice that really does
+       run an out-of-hours emergency service, a clinic that wants its health
+       library off. The trade is the default, not the ceiling. `hasEmergency`
+       is the one worth reading twice: turning it on is a claim that somebody
+       answers at three in the morning. */
+    const profile: KindProfile = {
+        ...base,
+        hasEmergency: record?.hasEmergency ?? base.hasEmergency,
+        hasDepartments: record?.hasDepartments ?? base.hasDepartments,
+        hasHealthLibrary: record?.hasHealthLibrary ?? base.hasHealthLibrary,
+        strapline: record?.strapline ?? base.strapline,
+        /* The footer and the structured data read the profile's service list,
+           so a clinic's own services have to land here rather than only in
+           the content object. */
+        services: record?.content?.services ?? base.services,
+    };
 
     return {
         identifier,
@@ -65,6 +88,8 @@ export async function siteFromHost(host: string | null | undefined): Promise<Sit
         brand: brandFromRecord(identifier, record, profile.kind),
         template: record?.template ?? null,
         profile,
+        overrides: record?.content ?? null,
+        pages: record?.pages ?? [],
         iconUrl: record?.iconPath ? cdnUrl(record.iconPath) : null,
     };
 }

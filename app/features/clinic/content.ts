@@ -1,7 +1,7 @@
 import type { Brand } from "./brands";
 import type { Department } from "./care";
 import type { AdditionalService, CatalogueIcon, Treatment } from "./catalogue";
-import type { KindProfile, PracticeKind } from "./practice-kinds";
+import type { KindProfile, PracticeKind, Service } from "./practice-kinds";
 import type { Clinician, Package } from "./types";
 
 /**
@@ -45,6 +45,27 @@ export interface ClinicContent {
     readonly clinicians: readonly Clinician[];
     /** Price cards, built from the appointments above so they cannot disagree. */
     readonly packages: readonly Package[];
+    /**
+     * How the numbers above should be read.
+     *
+     * The two sources of a price are scaled differently: trade defaults are
+     * index numbers written against the UK and scaled per market, while a
+     * price set on the registry row is already in that clinic's own money and
+     * must be printed as given.
+     *
+     * A plain string, not a formatter closure. This object is resolved on the
+     * server and handed to a Client Component, and a function cannot cross
+     * that boundary — React refuses to serialise it, and the whole subtree
+     * fails to render. Call `formatPrice(brand, value, mode)` instead.
+     */
+    readonly priceMode: PriceMode;
+}
+
+export type PriceMode = "index" | "local";
+
+/** The one place a price becomes text. Works on either side of the boundary. */
+export function formatPrice(brand: Brand, value: number, mode: PriceMode): string {
+    return mode === "local" ? priceLabelLocal(brand, value) : priceLabel(brand, value);
 }
 
 interface DeptSpec {
@@ -430,6 +451,11 @@ const PRICE_ROUND: Readonly<Record<string, number>> = {
  * Zero is "no charge" rather than a free-looking "£0", because a consultation
  * offered at no cost is a selling point and a zero is a typo.
  */
+export function priceLabelLocal(brand: Brand, amount: number): string {
+    if (amount <= 0) return "No charge";
+    return `${brand.currency}${Math.round(amount).toLocaleString("en-GB")}`;
+}
+
 export function priceLabel(brand: Brand, index: number): string {
     if (index <= 0) return "No charge";
     const country = brand.country.toUpperCase();
@@ -440,16 +466,63 @@ export function priceLabel(brand: Brand, index: number): string {
     return `${brand.currency}${rounded.toLocaleString("en-GB")}`;
 }
 
+/**
+ * What one clinic has told us it actually offers.
+ *
+ * Every field is optional and every one replaces the trade default wholesale
+ * rather than merging into it. Replacement is the predictable rule: a clinic
+ * that sends four departments has four, not four plus whichever of the trade's
+ * six did not collide. Merging arrays by id reads as helpful and produces
+ * departments nobody asked for.
+ *
+ * Prices here are in the clinic's own currency, already. They are not scaled,
+ * because a number typed by someone looking at that clinic's price list is a
+ * real price, not an index.
+ */
+export interface ContentOverrides {
+    /**
+     * The headline service list — the footer's four, and the `availableService`
+     * entries in the structured data. Separate from `treatments` because this
+     * is what the practice says it does, and treatments are the individual
+     * things you can book.
+     */
+    readonly services?: readonly Service[];
+    readonly departments?: readonly Department[];
+    readonly treatments?: readonly Treatment[];
+    readonly additionalServices?: readonly AdditionalService[];
+    readonly appointmentTypes?: readonly AppointmentType[];
+    readonly clinicians?: readonly Clinician[];
+    readonly packages?: readonly Package[];
+}
+
 /** Everything this practice offers, in its own terms. */
-export function contentFor(profile: KindProfile, brand: Brand): ClinicContent {
+export function contentFor(
+    profile: KindProfile,
+    brand: Brand,
+    overrides?: ContentOverrides | null,
+): ClinicContent {
     const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
+    const o = overrides ?? {};
+
+    /* Anything the row supplied is already in local money; anything from the
+       trade table is an index to be scaled. Where a row supplies appointments
+       but not packages, the packages derived from those appointments are local
+       too, which is why this is decided per field rather than per site. */
+    const priceMode: PriceMode =
+        o.appointmentTypes !== undefined || o.packages !== undefined ? "local" : "index";
+    const format = (value: number): string => formatPrice(brand, value, priceMode);
+
+    const appointmentTypes = o.appointmentTypes ?? set.appointments;
+    const departments = o.departments ?? set.departments;
+
     return {
-        departments: set.departments,
-        treatments: set.treatments,
-        additionalServices: set.additional,
-        appointmentTypes: set.appointments,
-        clinicians: cliniciansFor(profile, brand),
-        packages: packagesFor(profile, brand),
+        departments,
+        treatments: o.treatments ?? set.treatments,
+        additionalServices: o.additionalServices ?? set.additional,
+        appointmentTypes,
+        clinicians: o.clinicians ?? cliniciansFor(profile, brand),
+        packages: o.packages ?? packagesFor(profile, brand, appointmentTypes, format),
+        priceMode,
     };
 }
 
@@ -673,11 +746,15 @@ const PLANS: Readonly<Record<PracticeKind, PlanSpec>> = {
  * The first and third are real appointments from the list above, so the cards
  * and the price table are the same numbers by construction.
  */
-export function packagesFor(profile: KindProfile, brand: Brand): readonly Package[] {
-    const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
-    const paid = set.appointments.filter((a) => a.price > 0);
-    const cheapest = paid.reduce<ApptSpec | null>((low, a) => (low === null || a.price < low.price ? a : low), null);
-    const longest = set.appointments.reduce<ApptSpec | null>(
+export function packagesFor(
+    profile: KindProfile,
+    brand: Brand,
+    appointments: readonly AppointmentType[],
+    format: (value: number) => string,
+): readonly Package[] {
+    const paid = appointments.filter((a) => a.price > 0);
+    const cheapest = paid.reduce<AppointmentType | null>((low, a) => (low === null || a.price < low.price ? a : low), null);
+    const longest = appointments.reduce<AppointmentType | null>(
         (top, a) => (top === null || a.minutes > top.minutes ? a : top),
         null,
     );
@@ -689,7 +766,7 @@ export function packagesFor(profile: KindProfile, brand: Brand): readonly Packag
         packages.push({
             slug: "single",
             name: `Single ${profile.visit}`,
-            price: priceLabel(brand, cheapest.price),
+            price: format(cheapest.price),
             cadence: "per visit",
             summary: `One ${profile.visit} with the ${profile.clinician} you choose. Nothing to join.`,
             includes: [
@@ -715,7 +792,7 @@ export function packagesFor(profile: KindProfile, brand: Brand): readonly Packag
         packages.push({
             slug: "thorough",
             name: longest.name,
-            price: priceLabel(brand, longest.price),
+            price: format(longest.price),
             cadence: "one off",
             summary: `${longest.minutes} minutes, and time afterwards to go through every result.`,
             includes: [
