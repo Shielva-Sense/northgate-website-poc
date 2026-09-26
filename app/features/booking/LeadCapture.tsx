@@ -5,6 +5,7 @@ import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { Field, Input } from "@/app/components/ui/Field";
 import { Button } from "@/app/components/ui/Button";
 import styles from "./LeadCapture.module.scss";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 const PHONE_DIGITS = /\d/g;
 
@@ -16,6 +17,7 @@ const PHONE_DIGITS = /\d/g;
  * rather give the detail up front; this exists for the ones who would not.
  */
 export function LeadCapture(): React.JSX.Element {
+    const { t } = useLocale();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
@@ -88,13 +90,12 @@ export function LeadCapture(): React.JSX.Element {
 
     return (
         <form className={styles.panel} onSubmit={(event) => void handleSubmit(event)} noValidate>
-            <h2 className={styles.title}>See this week&rsquo;s openings</h2>
+            <h2 className={styles.title}>{t("leadTitle")}</h2>
             <p className={styles.sub}>
-                Two details and we will call you back with the next three slots. No account, no
-                waiting on hold.
+                {t("leadLede")}
             </p>
 
-            <Field label="Your name" required error={errors.name}>
+            <Field label={t("yourName")} required error={errors.name}>
                 {(id, describedBy) => (
                     <Input
                         id={id}
@@ -108,7 +109,7 @@ export function LeadCapture(): React.JSX.Element {
                 )}
             </Field>
 
-            <Field label="Mobile number" required error={errors.phone}>
+            <Field label={t("mobileNumber")} required error={errors.phone}>
                 {(id, describedBy) => (
                     <Input
                         id={id}
@@ -137,12 +138,12 @@ export function LeadCapture(): React.JSX.Element {
                 disabled={busy}
                 rightIcon={<ArrowRight size={16} />}
             >
-                {busy ? "Sending…" : "Call me back"}
+                {busy ? t("sending") : t("callMeBack")}
             </Button>
 
             <p className={styles.note}>
                 <ShieldCheck size={14} aria-hidden="true" />
-                Used once, to arrange this appointment. Never passed on.
+                {t("leadPrivacy")}
             </p>
         </form>
     );

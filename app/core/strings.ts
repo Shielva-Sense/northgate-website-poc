@@ -31,6 +31,21 @@ const en = {
         "It takes about a minute. You will get a confirmation with a time, not a promise to call you back at some point.",
     ratherTalk: "Rather talk to someone?",
 
+    leadTitle: "See this week's openings",
+    leadLede:
+        "Two details and we will call you back with the next three slots. No account, no waiting on hold.",
+    yourName: "Your name",
+    mobileNumber: "Mobile number",
+    callMeBack: "Call me back",
+    sending: "Sending…",
+    leadPrivacy: "Used once, to arrange this appointment. Never passed on.",
+    heroSeeNamed: "See a named",
+    heroThisWeek: "this week",
+    heroNotInThree: "not in three",
+    heroPricesLine: "Every price published on this page, and a real time confirmed within the hour.",
+    chooseClinician: "Choose your clinician",
+    minutes: "minutes",
+
     skipToContent: "Skip to main content",
     backToHome: "Back to the home page",
     language: "Language",
@@ -61,6 +76,21 @@ const ar: Record<UiKey, string> = {
     bookingLede:
         "يستغرق الأمر دقيقة تقريباً. ستصلك رسالة تأكيد بموعد محدد، لا مجرد وعد بالاتصال بك لاحقاً.",
     ratherTalk: "تفضل التحدث مع أحد موظفينا؟",
+
+    leadTitle: "مواعيد هذا الأسبوع",
+    leadLede:
+        "تفصيلان فقط وسنعاود الاتصال بك بأقرب ثلاثة مواعيد. دون حساب ودون انتظار على الهاتف.",
+    yourName: "الاسم",
+    mobileNumber: "رقم الهاتف",
+    callMeBack: "عاودوا الاتصال بي",
+    sending: "جارٍ الإرسال…",
+    leadPrivacy: "يُستخدم مرة واحدة لترتيب هذا الموعد، ولا يُشارك مع أي جهة أخرى.",
+    heroSeeNamed: "قابل",
+    heroThisWeek: "هذا الأسبوع",
+    heroNotInThree: "لا بعد ثلاثة أسابيع",
+    heroPricesLine: "كل الأسعار منشورة على هذه الصفحة، وموعد مؤكد خلال ساعة.",
+    chooseClinician: "اختر طبيبك",
+    minutes: "دقيقة",
 
     skipToContent: "تخطَّ إلى المحتوى الرئيسي",
     backToHome: "العودة إلى الصفحة الرئيسية",

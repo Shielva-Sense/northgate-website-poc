@@ -35,9 +35,15 @@ export interface KindProfile {
     readonly label: string;
     /** The word for one of its clinicians. */
     readonly clinician: string;
+    /* Arabic beside the English, for the same reason the labels are: this is
+       trade vocabulary, and a dentist is a طبيب أسنان whichever language the
+       page is read in. */
+    readonly clinicianAr: string;
     readonly clinicianPlural: string;
+    readonly clinicianPluralAr: string;
     /** The word for a visit. */
     readonly visit: string;
+    readonly visitAr: string;
 
     /**
      * True only where a 24-hour emergency department is plausible. Everything
@@ -79,6 +85,7 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
     hospital: {
         kind: "hospital", label: "hospital",
         clinician: "consultant", clinicianPlural: "consultants", visit: "appointment",
+        clinicianAr: "استشاري", clinicianPluralAr: "استشاريين", visitAr: "موعد",
         hasEmergency: true, hasDepartments: true, hasHealthLibrary: true,
         strapline: "Every specialty under one roof, and someone on duty at every hour",
         findLabel: "Find a consultant",
@@ -102,6 +109,7 @@ libraryLabelAr: "المكتبة الصحية",
     "general-practice": {
         kind: "general-practice", label: "practice",
         clinician: "doctor", clinicianPlural: "doctors", visit: "appointment",
+        clinicianAr: "طبيب", clinicianPluralAr: "أطباء", visitAr: "موعد",
         hasEmergency: false, hasDepartments: true, hasHealthLibrary: true,
         strapline: "See a named doctor this week, not in three",
         findLabel: "Find a doctor",
@@ -126,6 +134,7 @@ libraryLabelAr: "المكتبة الصحية",
     dental: {
         kind: "dental", label: "dental practice",
         clinician: "dentist", clinicianPlural: "dentists", visit: "appointment",
+        clinicianAr: "طبيب أسنان", clinicianPluralAr: "أطباء أسنان", visitAr: "موعد",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A dentist who explains what they are doing, and what it costs, first",
         findLabel: "Find a dentist",
@@ -150,6 +159,7 @@ libraryLabelAr: "إرشادات الأسنان",
     physio: {
         kind: "physio", label: "physiotherapy clinic",
         clinician: "physiotherapist", clinicianPlural: "physiotherapists", visit: "session",
+        clinicianAr: "أخصائي علاج طبيعي", clinicianPluralAr: "أخصائيي علاج طبيعي", visitAr: "جلسة",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Hands-on treatment and a plan you can actually keep to",
         findLabel: "Find a physiotherapist",
@@ -173,6 +183,7 @@ libraryLabelAr: "إرشادات الإصابات",
     chiro: {
         kind: "chiro", label: "chiropractic clinic",
         clinician: "chiropractor", clinicianPlural: "chiropractors", visit: "adjustment",
+        clinicianAr: "أخصائي تقويم", clinicianPluralAr: "أخصائيي تقويم", visitAr: "جلسة تقويم",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Back and neck pain treated by someone who explains the plan",
         findLabel: "Find a chiropractor",
@@ -195,6 +206,7 @@ libraryLabelAr: "إرشادات العناية بالظهر",
     dermatology: {
         kind: "dermatology", label: "dermatology clinic",
         clinician: "dermatologist", clinicianPlural: "dermatologists", visit: "appointment",
+        clinicianAr: "طبيب جلدية", clinicianPluralAr: "أطباء جلدية", visitAr: "موعد",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Skin looked at properly, by someone who does this all day",
         findLabel: "Find a dermatologist",
@@ -218,6 +230,7 @@ libraryLabelAr: "إرشادات العناية بالبشرة",
     optometry: {
         kind: "optometry", label: "eye care practice",
         clinician: "optometrist", clinicianPlural: "optometrists", visit: "eye test",
+        clinicianAr: "أخصائي بصريات", clinicianPluralAr: "أخصائيي بصريات", visitAr: "فحص نظر",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A proper eye examination, not a rush to the frames",
         findLabel: "Find an optometrist",
@@ -240,6 +253,7 @@ libraryLabelAr: "إرشادات العناية بالعيون",
     "mental-health": {
         kind: "mental-health", label: "practice",
         clinician: "therapist", clinicianPlural: "therapists", visit: "session",
+        clinicianAr: "معالج", clinicianPluralAr: "معالجين", visitAr: "جلسة",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Someone to talk to, within the week",
         findLabel: "Find a therapist",
@@ -262,6 +276,7 @@ libraryLabelAr: "مكتبة الصحة النفسية",
     podiatry: {
         kind: "podiatry", label: "podiatry clinic",
         clinician: "podiatrist", clinicianPlural: "podiatrists", visit: "appointment",
+        clinicianAr: "أخصائي قدم", clinicianPluralAr: "أخصائيي قدم", visitAr: "موعد",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Feet treated by a specialist, not squeezed into a GP slot",
         findLabel: "Find a podiatrist",
@@ -284,6 +299,7 @@ libraryLabelAr: "إرشادات العناية بالقدم",
     veterinary: {
         kind: "veterinary", label: "veterinary practice",
         clinician: "vet", clinicianPlural: "vets", visit: "appointment",
+        clinicianAr: "طبيب بيطري", clinicianPluralAr: "أطباء بيطريين", visitAr: "موعد",
         hasEmergency: true, hasDepartments: false, hasHealthLibrary: false,
         strapline: "The same vet each visit, who remembers your animal",
         findLabel: "Find a vet",

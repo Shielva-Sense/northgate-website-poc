@@ -10,6 +10,7 @@ import { slotsFor } from "@/app/features/clinic/care";
 import type { Slot } from "@/app/features/clinic/care";
 import type { Clinician } from "@/app/features/clinic/types";
 import styles from "./AppointmentFlow.module.scss";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 type Step = "clinician" | "details" | "slot" | "done";
 
@@ -54,6 +55,7 @@ type Props = {
  * their phone number.
  */
 export function AppointmentFlow({ department, serviceName }: Props): React.JSX.Element {
+    const { t } = useLocale();
     const brand = useBrand();
     const { clinicians } = useContent();
     const [step, setStep] = useState<Step>("clinician");
@@ -259,7 +261,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                         can confirm.
                     </p>
 
-                    <Field label="Your name" required error={errors.name}>
+                    <Field label={t("yourName")} required error={errors.name}>
                         {(id, describedBy) => (
                             <Input
                                 id={id}
@@ -273,7 +275,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                     </Field>
 
                     <div className={styles.pair}>
-                        <Field label="Mobile number" error={errors.phone}>
+                        <Field label={t("mobileNumber")} error={errors.phone}>
                             {(id, describedBy) => (
                                 <Input
                                     id={id}
