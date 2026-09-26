@@ -20,6 +20,7 @@ import type {
 } from "./types";
 import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import styles from "./BookingForm.module.scss";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 const PATIENT_OPTIONS: readonly ChoiceOption<PatientType>[] = [
     { value: "existing", label: "I am already registered" },
@@ -82,6 +83,7 @@ const CONTACT_OPTIONS: readonly ChoiceOption<ContactMethod>[] = (
 ).map((value) => ({ value, label: CONTACT_LABELS[value] }));
 
 export function BookingForm(): React.JSX.Element {
+    const { t } = useLocale();
     const brand = useBrand();
     const { departments, appointmentTypes, clinicians } = useContent();
     const [form, setForm] = useState<BookingFormValues>(EMPTY_FORM);
@@ -186,7 +188,7 @@ export function BookingForm(): React.JSX.Element {
                 onChange={(value) => set("patientType", value)}
             />
 
-            <Field label="Your name" required error={errors.fullName}>
+            <Field label={t("yourName")} required error={errors.fullName}>
                 {(id, describedBy) => (
                     <Input
                         id={id}

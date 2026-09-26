@@ -8,6 +8,7 @@ import { LeadCapture } from "@/app/features/booking/LeadCapture";
 import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { useBrand, useContent, useProfile } from "../BrandContext";
+import { useLocale } from "../LocaleContext";
 import { mediaFor } from "../content";
 import type { AppointmentType } from "../content";
 import { templateById } from "../templates";
@@ -56,6 +57,7 @@ export function Hero({ template }: { readonly template: TemplateId }): React.JSX
 function HeroCinematic(): React.JSX.Element {
     const profile = useProfile();
     const brand = useBrand();
+    const { t, locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const back = useParallax<HTMLDivElement>(-0.12);
     /* Resolved once, so the poster and the footage can never come from
@@ -82,28 +84,38 @@ function HeroCinematic(): React.JSX.Element {
                     <h1 className={styles.h1}>
                         <span className="line-mask">
                             <span data-reveal="" data-reveal-style="rise">
-                                See a named {profile.clinician}
+                                {t("heroSeeNamed")} {locale === "ar" ? profile.clinicianAr : profile.clinician}
                             </span>
                         </span>
                         <span className="line-mask">
                             <em data-reveal="" data-reveal-style="rise">
-                                this week
+                                {t("heroThisWeek")}
                             </em>
                         </span>
                         <span className="line-mask">
                             <span data-reveal="" data-reveal-style="rise">
-                                not in three
+                                {t("heroNotInThree")}
                             </span>
                         </span>
                     </h1>
                     <p className={styles.lede}>
-                        {clinicians.length} {clinicians.length === 1 ? profile.clinician : profile.clinicianPlural}.{" "}
-                        {shortest === undefined ? null : `${shortest.minutes}-minute ${profile.visit}s. `}
-                        Every price published on this page, and a real time confirmed within the hour.
+                        {clinicians.length}{" "}
+                        {locale === "ar"
+                            ? profile.clinicianPluralAr
+                            : clinicians.length === 1
+                              ? profile.clinician
+                              : profile.clinicianPlural}
+                        .{" "}
+                        {shortest === undefined
+                            ? null
+                            : locale === "ar"
+                              ? `${shortest.minutes} ${t("minutes")} لكل ${profile.visitAr}. `
+                              : `${shortest.minutes}-minute ${profile.visit}s. `}
+                        {t("heroPricesLine")}
                     </p>
                     <div className={styles.cta}>
                         <LinkButton href="/#team" size="lg">
-                            Choose your clinician
+                            {t("chooseClinician")}
                         </LinkButton>
                         <LinkButton href={brand.phoneHref} variant="onDark" size="lg">
                             {brand.phone}
