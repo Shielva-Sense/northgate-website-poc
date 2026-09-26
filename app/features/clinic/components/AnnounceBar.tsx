@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ANNOUNCEMENTS } from "../constants";
+
+import { useProfile } from "../BrandContext";
 import styles from "./AnnounceBar.module.scss";
 
 const ROTATE_MS = 4500;
@@ -14,23 +15,27 @@ const ROTATE_MS = 4500;
  * backgrounded page is not burning frames.
  */
 export function AnnounceBar(): React.JSX.Element {
+    /* This practice's own lines. The shared set promised blood results in two
+       working days and evening GP clinics, on veterinary and dental sites
+       alike. */
+    const { announcements } = useProfile();
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
         const id = window.setInterval(() => {
             if (document.hidden) return;
-            setIndex((current) => (current + 1) % ANNOUNCEMENTS.length);
+            setIndex((current) => (current + 1) % announcements.length);
         }, ROTATE_MS);
         return () => window.clearInterval(id);
-    }, []);
+    }, [announcements.length]);
 
     return (
         <aside className={styles.bar} aria-label="Practice updates">
             <p className={styles.inner} aria-live="polite">
                 {/* Keyed on the message itself: it remounts on each change so
                     the fade re-runs, without keying on an array index. */}
-                <span key={ANNOUNCEMENTS[index]} className={styles.line}>
-                    {ANNOUNCEMENTS[index]}
+                <span key={announcements[index]} className={styles.line}>
+                    {announcements[index]}
                 </span>
             </p>
         </aside>

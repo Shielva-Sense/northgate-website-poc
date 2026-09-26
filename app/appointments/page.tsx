@@ -45,7 +45,7 @@ export default async function Page(): Promise<React.JSX.Element> {
             kicker="Appointments and access"
             title="Every way to get seen"
             lede={`However you would rather do it — online, on the phone, or by walking in. If you are not sure which you need, start with "where to go" below.`}
-            image="/img/reception.jpg"
+            imageKey="reception"
             imageAlt="A reception desk with a receptionist looking up, and seating beyond"
         >
             {/* ── ways in ─────────────────────────────────────────── */}

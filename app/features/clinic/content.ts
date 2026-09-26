@@ -914,3 +914,63 @@ const TRIAGE: Readonly<Partial<Record<PracticeKind, TriageCopy>>> = {
 export function triageFor(kind: PracticeKind): TriageCopy {
     return TRIAGE[kind] ?? HUMAN_TRIAGE;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   Photography
+
+   Every site used the same eight photographs: a consulting room, a
+   reception desk, a corridor, a treatment room. They were shot for a human
+   clinic, and on a veterinary practice there is not an animal anywhere in
+   them — which a vet notices in about a second.
+
+   A trade that has its own photography gets it. A trade that does not falls
+   back to the originals, which are neutral enough to pass for most human
+   practices. Falling back is deliberate: a stock waiting room is a weak
+   image, but a picture of the wrong sort of room is a wrong one.
+   ──────────────────────────────────────────────────────────────── */
+
+export interface SiteMedia {
+    readonly exterior: string;
+    readonly reception: string;
+    readonly consulting: string;
+    readonly consultation: string;
+    readonly treatment: string;
+    readonly waiting: string;
+    readonly corridor: string;
+}
+
+const DEFAULT_MEDIA: SiteMedia = {
+    exterior: "/img/exterior.jpg",
+    reception: "/img/reception.jpg",
+    consulting: "/img/consulting.jpg",
+    consultation: "/img/consultation.jpg",
+    treatment: "/img/treatment.jpg",
+    waiting: "/img/waiting.jpg",
+    corridor: "/img/corridor.jpg",
+};
+
+/**
+ * Only the shots a trade actually has.
+ *
+ * Partial on purpose. Commissioning seven photographs for ten trades is
+ * seventy pictures, and they will arrive a few at a time; a trade with three
+ * of its own should use those three rather than wait for the set. Anything
+ * missing falls back to the original, which is a weak image but a real file
+ * — listing a path for a photograph that does not exist would put a broken
+ * image on a prospect's page.
+ */
+const MEDIA: Readonly<Partial<Record<PracticeKind, Partial<SiteMedia>>>> = {
+    veterinary: {
+        exterior: "/img/vet/exterior.jpg",
+        reception: "/img/vet/reception.jpg",
+        consulting: "/img/vet/consulting.jpg",
+        consultation: "/img/vet/consultation.jpg",
+        treatment: "/img/vet/treatment.jpg",
+        waiting: "/img/vet/waiting.jpg",
+        corridor: "/img/vet/corridor.jpg",
+    },
+};
+
+export function mediaFor(kind: PracticeKind): SiteMedia {
+    return { ...DEFAULT_MEDIA, ...(MEDIA[kind] ?? {}) };
+}

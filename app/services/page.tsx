@@ -22,7 +22,7 @@ export default function Page(): React.JSX.Element {
             kicker="Services"
             title="Everything we offer"
             lede="Three ways in: by the department you think you need, by the treatment you have been told to have, or by the practical thing you are after."
-            image="/img/consulting.jpg"
+            imageKey="consulting"
             imageAlt="A consulting room with two chairs turned toward each other and daylight from a tall window"
         >
             <ServicesCatalogue />

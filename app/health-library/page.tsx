@@ -34,7 +34,7 @@ export default async function Page(): Promise<React.JSX.Element> {
             kicker="Health library"
             title="Written to be read, not to rank"
             lede="Plain-language information about the things we are asked about most. Every article ends with when to stop reading and speak to a person."
-            image="/img/consultation.jpg"
+            imageKey="consultation"
             imageAlt="A clinician and a patient talking across a desk, both leaning in"
         >
             <section className={styles.section}>
