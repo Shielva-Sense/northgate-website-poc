@@ -51,19 +51,25 @@ export default async function Page(): Promise<React.JSX.Element> {
             {/* ── ways in ─────────────────────────────────────────── */}
             <section className={`${styles.section} ${styles.first}`} aria-labelledby="ways">
                 <div className="wrap">
-                    <Link className={styles.urgentBanner} href="/urgent-care">
-                        <span className={styles.urgentIco} aria-hidden="true">
-                            <Siren size={22} />
-                        </span>
-                        <span className={styles.urgentText}>
-                            <b>Need to be seen today?</b> Urgent care is walk-in — search what has
-                            happened and come straight in. No slot to pick and no callback to wait
-                            for.
-                        </span>
-                        <span className={styles.urgentGo} aria-hidden="true">
-                            <ArrowRight size={18} />
-                        </span>
-                    </Link>
+                    {/* "Walk in, no callback to wait for" is a promise only a
+                        practice that is actually open to walk-ins can keep. On
+                        one that is not, it contradicts its own urgent page,
+                        which asks people to ring first. */}
+                    {profile.hasEmergency ? (
+                        <Link className={styles.urgentBanner} href="/urgent-care">
+                            <span className={styles.urgentIco} aria-hidden="true">
+                                <Siren size={22} />
+                            </span>
+                            <span className={styles.urgentText}>
+                                <b>Need to be seen today?</b> Urgent care is walk-in — search what
+                                has happened and come straight in. No slot to pick and no callback
+                                to wait for.
+                            </span>
+                            <span className={styles.urgentGo} aria-hidden="true">
+                                <ArrowRight size={18} />
+                            </span>
+                        </Link>
+                    ) : null}
 
                     <h2 className={styles.h2} id="ways">
                         Ways to book
