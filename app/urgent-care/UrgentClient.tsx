@@ -20,6 +20,7 @@ import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
 import { searchUrgent } from "@/app/features/clinic/urgent";
+import { triageFor } from "@/app/features/clinic/content";
 import type { UrgentUnit } from "@/app/features/clinic/urgent";
 import { NearestEmergency } from "./NearestEmergency";
 import styles from "./Urgent.module.scss";
@@ -53,6 +54,7 @@ export function UrgentClient(): React.JSX.Element {
     const brand = useBrand();
     const profile = useProfile();
     const isVet = profile.kind === "veterinary";
+    const triage = triageFor(profile.kind);
     const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(brand.address)}`;
     const [query, setQuery] = useState("");
     const [stage, setStage] = useState<Stage>("find");
@@ -157,18 +159,23 @@ export function UrgentClient(): React.JSX.Element {
                 If this could be life-threatening
             </p>
             <h2 className={styles.emergencyTitle} id="emergency-heading">
-                Come straight to A&amp;E, or ring us on {brand.aeLine}
+                {isVet
+                    ? `Ring us on ${brand.aeLine} and bring them straight in`
+                    : `Come straight to A&E, or ring us on ${brand.aeLine}`}
             </h2>
+            {/* The symptom list is the trade's own. It was a human one on every
+                site, so a veterinary page told owners to watch for face
+                drooping and slurred speech. */}
             <p className={styles.emergencyBody}>
-                Chest pain or tightness, sudden difficulty breathing, face drooping or slurred
-                speech, bleeding that will not stop, a baby under three months with a fever, or
-                thoughts of harming yourself. Our emergency department is open 24 hours and you do
-                not need an appointment. Do not book, and do not wait for us to ring back.
+                {triage.emergency}{" "}
+                {isVet
+                    ? "Ring on your way so the team is waiting at the door. Do not book, and do not wait for us to ring back."
+                    : "Our emergency department is open 24 hours and you do not need an appointment. Do not book, and do not wait for us to ring back."}
             </p>
             <div className={styles.emergencyActions}>
                 <a className={styles.emergencyCall} href={brand.aeLineHref}>
                     <Phone size={17} aria-hidden="true" />
-                    Call our A&amp;E — {brand.aeLine}
+                    {isVet ? "Call us" : "Call our A&E"} — {brand.aeLine}
                 </a>
                 <a
                     className={styles.emergencyWay}
