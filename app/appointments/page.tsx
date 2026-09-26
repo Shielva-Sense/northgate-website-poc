@@ -17,6 +17,7 @@ import {
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import { triageFor } from "@/app/features/clinic/content";
 import { OPENING } from "@/app/features/clinic/constants";
 import styles from "./Appointments.module.scss";
 
@@ -35,6 +36,9 @@ export default async function Page(): Promise<React.JSX.Element> {
     const site = await siteFromHost((await headers()).get("host"));
     const brand = site.brand;
     const profile = site.profile;
+    /* Triage wording follows the trade. A veterinary practice must not tell
+       anyone to watch for a stroke or to call for an ambulance. */
+    const triage = triageFor(profile.kind);
 
     return (
         <PageShell
@@ -139,45 +143,26 @@ export default async function Page(): Promise<React.JSX.Element> {
                                 Do not wait
                             </p>
                             <h3 className={styles.cardTitle}>Emergency</h3>
-                            <p className={styles.cardBody}>
-                                Chest pain, difficulty breathing, signs of a stroke, heavy bleeding,
-                                a baby under three months with a fever, or thoughts of harming
-                                yourself.
-                            </p>
+                            <p className={styles.cardBody}>{triage.emergency}</p>
                             {profile.hasEmergency ? (
                                 <>
                                     <p className={styles.levelDo}>
-                                        Come straight to our emergency department — it is open 24
-                                        hours and you do not need an appointment. Ring our
-                                        emergency line on {brand.aeLine} on the way, or{" "}
-                                        {brand.emergencyNumber} for an ambulance if you cannot
-                                        travel. Do not book here.
+                                        {triage.emergencyAdvice(brand.aeLine, brand.emergencyNumber)}
                                     </p>
                                     <Link className={styles.action} href="/urgent-care">
                                         Emergency and urgent care
                                     </Link>
                                 </>
                             ) : (
-                                /* A practice without an emergency department must never
-                                   invite someone having a stroke to travel to it. The
-                                   correct advice is the ambulance service and the nearest
-                                   hospital, and saying so plainly is the whole point of
-                                   this card. */
                                 <p className={styles.levelDo}>
-                                    We are not an emergency service. Call{" "}
-                                    {brand.emergencyNumber} for an ambulance, or go straight to
-                                    your nearest hospital emergency department. Do not wait to
-                                    hear back from us, and do not book here.
+                                    {triage.noEmergencyAdvice(brand.emergencyNumber, brand.phone)}
                                 </p>
                             )}
                         </li>
                         <li className={styles.level}>
                             <p className={styles.levelTag}>Today or tomorrow</p>
                             <h3 className={styles.cardTitle}>Urgent, but not an emergency</h3>
-                            <p className={styles.cardBody}>
-                                Pain that is getting worse, a suspected infection, swelling, or
-                                something that has changed since yesterday.
-                            </p>
+                            <p className={styles.cardBody}>{triage.urgent}</p>
                             {profile.hasEmergency ? (
                                 <>
                                     <p className={styles.levelDo}>
@@ -200,10 +185,7 @@ export default async function Page(): Promise<React.JSX.Element> {
                         <li className={styles.level}>
                             <p className={styles.levelTag}>This week</p>
                             <h3 className={styles.cardTitle}>Routine</h3>
-                            <p className={styles.cardBody}>
-                                Check-ups, reviews, ongoing treatment, and anything you have been
-                                meaning to get looked at.
-                            </p>
+                            <p className={styles.cardBody}>{triage.routine}</p>
                             <p className={styles.levelDo}>
                                 Book online and choose your {profile.clinician}. Most routine{" "}
                                 {profile.visit}s are within the same week.

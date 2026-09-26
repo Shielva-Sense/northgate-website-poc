@@ -845,3 +845,72 @@ export function packagesFor(
 
     return packages;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   Triage
+
+   The "not sure where to go?" cards were written for human medicine and
+   shown on every site. On a veterinary practice they told pet owners to
+   watch for chest pain and signs of a stroke, and to call the national
+   ambulance service — which does not come for a dog, and reads as though
+   nobody looked at the page before sending it.
+
+   Only the veterinary wording genuinely differs. A dental or physiotherapy
+   patient having a stroke should absolutely call an ambulance, so the human
+   copy is correct for every practice that treats people.
+   ──────────────────────────────────────────────────────────────── */
+
+export interface TriageCopy {
+    readonly emergency: string;
+    readonly urgent: string;
+    readonly routine: string;
+    /** What to do when this practice is not the place to come. */
+    readonly noEmergencyAdvice: (emergencyNumber: string, phone: string) => string;
+    /** How the emergency card advises someone who should come here. */
+    readonly emergencyAdvice: (aeLine: string, emergencyNumber: string) => string;
+}
+
+const HUMAN_TRIAGE: TriageCopy = {
+    emergency:
+        "Chest pain, difficulty breathing, signs of a stroke, heavy bleeding, a baby under " +
+        "three months with a fever, or thoughts of harming yourself.",
+    urgent:
+        "Pain that is getting worse, a suspected infection, swelling, or something that has " +
+        "changed since yesterday.",
+    routine: "Check-ups, reviews, ongoing treatment, and anything you have been meaning to get looked at.",
+    noEmergencyAdvice: (emergencyNumber) =>
+        `We are not an emergency service. Call ${emergencyNumber} for an ambulance, or go ` +
+        "straight to your nearest hospital emergency department. Do not wait to hear back " +
+        "from us, and do not book here.",
+    emergencyAdvice: (aeLine, emergencyNumber) =>
+        `Come straight to our emergency department — it is open 24 hours and you do not need ` +
+        `an appointment. Ring our emergency line on ${aeLine} on the way, or ${emergencyNumber} ` +
+        "for an ambulance if you cannot travel. Do not book here.",
+};
+
+const VET_TRIAGE: TriageCopy = {
+    emergency:
+        "Difficulty breathing, collapse, a swollen or painful belly, repeated retching without " +
+        "bringing anything up, a seizure, a suspected poisoning, a road accident, or straining " +
+        "to pass urine with nothing coming.",
+    urgent:
+        "Vomiting or diarrhoea that will not settle, a wound, a limp that is getting worse, a " +
+        "sore or closed eye, or an animal that has stopped eating.",
+    routine: "Vaccinations, dentals, a lump you want checked, and anything you have been meaning to book.",
+    /* No ambulance service comes for an animal, so the advice is to ring
+       ahead and travel — which is what every out-of-hours vet asks for. */
+    noEmergencyAdvice: (_emergencyNumber, phone) =>
+        `Ring us on ${phone} before you set off, whatever the hour. If we cannot see you we ` +
+        "will tell you straight away who can, so you are not driving between closed doors.",
+    emergencyAdvice: (aeLine) =>
+        `Ring us on ${aeLine} before you set off so we can be ready for you, then come ` +
+        "straight in. Do not book online for this — telling us you are coming is what matters.",
+};
+
+const TRIAGE: Readonly<Partial<Record<PracticeKind, TriageCopy>>> = {
+    veterinary: VET_TRIAGE,
+};
+
+export function triageFor(kind: PracticeKind): TriageCopy {
+    return TRIAGE[kind] ?? HUMAN_TRIAGE;
+}
