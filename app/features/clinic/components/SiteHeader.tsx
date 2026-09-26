@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { Menu, Phone, Siren, X } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
 import { useBooking } from "@/app/features/booking/BookingPanel";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { Layers } from "lucide-react";
 import { TEMPLATES } from "../templates";
 import type { TemplateId } from "../templates";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { Check, ShieldCheck } from "lucide-react";
 import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
