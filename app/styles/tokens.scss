@@ -29,6 +29,11 @@
 
     --z-header: 50;
     --z-skip: 100;
+    /* Modals and drawers, above everything including the skip link. Both the
+       booking panel and the suggestion panel already reached for it with a
+       fallback of 900; defining it here makes tokens.scss the owner it claims
+       to be, rather than two components agreeing on a number by luck. */
+    --z-modal: 900;
 
     --wrap: 1280px;
     /* Noto Sans Arabic sits after Inter rather than replacing it: the browser
