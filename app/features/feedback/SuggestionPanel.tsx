@@ -10,6 +10,7 @@ import { groupsFor, RATING_LABELS } from "./questions";
 import { useProfile } from "@/app/features/clinic/BrandContext";
 import { clearDraft, EMPTY_DRAFT, loadDraft, saveDraft } from "./storage";
 import type { Draft } from "./storage";
+import { createPortal } from "react-dom";
 import styles from "./SuggestionPanel.module.scss";
 
 /**
@@ -182,7 +183,22 @@ export function SuggestionPanel({
 
     if (!open) return null;
 
-    return (
+    /* Portalled to the body, not rendered where it is written.
+     *
+     * The trigger lives in the demo bar, and .bar sets position: relative with
+     * z-index on it — which creates a stacking context. A fixed-position child
+     * of that context is trapped inside it however high its own z-index goes,
+     * so the panel competed at the demo bar's level and the site header, which
+     * shares that level and comes later in the DOM, painted straight over it:
+     * the nav, the phone number and the Book button all drew on top of an
+     * open drawer.
+     *
+     * document.body has no stacking context above it, so the panel is layered
+     * against the page rather than against the strip it was declared in.
+     * Rendering only after mount because document does not exist on the
+     * server, and the panel returns null when closed anyway.
+     */
+    return createPortal(
         <>
             <div className={styles.scrim} onClick={onClose} aria-hidden="true" />
             <aside
@@ -489,7 +505,8 @@ export function SuggestionPanel({
                     </footer>
                 ) : null}
             </aside>
-        </>
+        </>,
+        document.body,
     );
 }
 
