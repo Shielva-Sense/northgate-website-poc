@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { HomeClient } from "./HomeClient";
-import { JsonLd } from "./components/JsonLd";
-import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
-import { siteFromHost } from "./core/site";
-import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
-import { BrandProvider } from "./features/clinic/BrandContext";
-import { BookingProvider } from "./features/booking/BookingPanel";
-import { contentFor, mediaFor } from "./features/clinic/content";
-import { DemoBar } from "./features/clinic/components/DemoBar";
+import { JsonLd } from "@/app/components/JsonLd";
+import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "@/app/core/seo";
+import { siteFromHost } from "@/app/core/site";
+import { DEFAULT_TEMPLATE, isTemplateId } from "@/app/features/clinic/templates";
+import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { BookingProvider } from "@/app/features/booking/BookingPanel";
+import { contentFor, mediaFor } from "@/app/features/clinic/content";
+import { DemoBar } from "@/app/features/clinic/components/DemoBar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const site = await siteFromHost((await headers()).get("host"));
