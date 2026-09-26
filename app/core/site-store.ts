@@ -102,11 +102,24 @@ let clientPromise: Promise<MongoClient> | null = null;
 function client(): Promise<MongoClient> | null {
     const uri = process.env.MONGODB_URL;
     if (!uri) return null;
-    clientPromise ??= new MongoClient(uri, {
-        serverSelectionTimeoutMS: 5_000,
-        connectTimeoutMS: 5_000,
-        maxPoolSize: 10,
-    }).connect();
+    if (clientPromise === null) {
+        clientPromise = new MongoClient(uri, {
+            serverSelectionTimeoutMS: 5_000,
+            connectTimeoutMS: 5_000,
+            maxPoolSize: 10,
+        })
+            .connect()
+            /* Drop a failed connection so the next request tries again.
+               Caching the rejected promise meant a database that was briefly
+               unreachable at boot stayed unreachable for the life of the
+               process: every later request awaited the same rejection, fell
+               through to the defaults, and the site served a generic clinic
+               until somebody restarted the pod. Nothing in the logs said so. */
+            .catch((error: unknown) => {
+                clientPromise = null;
+                throw error;
+            });
+    }
     return clientPromise;
 }
 
