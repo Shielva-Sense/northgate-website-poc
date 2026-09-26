@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { Menu, Phone, Siren, X } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
 import { useBooking } from "@/app/features/booking/BookingPanel";
@@ -10,6 +10,8 @@ import { ThemeMenu } from "./ThemeMenu";
 
 import { useBrand, useProfile } from "../BrandContext";
 import type { KindProfile } from "../practice-kinds";
+import { useLocale } from "../LocaleContext";
+import type { UiKey } from "@/app/core/strings";
 import type { Brand } from "../brands";
 import { ordersPriceList } from "../price-list";
 import styles from "./SiteHeader.module.scss";
@@ -26,22 +28,30 @@ import styles from "./SiteHeader.module.scss";
 function linksFor(
     profile: KindProfile,
     brand: Brand,
+    t: (key: UiKey) => string,
 ): readonly { href: string; label: string }[] {
+    /* The trade decides which label, the language decides its words. A
+       veterinary site says "find a vet" in whichever language it is read in,
+       so the choice and the translation happen in the same place — using
+       profile.findLabel here would have put English in the Arabic nav. */
+    const findLabel = profile.kind === "veterinary" ? t("findVet") : t("findDoctor");
+    const libraryLabel =
+        profile.kind === "veterinary" ? t("petHealthLibrary") : t("healthLibrary");
     return [
-        { href: "/services", label: "Services" },
+        { href: "/services", label: t("services") },
         /* The CMA Order wants the price list one click from the home page, so
            it is a nav link rather than a footer link — and only where the
            Order actually applies, since a dentist publishing a weight-banded
            veterinary table would be answering an obligation it does not have.
            The health library gives way to it: six links crowd the bar, and a
            practice under an order to publish prices should show prices. */
-        ...(ordersPriceList(profile, brand) ? [{ href: "/prices", label: "Our prices" }] : []),
-        { href: "/find-a-doctor", label: profile.findLabel },
+        ...(ordersPriceList(profile, brand) ? [{ href: "/prices", label: t("prices") }] : []),
+        { href: "/find-a-doctor", label: findLabel },
         ...(profile.hasHealthLibrary && !ordersPriceList(profile, brand)
-            ? [{ href: "/health-library", label: profile.libraryLabel }]
+            ? [{ href: "/health-library", label: libraryLabel }]
             : []),
-        { href: "/appointments", label: "Appointments" },
-        { href: "/contact", label: "Contact" },
+        { href: "/appointments", label: t("appointments") },
+        { href: "/contact", label: t("contact") },
     ];
 }
 
@@ -60,7 +70,8 @@ export function SiteHeader(): React.JSX.Element {
     const booking = useBooking();
     const profile = useProfile();
     const hasEmergency = profile.hasEmergency;
-    const links = linksFor(profile, brand);
+    const { t } = useLocale();
+    const links = linksFor(profile, brand, t);
     const [open, setOpen] = useState(false);
 
     return (
@@ -89,7 +100,7 @@ export function SiteHeader(): React.JSX.Element {
                     {hasEmergency ? (
                         <Link className={styles.urgent} href="/urgent-care">
                             <Siren size={15} aria-hidden="true" />
-                            Urgent care
+                            {t("urgentCare")}
                         </Link>
                     ) : null}
                     <ThemeMenu />
@@ -97,7 +108,7 @@ export function SiteHeader(): React.JSX.Element {
                         <Phone size={15} aria-hidden="true" />
                         {brand.phone}
                     </a>
-                    <Button onClick={booking.open}>Book</Button>
+                    <Button onClick={booking.open}>{t("book")}</Button>
                 </nav>
 
                 <button
@@ -132,7 +143,7 @@ export function SiteHeader(): React.JSX.Element {
                                 onClick={() => setOpen(false)}
                             >
                                 <Siren size={15} aria-hidden="true" />
-                                Urgent care
+                                {t("urgentCare")}
                             </Link>
                         ) : null}
                         <ThemeMenu />
@@ -141,7 +152,7 @@ export function SiteHeader(): React.JSX.Element {
                             {brand.phone}
                         </a>
                         <Button fullWidth onClick={() => { setOpen(false); booking.open(); }}>
-                            Book an appointment
+                            {t("bookAppointment")}
                         </Button>
                     </nav>
                 </div>

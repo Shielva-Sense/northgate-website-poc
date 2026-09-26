@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { siteFromHost } from "@/app/core/site";

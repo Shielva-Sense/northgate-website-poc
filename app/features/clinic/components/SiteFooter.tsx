@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { useBrand, useProfile } from "../BrandContext";
 import styles from "./Sections.module.scss";
 

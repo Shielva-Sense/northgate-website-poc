@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { ArrowRight, Check, Clock, Phone, Star } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { LeadCapture } from "@/app/features/booking/LeadCapture";

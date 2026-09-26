@@ -64,6 +64,22 @@ export interface SiteRecord {
     readonly content?: ContentOverrides;
 
     /**
+     * The same content, in another language.
+     *
+     * This is the field that makes an Arabic site possible for a real clinic
+     * rather than only for the seeded demo. `content` replaces the trade
+     * defaults wholesale, so once a practice's own departments, treatments and
+     * prices are set here, translating the defaults in content.ts changes
+     * nothing they will ever see — /ar would serve their English words in a
+     * right-to-left layout, which is worse than not offering Arabic at all.
+     *
+     * Keyed by locale and falling back to `content`, so a row can be Arabic
+     * for the pages that have been translated and English for the rest, and
+     * the eighteen rows that predate this keep working untouched.
+     */
+    readonly contentByLocale?: Readonly<Partial<Record<"en" | "ar", ContentOverrides>>>;
+
+    /**
      * Extra pages, created from outside.
      *
      * Each is rendered at /<slug> by a catch-all route, so a clinic can be

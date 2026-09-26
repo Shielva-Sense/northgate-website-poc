@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { siteFromHost } from "@/app/core/site";
 import { groupRows, ordersPriceList, priceListFor } from "@/app/features/clinic/price-list";
 import type { PriceBand, PriceRow } from "@/app/features/clinic/price-list";

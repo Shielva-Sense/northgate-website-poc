@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import Image from "next/image";
 import { ArrowLeft, Check, Clock } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";

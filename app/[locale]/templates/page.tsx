@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { ArrowRight, Layers } from "lucide-react";
 import { isIndexable } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";

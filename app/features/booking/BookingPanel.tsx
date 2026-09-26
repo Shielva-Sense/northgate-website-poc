@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useBrand } from "@/app/features/clinic/BrandContext";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 import { BookingForm } from "./BookingForm";
 import styles from "./BookingPanel.module.scss";
 
@@ -54,6 +55,7 @@ export function BookingProvider({ children }: { readonly children: React.ReactNo
 function BookingPanel(): React.JSX.Element | null {
     const { isOpen, close } = useBooking();
     const brand = useBrand();
+    const { t } = useLocale();
     const titleId = useId();
     const panel = useRef<HTMLDivElement>(null);
     /* Whatever had focus before the panel opened, so it can be given back.
@@ -126,27 +128,24 @@ function BookingPanel(): React.JSX.Element | null {
             >
                 <header className={styles.head}>
                     <div>
-                        <p className={styles.kicker}>Book</p>
+                        <p className={styles.kicker}>{t("bookingKicker")}</p>
                         <h2 className={styles.title} id={titleId}>
-                            Request an appointment
+                            {t("bookAppointment")}
                         </h2>
                     </div>
-                    <button className={styles.close} type="button" onClick={close} aria-label="Close booking">
+                    <button className={styles.close} type="button" onClick={close} aria-label={t("close")}>
                         <X size={18} aria-hidden="true" />
                     </button>
                 </header>
 
-                <p className={styles.lede}>
-                    It takes about a minute. You will get a confirmation with a time, not a
-                    promise to call you back at some point.
-                </p>
+                <p className={styles.lede}>{t("bookingLede")}</p>
 
                 <div className={styles.body}>
                     <BookingForm />
                 </div>
 
                 <footer className={styles.foot}>
-                    <span>Rather talk to someone?</span>
+                    <span>{t("ratherTalk")}</span>
                     <a href={brand.phoneHref}>{brand.phone}</a>
                 </footer>
             </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { headers } from "next/headers";
 import { siteFromHost } from "@/app/core/site";
 import { isIndexable, siteUrl } from "@/app/core/seo";
