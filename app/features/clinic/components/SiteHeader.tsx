@@ -45,15 +45,21 @@ function linksFor(
     ];
 }
 
-export function SiteHeader({
-    hasEmergency = true,
-}: {
-    /** Hidden entirely where the practice has no emergency department. */
-    readonly hasEmergency?: boolean;
-} = {}): React.JSX.Element {
+/**
+ * Read from the profile, not passed in.
+ *
+ * This was a prop defaulting to true, and two of the three call sites — the
+ * home page and a service page — never passed it. A practice with
+ * hasEmergency false therefore still advertised "Urgent care" in the nav on
+ * the one page every visitor lands on, and the flag looked like it worked
+ * only because the inner pages go through PageShell, which did pass it. The
+ * profile is already in context here, so there is nothing left to forget.
+ */
+export function SiteHeader(): React.JSX.Element {
     const brand = useBrand();
     const booking = useBooking();
     const profile = useProfile();
+    const hasEmergency = profile.hasEmergency;
     const links = linksFor(profile, brand);
     const [open, setOpen] = useState(false);
 

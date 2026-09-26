@@ -84,7 +84,7 @@ async function CachedShell({
                 invite build, like the rest of the demo furniture. */}
             {isIndexable() ? null : <DemoBar />}
             <AnnounceBar />
-            <SiteHeader hasEmergency={site.profile.hasEmergency} />
+            <SiteHeader />
             <main id="main-content" tabIndex={-1}>
                 <Head title={title} lede={lede} kicker={kicker} image={shot} imageAlt={imageAlt} />
                 {children}
