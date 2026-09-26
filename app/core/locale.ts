@@ -43,28 +43,13 @@ export function dirFor(locale: Locale): "ltr" | "rtl" {
 /**
  * The same path under a different language.
  *
- * `/services` → `/ar/services`, and back again. English is the bare path
- * rather than `/en/...` so existing links, the sitemap and anything a prospect
- * has already been sent keep working untouched.
+ * `/en/services` ↔ `/ar/services`. Both languages are named explicitly: this
+ * returned the bare path for English when English lived at the root, and
+ * since routes moved under `app/[locale]` that answer costs a redirect on
+ * every switch back to English — correct, but a wasted round trip on a link
+ * the visitor clicks precisely because they could not read the page.
  */
 export function pathForLocale(pathname: string, locale: Locale): string {
     const bare = pathname.replace(/^\/(ar|en)(?=\/|$)/, "") || "/";
-    if (locale === DEFAULT_LOCALE) return bare;
-    return bare === "/" ? "/ar" : `/ar${bare}`;
-}
-
-/**
- * This clinic's content in the language being served.
- *
- * Falls back to the default-language content rather than to nothing: a
- * practice that has translated its departments but not its treatments should
- * get Arabic departments and English treatments, not an empty page. Half
- * translated is a visible, fixable state; empty is neither.
- */
-export function overridesFor<T>(
-    base: T | null,
-    byLocale: Readonly<Partial<Record<Locale, T>>>,
-    locale: Locale,
-): T | null {
-    return byLocale[locale] ?? base;
+    return bare === "/" ? `/${locale}` : `/${locale}${bare}`;
 }

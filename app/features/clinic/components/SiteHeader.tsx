@@ -7,6 +7,7 @@ import { Button } from "@/app/components/ui/Button";
 import { useBooking } from "@/app/features/booking/BookingPanel";
 import { Logo } from "@/app/components/ui/Logo";
 import { ThemeMenu } from "./ThemeMenu";
+import { LanguageToggle } from "./LanguageToggle";
 
 import { useBrand, useProfile } from "../BrandContext";
 import type { KindProfile } from "../practice-kinds";
@@ -103,6 +104,7 @@ export function SiteHeader(): React.JSX.Element {
                             {t("urgentCare")}
                         </Link>
                     ) : null}
+                    <LanguageToggle />
                     <ThemeMenu />
                     <a className={styles.tel} href={brand.phoneHref}>
                         <Phone size={15} aria-hidden="true" />
@@ -146,6 +148,7 @@ export function SiteHeader(): React.JSX.Element {
                                 {t("urgentCare")}
                             </Link>
                         ) : null}
+                        <LanguageToggle />
                         <ThemeMenu />
                         <a className={styles.tel} href={brand.phoneHref}>
                             <Phone size={15} aria-hidden="true" />

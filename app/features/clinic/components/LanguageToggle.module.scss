@@ -1,0 +1,36 @@
+.group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-subtle);
+}
+
+.option {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.option:hover {
+    color: var(--color-text);
+}
+
+/* The current language reads as selected rather than merely highlighted:
+   a toggle where neither side looks chosen is a toggle nobody trusts. */
+.current {
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-sm);
+}
