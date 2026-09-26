@@ -33,7 +33,7 @@
 .menu {
     position: absolute;
     top: calc(100% + var(--space-2));
-    right: 0;
+    inset-inline-end: 0;
     z-index: var(--z-header);
     width: 260px;
     padding: var(--space-4);
@@ -84,7 +84,7 @@
 }
 
 .option svg {
-    margin-left: auto;
+    margin-inline-start: auto;
     flex: none;
     color: var(--color-brand-600);
 }

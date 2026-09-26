@@ -31,7 +31,12 @@
     --z-skip: 100;
 
     --wrap: 1280px;
-    --font-sans: var(--font-sans-family), system-ui, -apple-system, sans-serif;
+    /* Noto Sans Arabic sits after Inter rather than replacing it: the browser
+       takes each glyph from the first family that has it, so Latin text on an
+       Arabic page still renders in Inter and only the Arabic falls through.
+       That keeps a bilingual line — a clinic name beside its Arabic name —
+       looking like one typeface decision instead of two. */
+    --font-sans: var(--font-sans-family), var(--font-arabic-family), system-ui, -apple-system, sans-serif;
     --font-serif: var(--font-serif-family), Georgia, "Times New Roman", serif;
     /* No webfont is loaded for this — a booking reference only needs the digit
        alignment and unambiguous 0/O that any system mono already gives. */

@@ -12,7 +12,7 @@
 
 .searchIcon {
     position: absolute;
-    left: var(--space-4);
+    inset-inline-start: var(--space-4);
     top: 50%;
     transform: translateY(-50%);
     color: var(--color-text-subtle);
@@ -46,7 +46,7 @@
 
 .clear {
     position: absolute;
-    right: var(--space-3);
+    inset-inline-end: var(--space-3);
     top: 50%;
     transform: translateY(-50%);
     width: 34px;
@@ -176,7 +176,7 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-text-subtle);
-    margin-right: var(--space-1);
+    margin-inline-end: var(--space-1);
 }
 
 /* ── cards ────────────────────────────────────── */
