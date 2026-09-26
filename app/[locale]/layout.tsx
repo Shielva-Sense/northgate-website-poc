@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { LOCALES, dirFor, isLocale } from "@/app/core/locale";
+import { LocaleProvider } from "@/app/features/clinic/LocaleContext";
 
 /**
  * The language segment.
@@ -35,7 +36,7 @@ export default async function LocaleLayout({
 
     return (
         <div lang={locale} dir={dirFor(locale)}>
-            {children}
+            <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </div>
     );
 }

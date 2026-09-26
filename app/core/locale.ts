@@ -1,8 +1,6 @@
-import "server-only";
-import { headers } from "next/headers";
 
 /**
- * Which language this request is being served in.
+ * Which language a page is being served in.
  *
  * The farm already resolves the tenant from the `host` header rather than from
  * the path, so locale follows the same shape: middleware rewrites `/ar/...` to
@@ -21,9 +19,6 @@ export const LOCALES = ["en", "ar"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = "en";
-
-/** The header middleware sets. Named like the platform's other internal headers. */
-export const LOCALE_HEADER = "x-shielva-locale";
 
 export function isLocale(value: string | null | undefined): value is Locale {
     return value === "en" || value === "ar";
@@ -44,11 +39,6 @@ export function dirFor(locale: Locale): "ltr" | "rtl" {
     return isRtl(locale) ? "rtl" : "ltr";
 }
 
-/** The locale for this request. `en` unless middleware says otherwise. */
-export async function currentLocale(): Promise<Locale> {
-    const value = (await headers()).get(LOCALE_HEADER);
-    return isLocale(value) ? value : DEFAULT_LOCALE;
-}
 
 /**
  * The same path under a different language.
