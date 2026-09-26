@@ -8,7 +8,8 @@ import { useBooking } from "@/app/features/booking/BookingPanel";
 import { Logo } from "@/app/components/ui/Logo";
 import { ThemeMenu } from "./ThemeMenu";
 
-import { useBrand } from "../BrandContext";
+import { useBrand, useProfile } from "../BrandContext";
+import type { KindProfile } from "../practice-kinds";
 import styles from "./SiteHeader.module.scss";
 
 /* Absolute, not bare hashes: these have to work from /privacy and /services/*
@@ -16,13 +17,21 @@ import styles from "./SiteHeader.module.scss";
 /* Five, not seven. Cramming the gap to make more fit was the wrong trade —
    Contact lives on /appointments and in the footer, and "Doctors" is the team
    section that /find-a-doctor already leads to. */
-const LINKS = [
-    { href: "/services", label: "Services" },
-    { href: "/find-a-doctor", label: "Find a doctor" },
-    { href: "/health-library", label: "Health library" },
-    { href: "/appointments", label: "Appointments" },
-    { href: "/contact", label: "Contact" },
-] as const;
+/* Built from the practice's own trade. "Find a doctor" and "Health library"
+   were printed on every site, including veterinary ones, and the navigation
+   is the first thing anybody reads. A practice with no health library does
+   not get a link to an empty one. */
+function linksFor(profile: KindProfile): readonly { href: string; label: string }[] {
+    return [
+        { href: "/services", label: "Services" },
+        { href: "/find-a-doctor", label: profile.findLabel },
+        ...(profile.hasHealthLibrary
+            ? [{ href: "/health-library", label: profile.libraryLabel }]
+            : []),
+        { href: "/appointments", label: "Appointments" },
+        { href: "/contact", label: "Contact" },
+    ];
+}
 
 export function SiteHeader({
     hasEmergency = true,
@@ -32,6 +41,8 @@ export function SiteHeader({
 } = {}): React.JSX.Element {
     const brand = useBrand();
     const booking = useBooking();
+    const profile = useProfile();
+    const links = linksFor(profile);
     const [open, setOpen] = useState(false);
 
     return (
@@ -49,7 +60,7 @@ export function SiteHeader({
                 </Link>
 
                 <nav className={`${styles.nav} ${styles.links}`} aria-label="Main">
-                    {LINKS.map((link) => (
+                    {links.map((link) => (
                         <a key={link.href} href={link.href} className={styles.navLink}>
                             {link.label}
                         </a>
@@ -86,7 +97,7 @@ export function SiteHeader({
             {open ? (
                 <div className="wrap">
                     <nav className={styles.panel} id="mobile-nav" aria-label="Main">
-                        {LINKS.map((link) => (
+                        {links.map((link) => (
                             <a
                                 key={link.href}
                                 href={link.href}

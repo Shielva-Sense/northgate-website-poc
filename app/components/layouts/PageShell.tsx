@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { siteFromHost } from "@/app/core/site";
-import { contentFor } from "@/app/features/clinic/content";
+import { contentFor, mediaFor } from "@/app/features/clinic/content";
+import type { SiteMedia } from "@/app/features/clinic/content";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
@@ -19,6 +20,11 @@ interface ShellProps {
     readonly kicker?: string | undefined;
     /** Hero image. A page header of flat colour and type read as unfinished. */
     readonly image?: string | undefined;
+    /**
+     * Which of this practice's photographs to use, rather than a path.
+     * A veterinary site has its own; naming the role lets the shell pick.
+     */
+    readonly imageKey?: keyof SiteMedia | undefined;
     readonly imageAlt?: string | undefined;
     readonly children: React.ReactNode;
 }
@@ -59,6 +65,7 @@ async function CachedShell({
     lede,
     kicker,
     image,
+    imageKey,
     imageAlt,
     children,
 }: ShellProps & { readonly host: string }): Promise<React.JSX.Element> {
@@ -66,6 +73,7 @@ async function CachedShell({
     const site = await siteFromHost(host);
     const brand = site.brand;
     const content = contentFor(site.profile, brand, site.overrides);
+    const shot = imageKey === undefined ? image : mediaFor(site.profile.kind)[imageKey];
 
     return (
         <BrandProvider brand={brand} profile={site.profile} content={content}>
@@ -78,7 +86,7 @@ async function CachedShell({
             <AnnounceBar />
             <SiteHeader hasEmergency={site.profile.hasEmergency} />
             <main id="main-content" tabIndex={-1}>
-                <Head title={title} lede={lede} kicker={kicker} image={image} imageAlt={imageAlt} />
+                <Head title={title} lede={lede} kicker={kicker} image={shot} imageAlt={imageAlt} />
                 {children}
             </main>
             <SiteFooter />
@@ -97,6 +105,11 @@ async function CachedShell({
 function ShellFallback({ title, lede, kicker, image, imageAlt }: ShellProps): React.JSX.Element {
     return (
         <main id="main-content" tabIndex={-1}>
+            {/* No imageKey here on purpose: the static shell is rendered
+                before the host is known, so which practice's photograph to
+                use is exactly the thing it cannot answer yet. A page that
+                names a key simply paints its heading first and the picture a
+                beat later, which is the trade the shell exists to make. */}
             <Head title={title} lede={lede} kicker={kicker} image={image} imageAlt={imageAlt} />
         </main>
     );

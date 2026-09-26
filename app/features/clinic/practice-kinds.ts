@@ -53,6 +53,18 @@ export interface KindProfile {
     readonly services: readonly Service[];
     /** One line for the hero, in this trade's own terms. */
     readonly strapline: string;
+
+    /**
+     * What the navigation calls things.
+     *
+     * "Find a doctor" and "Health library" were printed on every site. A
+     * veterinary practice does not have doctors and does not run a health
+     * library, and the labels are the first words a visitor reads.
+     */
+    readonly findLabel: string;
+    readonly libraryLabel: string;
+    /** The rotating line above the header, in this trade's own terms. */
+    readonly announcements: readonly string[];
 }
 
 const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
@@ -61,6 +73,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "consultant", clinicianPlural: "consultants", visit: "appointment",
         hasEmergency: true, hasDepartments: true, hasHealthLibrary: true,
         strapline: "Every specialty under one roof, and someone on duty at every hour",
+        findLabel: "Find a consultant",
+        libraryLabel: "Health library",
+        announcements: [
+            "Every specialty under one roof, and someone on duty at every hour",
+            "Most scans reported inside five working days",
+            "Emergency department open 24 hours, no appointment needed",
+            "Self-pay prices published in full before you book",
+        ],
         services: [
             { slug: "emergency", name: "Emergency care", blurb: "Open every hour of every day, no appointment needed." },
             { slug: "surgery", name: "Surgery", blurb: "Planned procedures with a named surgeon and a date." },
@@ -74,6 +94,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "doctor", clinicianPlural: "doctors", visit: "appointment",
         hasEmergency: false, hasDepartments: true, hasHealthLibrary: true,
         strapline: "See a named doctor this week, not in three",
+        findLabel: "Find a doctor",
+        libraryLabel: "Health library",
+        announcements: [
+            "Same-week appointments, one phone call",
+            "Most blood results back inside two working days",
+            "Evening clinics until 18:30, Monday to Thursday",
+            "Fixed prices published in full — no consultation fee to ask",
+        ],
         services: [
             { slug: "gp", name: "GP appointments", blurb: "Twenty minutes as standard, thirty for anything that needs it." },
             { slug: "health-checks", name: "Health checks", blurb: "Bloods, blood pressure and a proper conversation about the results." },
@@ -88,6 +116,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "dentist", clinicianPlural: "dentists", visit: "appointment",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A dentist who explains what they are doing, and what it costs, first",
+        findLabel: "Find a dentist",
+        libraryLabel: "Dental advice",
+        announcements: [
+            "Same-day appointments held back every morning for pain",
+            "Every treatment priced in writing before we start",
+            "Implants, aligners and whitening under one roof",
+            "Nervous patients welcome — tell us when you book",
+        ],
         services: [
             { slug: "check-up", name: "Check-up & hygiene", blurb: "Examination, scale and polish, and a plan you agree to." },
             { slug: "fillings", name: "Fillings & restorations", blurb: "Tooth-coloured, matched and done in one visit where possible." },
@@ -102,6 +138,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "physiotherapist", clinicianPlural: "physiotherapists", visit: "session",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Hands-on treatment and a plan you can actually keep to",
+        findLabel: "Find a physiotherapist",
+        libraryLabel: "Injury advice",
+        announcements: [
+            "Forty-five minute first assessments as standard",
+            "Hands-on treatment, not a leaflet of exercises",
+            "Return-to-sport plans with dates in them",
+            "Clinical Pilates in groups of six, led by a physiotherapist",
+        ],
         services: [
             { slug: "assessment", name: "Initial assessment", blurb: "Forty-five minutes to find the cause, not just the sore bit." },
             { slug: "manual-therapy", name: "Manual therapy", blurb: "Hands-on treatment for joints and soft tissue." },
@@ -115,6 +159,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "chiropractor", clinicianPlural: "chiropractors", visit: "adjustment",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Back and neck pain treated by someone who explains the plan",
+        findLabel: "Find a chiropractor",
+        libraryLabel: "Back care advice",
+        announcements: [
+            "A full examination before anything is adjusted",
+            "Back and neck pain seen within the week",
+            "Soft tissue work alongside adjustment",
+            "Posture and desk assessment included",
+        ],
         services: [
             { slug: "assessment", name: "Initial consultation", blurb: "History, examination and a clear plan before anything else." },
             { slug: "adjustment", name: "Chiropractic adjustment", blurb: "Spinal and joint treatment tailored to the assessment." },
@@ -127,6 +179,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "dermatologist", clinicianPlural: "dermatologists", visit: "appointment",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Skin looked at properly, by someone who does this all day",
+        findLabel: "Find a dermatologist",
+        libraryLabel: "Skin advice",
+        announcements: [
+            "Mole checks photographed and kept for comparison",
+            "Consultant-led, with histology reported back to you",
+            "Acne and eczema managed properly, not with a product list",
+            "Minor skin surgery on site",
+        ],
         services: [
             { slug: "mole-check", name: "Mole & skin cancer check", blurb: "Full-body dermoscopy, with photographs kept for comparison." },
             { slug: "acne", name: "Acne & rosacea", blurb: "Medical treatment with review, not a product list." },
@@ -140,6 +200,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "optometrist", clinicianPlural: "optometrists", visit: "eye test",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A proper eye examination, not a rush to the frames",
+        findLabel: "Find an optometrist",
+        libraryLabel: "Eye care advice",
+        announcements: [
+            "Thirty-minute eye examinations with retinal photography",
+            "Contact lens fitting, trial and aftercare in one price",
+            "Children's tests that work before they can read a chart",
+            "Glaucoma screening in a single visit",
+        ],
         services: [
             { slug: "eye-test", name: "Eye examination", blurb: "Thirty minutes, including retinal photography." },
             { slug: "contact-lenses", name: "Contact lenses", blurb: "Fitting, trial and aftercare included." },
@@ -152,6 +220,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "therapist", clinicianPlural: "therapists", visit: "session",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Someone to talk to, within the week",
+        findLabel: "Find a therapist",
+        libraryLabel: "Wellbeing library",
+        announcements: [
+            "A first appointment within the week",
+            "Fifty minutes, weekly, with the same therapist",
+            "Evening sessions available",
+            "Online or in the room, whichever suits you",
+        ],
         services: [
             { slug: "individual", name: "Individual therapy", blurb: "Fifty minutes, weekly, with the same therapist." },
             { slug: "couples", name: "Couples therapy", blurb: "Structured sessions with both partners present." },
@@ -164,6 +240,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "podiatrist", clinicianPlural: "podiatrists", visit: "appointment",
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Feet treated by a specialist, not squeezed into a GP slot",
+        findLabel: "Find a podiatrist",
+        libraryLabel: "Foot care advice",
+        announcements: [
+            "Routine treatment at the interval your feet actually need",
+            "Diabetic foot checks recorded every visit",
+            "Nail surgery under local anaesthetic",
+            "Custom orthotics made from your own cast",
+        ],
         services: [
             { slug: "routine", name: "Routine foot care", blurb: "Nails, callus and the things that make walking hurt." },
             { slug: "diabetic", name: "Diabetic foot care", blurb: "Regular checks, because this is where small problems get big." },
@@ -176,6 +260,14 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         clinician: "vet", clinicianPlural: "vets", visit: "appointment",
         hasEmergency: true, hasDepartments: false, hasHealthLibrary: false,
         strapline: "The same vet each visit, who remembers your animal",
+        findLabel: "Find a vet",
+        libraryLabel: "Pet care advice",
+        announcements: [
+            "Same-week appointments, one phone call",
+            "The same vet each visit, who remembers your animal",
+            "An out-of-hours line that reaches a vet, not a message",
+            "Prices agreed before treatment starts",
+        ],
         services: [
             { slug: "consultations", name: "Consultations", blurb: "Fifteen minutes, longer for anything complicated." },
             { slug: "vaccinations", name: "Vaccinations", blurb: "Puppy and kitten courses, and annual boosters." },

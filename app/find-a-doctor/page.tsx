@@ -28,7 +28,7 @@ export default function Page(): React.JSX.Element {
             kicker="Our clinicians"
             title="Find a doctor"
             lede="Nine clinicians, what each one costs, the languages they speak and the next time they are actually free. Filter to what matters to you — or, if you are not sure who you need, answer a few questions instead."
-            image="/img/corridor.jpg"
+            imageKey="corridor"
             imageAlt="A bright clinic corridor lined with consulting room doors in pale oak"
         >
             <div className={`wrap ${styles.page}`}>
