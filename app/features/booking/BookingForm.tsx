@@ -21,6 +21,7 @@ import type {
 import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import styles from "./BookingForm.module.scss";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { tr } from "@/app/core/content-ar";
 
 const PATIENT_OPTIONS: readonly ChoiceOption<PatientType>[] = [
     { value: "existing", label: "I am already registered" },
@@ -83,6 +84,7 @@ const CONTACT_OPTIONS: readonly ChoiceOption<ContactMethod>[] = (
 ).map((value) => ({ value, label: CONTACT_LABELS[value] }));
 
 export function BookingForm(): React.JSX.Element {
+    const { locale } = useLocale();
     const { t } = useLocale();
     const brand = useBrand();
     const { departments, appointmentTypes, clinicians } = useContent();
@@ -147,7 +149,7 @@ export function BookingForm(): React.JSX.Element {
                     <span className={styles.doneIcon} aria-hidden="true">
                         <CalendarCheck size={26} />
                     </span>
-                    <h3 className={styles.doneTitle}>Request received</h3>
+                    <h3 className={styles.doneTitle}>{tr("Request received", locale)}</h3>
                     <p className={styles.doneBody}>
                         Thank you, {form.fullName.split(" ")[0]}. We will confirm a time by{" "}
                         {CONTACT_LABELS[form.contactMethod].toLowerCase()}.
@@ -159,9 +161,7 @@ export function BookingForm(): React.JSX.Element {
                             setForm(EMPTY_FORM);
                             setState("idle");
                         }}
-                    >
-                        Make another request
-                    </Button>
+                    >{tr("Make another request", locale)}</Button>
                 </div>
             </div>
         );
@@ -204,7 +204,7 @@ export function BookingForm(): React.JSX.Element {
             </Field>
 
             <div className={styles.row}>
-                <Field label="Phone" help="Mobile is best for reminders." error={errors.phone}>
+                <Field label={tr("Phone", locale)} help="Mobile is best for reminders." error={errors.phone}>
                     {(id, describedBy) => (
                         <Input
                             id={id}
@@ -219,7 +219,7 @@ export function BookingForm(): React.JSX.Element {
                     )}
                 </Field>
 
-                <Field label="Email" error={errors.email}>
+                <Field label={tr("Email", locale)} error={errors.email}>
                     {(id, describedBy) => (
                         <Input
                             id={id}
@@ -290,7 +290,7 @@ export function BookingForm(): React.JSX.Element {
             />
 
             <Field
-                label="Anything we should know?"
+                label={tr("Anything we should know?", locale)}
                 help="Optional. Please do not include sensitive clinical detail here."
             >
                 {(id, describedBy) => (
@@ -344,10 +344,7 @@ export function BookingForm(): React.JSX.Element {
                 {busy ? "Sending…" : "Request an appointment"}
             </Button>
 
-            <p className={styles.formNote}>
-                Sample build — this request is not transmitted anywhere. In a live site it writes
-                straight into the practice CRM.
-            </p>
+            <p className={styles.formNote}>{tr("Sample build — this request is not transmitted anywhere. In a live site it writes straight into the practice CRM.", locale)}</p>
         </form>
     );
 }

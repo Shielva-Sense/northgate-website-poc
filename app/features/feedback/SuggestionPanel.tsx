@@ -12,6 +12,8 @@ import { clearDraft, EMPTY_DRAFT, loadDraft, saveDraft } from "./storage";
 import type { Draft } from "./storage";
 import { createPortal } from "react-dom";
 import styles from "./SuggestionPanel.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * The feedback and discovery panel.
@@ -34,6 +36,7 @@ export function SuggestionPanel({
     readonly onClose: () => void;
     readonly template: string;
 }): React.JSX.Element | null {
+    const { locale } = useLocale();
     const path = usePathname();
     /* The panel asks the prospect what they want; asking a vet whether they
        need "Find a doctor" answers the question badly before they start. */
@@ -210,17 +213,15 @@ export function SuggestionPanel({
             >
                 <header className={styles.head}>
                     <div>
-                        <p className={styles.kicker}>Tell us what you think</p>
-                        <h2 className={styles.title} id="suggest-title">
-                            Shape your site
-                        </h2>
+                        <p className={styles.kicker}>{tr("Tell us what you think", locale)}</p>
+                        <h2 className={styles.title} id="suggest-title">{tr("Shape your site", locale)}</h2>
                     </div>
                     <button
                         type="button"
                         className={styles.close}
                         onClick={onClose}
                         ref={closeRef}
-                        aria-label="Close the suggestions panel"
+                        aria-label={tr("Close the suggestions panel", locale)}
                     >
                         <X size={18} aria-hidden="true" />
                     </button>
@@ -232,18 +233,14 @@ export function SuggestionPanel({
                             <span className={styles.doneIcon} aria-hidden="true">
                                 <Check size={26} />
                             </span>
-                            <h3 className={styles.doneTitle}>Thank you — that is genuinely useful</h3>
+                            <h3 className={styles.doneTitle}>{tr("Thank you — that is genuinely useful", locale)}</h3>
                             <p className={styles.doneBody}>
                                 Reference <b>{sent.reference}</b>. We will come back with a plan
                                 and a price based on exactly what you have said here, not a
                                 template quote.
                             </p>
                             {sent.delivered ? null : (
-                                <p className={styles.warn} role="alert">
-                                    This demo is not connected to a live inbox, so nobody has
-                                    actually been notified yet. On the real deployment this
-                                    reaches us immediately.
-                                </p>
+                                <p className={styles.warn} role="alert">{tr("This demo is not connected to a live inbox, so nobody has actually been notified yet. On the real deployment this reaches us immediately.", locale)}</p>
                             )}
                         </div>
                     ) : (
@@ -251,14 +248,14 @@ export function SuggestionPanel({
                             {/* Rating the page you are on, not "the site" — a
                                 general score tells us nothing actionable. */}
                             <section className={styles.block}>
-                                <h3 className={styles.blockTitle}>This page</h3>
+                                <h3 className={styles.blockTitle}>{tr("This page", locale)}</h3>
                                 <p className={styles.blockBlurb}>
                                     <code className={styles.path}>{path}</code>
                                 </p>
                                 <div
                                     className={styles.stars}
                                     role="group"
-                                    aria-label="Rate this page"
+                                    aria-label={tr("Rate this page", locale)}
                                 >
                                     {RATING_LABELS.map((label, index) => {
                                         const value = index + 1;
@@ -299,14 +296,14 @@ export function SuggestionPanel({
                                     </p>
                                 )}
 
-                                <Field label="What would you change on this page?">
+                                <Field label={tr("What would you change on this page?", locale)}>
                                     {(id, describedBy) => (
                                         <Textarea
                                             id={id}
                                             rows={3}
                                             aria-describedby={describedBy}
                                             value={pageRating?.note ?? ""}
-                                            placeholder="Be blunt — it is more useful than being kind."
+                                            placeholder={tr("Be blunt — it is more useful than being kind.", locale)}
                                             onChange={(event) =>
                                                 update((prev) => ({
                                                     ...prev,
@@ -420,12 +417,9 @@ export function SuggestionPanel({
                             ))}
 
                             <section className={styles.block}>
-                                <h3 className={styles.blockTitle}>Where to send the plan</h3>
-                                <p className={styles.blockBlurb}>
-                                    Only one of these is needed. Nothing else on this panel is
-                                    required.
-                                </p>
-                                <Field label="Your name">
+                                <h3 className={styles.blockTitle}>{tr("Where to send the plan", locale)}</h3>
+                                <p className={styles.blockBlurb}>{tr("Only one of these is needed. Nothing else on this panel is required.", locale)}</p>
+                                <Field label={tr("Your name", locale)}>
                                     {(id) => (
                                         <Input
                                             id={id}
@@ -437,7 +431,7 @@ export function SuggestionPanel({
                                         />
                                     )}
                                 </Field>
-                                <Field label="Practice or clinic">
+                                <Field label={tr("Practice or clinic", locale)}>
                                     {(id) => (
                                         <Input
                                             id={id}
@@ -449,7 +443,7 @@ export function SuggestionPanel({
                                         />
                                     )}
                                 </Field>
-                                <Field label="Email">
+                                <Field label={tr("Email", locale)}>
                                     {(id) => (
                                         <Input
                                             id={id}
@@ -462,7 +456,7 @@ export function SuggestionPanel({
                                         />
                                     )}
                                 </Field>
-                                <Field label="Phone or WhatsApp">
+                                <Field label={tr("Phone or WhatsApp", locale)}>
                                     {(id) => (
                                         <Input
                                             id={id}
@@ -516,6 +510,7 @@ export function SuggestionTrigger({
 }: {
     readonly template: string;
 }): React.JSX.Element {
+    const { locale } = useLocale();
     const [open, setOpen] = useState(false);
     return (
         <>
@@ -525,9 +520,7 @@ export function SuggestionTrigger({
                 onClick={() => setOpen(true)}
                 aria-haspopup="dialog"
             >
-                <MessageSquarePlus size={14} aria-hidden="true" />
-                Suggest
-            </button>
+                <MessageSquarePlus size={14} aria-hidden="true" />{tr("Suggest", locale)}</button>
             <SuggestionPanel open={open} onClose={() => setOpen(false)} template={template} />
         </>
     );

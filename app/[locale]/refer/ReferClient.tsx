@@ -9,6 +9,8 @@ import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
 import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import styles from "./Refer.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /* Built from this practice's own departments rather than a module constant,
    which froze one clinic's list onto every site on the farm. */
@@ -43,6 +45,7 @@ type Errors = Partial<Record<
  * checkbox the form does not submit.
  */
 export function ReferClient(): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const { departments } = useContent();
     const [referrerName, setReferrerName] = useState("");
@@ -127,9 +130,7 @@ export function ReferClient(): React.JSX.Element {
                 <span className={styles.doneIco} aria-hidden="true">
                     <Check size={24} />
                 </span>
-                <h2 className={styles.title} role="status">
-                    Referral received
-                </h2>
+                <h2 className={styles.title} role="status">{tr("Referral received", locale)}</h2>
                 <p className={styles.body}>
                     Reference <b>{reference}</b>. We will contact {patientName.trim()} directly to
                     offer a time, and write back to you at {referrerEmail.trim()} once they have
@@ -146,15 +147,15 @@ export function ReferClient(): React.JSX.Element {
 
     return (
         <form className={styles.panel} onSubmit={(event) => void handleSubmit(event)} noValidate>
-            <h2 className={styles.title}>Refer a patient</h2>
+            <h2 className={styles.title}>{tr("Refer a patient", locale)}</h2>
             <p className={styles.body}>
                 For GPs, consultants, dentists, physiotherapists and other clinicians. If you are a
                 patient, please <Link href="/#book">book an appointment</Link> instead.
             </p>
 
             <fieldset className={styles.group}>
-                <legend className={styles.legend}>About you</legend>
-                <Field label="Your name" required error={errors.referrerName}>
+                <legend className={styles.legend}>{tr("About you", locale)}</legend>
+                <Field label={tr("Your name", locale)} required error={errors.referrerName}>
                     {(id, describedBy) => (
                         <Input
                             id={id}
@@ -166,7 +167,7 @@ export function ReferClient(): React.JSX.Element {
                     )}
                 </Field>
                 <div className={styles.pair}>
-                    <Field label="Your practice or organisation">
+                    <Field label={tr("Your practice or organisation", locale)}>
                         {(id) => (
                             <Input
                                 id={id}
@@ -175,7 +176,7 @@ export function ReferClient(): React.JSX.Element {
                             />
                         )}
                     </Field>
-                    <Field label="Your email" required error={errors.referrerEmail}>
+                    <Field label={tr("Your email", locale)} required error={errors.referrerEmail}>
                         {(id, describedBy) => (
                             <Input
                                 id={id}
@@ -191,9 +192,9 @@ export function ReferClient(): React.JSX.Element {
             </fieldset>
 
             <fieldset className={styles.group}>
-                <legend className={styles.legend}>About the patient</legend>
+                <legend className={styles.legend}>{tr("About the patient", locale)}</legend>
                 <div className={styles.pair}>
-                    <Field label="Patient name" required error={errors.patientName}>
+                    <Field label={tr("Patient name", locale)} required error={errors.patientName}>
                         {(id, describedBy) => (
                             <Input
                                 id={id}
@@ -204,7 +205,7 @@ export function ReferClient(): React.JSX.Element {
                             />
                         )}
                     </Field>
-                    <Field label="Date of birth">
+                    <Field label={tr("Date of birth", locale)}>
                         {(id) => (
                             <Input
                                 id={id}
@@ -216,7 +217,7 @@ export function ReferClient(): React.JSX.Element {
                     </Field>
                 </div>
                 <Field
-                    label="Patient phone or email"
+                    label={tr("Patient phone or email", locale)}
                     required
                     error={errors.patientContact}
                     help="So we can offer them a time directly rather than going back through you."
@@ -234,7 +235,7 @@ export function ReferClient(): React.JSX.Element {
             </fieldset>
 
             <fieldset className={styles.group}>
-                <legend className={styles.legend}>The referral</legend>
+                <legend className={styles.legend}>{tr("The referral", locale)}</legend>
                 <div className={styles.pair}>
                 </div>
                 <ChoiceGroup
@@ -254,7 +255,7 @@ export function ReferClient(): React.JSX.Element {
                 />
 
                 <Field
-                    label="Reason for referral"
+                    label={tr("Reason for referral", locale)}
                     required
                     error={errors.reason}
                     help="Relevant history, findings, and what you would like from us."

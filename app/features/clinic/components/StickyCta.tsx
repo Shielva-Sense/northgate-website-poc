@@ -7,6 +7,8 @@ import { useBooking } from "@/app/features/booking/BookingPanel";
 
 import { useBrand } from "../BrandContext";
 import styles from "./StickyCta.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * Small-screen booking bar.
@@ -15,6 +17,7 @@ import styles from "./StickyCta.module.scss";
  * pointing at, and hidden again over the booking section for the same reason.
  */
 export function StickyCta(): React.JSX.Element | null {
+    const { locale } = useLocale();
     const brand = useBrand();
     const booking = useBooking();
     const [show, setShow] = useState(false);
@@ -50,16 +53,16 @@ export function StickyCta(): React.JSX.Element | null {
     if (!show) return null;
 
     return (
-        <aside className={styles.bar} aria-label="Book an appointment">
+        <aside className={styles.bar} aria-label={tr("Book an appointment", locale)}>
             <p className={styles.text}>
-                <b>Seen this week</b>
+                <b>{tr("Seen this week", locale)}</b>
                 <span>{brand.ratingCount} reviews, rated {brand.rating}</span>
             </p>
             <div className={styles.actions}>
-                <a className={styles.tel} href={brand.phoneHref} aria-label="Call the practice">
+                <a className={styles.tel} href={brand.phoneHref} aria-label={tr("Call the practice", locale)}>
                     <Phone size={16} aria-hidden="true" />
                 </a>
-                <Button onClick={booking.open}>Book</Button>
+                <Button onClick={booking.open}>{tr("Book", locale)}</Button>
             </div>
         </aside>
     );

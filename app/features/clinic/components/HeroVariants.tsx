@@ -15,6 +15,7 @@ import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
 import { HeroMedia } from "./HeroMedia";
 import styles from "./HeroVariants.module.scss";
+import { tr } from "@/app/core/content-ar";
 
 const STARS = ["one", "two", "three", "four", "five"] as const;
 
@@ -132,6 +133,7 @@ function HeroCinematic(): React.JSX.Element {
 
 /* ── split: institutional, departments first ─────────────────────────── */
 function HeroSplit(): React.JSX.Element {
+    const { locale } = useLocale();
     const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
@@ -145,9 +147,7 @@ function HeroSplit(): React.JSX.Element {
             <div className={styles.splitPanel}>
                 <div className={styles.splitInner} data-reveal="">
                     <Rating tone="dark" />
-                    <h1 className={styles.h1Sans}>
-                        Find the right department, then the right day
-                    </h1>
+                    <h1 className={styles.h1Sans}>{tr("Find the right department, then the right day", locale)}</h1>
                     <p className={styles.lede}>
                         {departments.length} departments, {brand.ratingCount} reviews, and every{" "}
                         {profile.clinician} bookable by name.
@@ -166,9 +166,7 @@ function HeroSplit(): React.JSX.Element {
                         </li>
                     </ul>
                     <div className={styles.cta}>
-                        <LinkButton href="/find-a-doctor" size="lg">
-                            Not sure who to see?
-                        </LinkButton>
+                        <LinkButton href="/find-a-doctor" size="lg">{tr("Not sure who to see?", locale)}</LinkButton>
                         <LinkButton href={brand.phoneHref} variant="onDark" size="lg">
                             <Phone size={16} aria-hidden="true" />
                             {brand.phone}
@@ -179,7 +177,7 @@ function HeroSplit(): React.JSX.Element {
             <div className={styles.splitShot} data-reveal="">
                 <Image
                     src={mediaFor(profile.kind).exterior}
-                    alt="The practice building on a quiet leafy street"
+                    alt={tr("The practice building on a quiet leafy street", locale)}
                     fill
                     priority
                     sizes="(min-width: 980px) 50vw, 100vw"
@@ -192,6 +190,7 @@ function HeroSplit(): React.JSX.Element {
 
 /* ── panel: price and proof, form front and centre ───────────────────── */
 function HeroPanel(): React.JSX.Element {
+    const { locale } = useLocale();
     const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
@@ -205,31 +204,20 @@ function HeroPanel(): React.JSX.Element {
             <div className={`wrap ${styles.panelInner}`} ref={ref}>
                 <div className={styles.panelCopy} data-reveal="">
                     <Rating tone="light" />
-                    <h1 className={styles.h1Sans}>
-                        Published prices. Named clinicians. Seen this week.
-                    </h1>
-                    <p className={styles.lede}>
-                        No consultation fee to ask a question, no booking fee, and nothing added
-                        afterwards that you were not told about first.
-                    </p>
+                    <h1 className={styles.h1Sans}>{tr("Published prices. Named clinicians. Seen this week.", locale)}</h1>
+                    <p className={styles.lede}>{tr("No consultation fee to ask a question, no booking fee, and nothing added afterwards that you were not told about first.", locale)}</p>
                     <ul className={styles.proofChips} role="list">
                         <li>
                             <Check size={14} aria-hidden="true" />
                             From {cheapest?.price} per appointment
                         </li>
                         <li>
-                            <Clock size={14} aria-hidden="true" />
-                            Confirmed within the hour
-                        </li>
+                            <Clock size={14} aria-hidden="true" />{tr("Confirmed within the hour", locale)}</li>
                         <li>
-                            <Check size={14} aria-hidden="true" />
-                            Most insurers accepted
-                        </li>
+                            <Check size={14} aria-hidden="true" />{tr("Most insurers accepted", locale)}</li>
                     </ul>
                     <div className={styles.cta}>
-                        <LinkButton href="/#pricing" size="lg">
-                            See all prices
-                        </LinkButton>
+                        <LinkButton href="/#pricing" size="lg">{tr("See all prices", locale)}</LinkButton>
                         <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
                             {brand.phone}
                         </LinkButton>
@@ -241,7 +229,7 @@ function HeroPanel(): React.JSX.Element {
                 <div className={styles.panelMedia} data-reveal="">
                     <Image
                         src={mediaFor(profile.kind).treatment}
-                        alt="A spotless minor-procedures room with a sterile instrument trolley"
+                        alt={tr("A spotless minor-procedures room with a sterile instrument trolley", locale)}
                         fill
                         priority
                         sizes="(min-width: 980px) 45vw, 100vw"
@@ -258,6 +246,7 @@ function HeroPanel(): React.JSX.Element {
 
 /* ── editorial: calm, image below the words ──────────────────────────── */
 function HeroEditorial(): React.JSX.Element {
+    const { locale } = useLocale();
     const profile = useProfile();
     const ref = useReveal<HTMLDivElement>();
     const shot = useParallax<HTMLDivElement>(0.05);
@@ -268,20 +257,14 @@ function HeroEditorial(): React.JSX.Element {
             <div className="wrap" ref={ref}>
                 <div className={styles.editCopy} data-reveal="">
                     <Rating tone="light" />
-                    <h1 className={styles.h1Edit}>
-                        Unhurried care, from people who remember you
-                    </h1>
+                    <h1 className={styles.h1Edit}>{tr("Unhurried care, from people who remember you", locale)}</h1>
                     <p className={styles.ledeWide}>
                         Time that suits what you came for, and the same {profile.clinician} every
                         visit if you would rather. We book to time because we run to time.
                     </p>
                     <div className={styles.cta}>
-                        <LinkButton href="/#book" size="lg">
-                            Request an appointment
-                        </LinkButton>
-                        <LinkButton href="/#story" variant="ghost" size="lg">
-                            Read a patient&rsquo;s story
-                        </LinkButton>
+                        <LinkButton href="/#book" size="lg">{tr("Request an appointment", locale)}</LinkButton>
+                        <LinkButton href="/#story" variant="ghost" size="lg">{tr("Read a patient’s story", locale)}</LinkButton>
                     </div>
                 </div>
             </div>

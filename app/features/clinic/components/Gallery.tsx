@@ -7,6 +7,8 @@ import { useReveal } from "@/app/core/hooks/useReveal";
 import { facilitiesFor } from "../content";
 import { useProfile } from "../BrandContext";
 import styles from "./Gallery.module.scss";
+import { localise, tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * The facilities gallery.
@@ -16,9 +18,10 @@ import styles from "./Gallery.module.scss";
  * key handling to get wrong. Only arrow-key paging is added on top.
  */
 export function Gallery(): React.JSX.Element {
+    const { locale } = useLocale();
     /* This practice's own rooms. The shared set is a human clinic, down to
        the fig tree in the waiting room. */
-    const facilities = facilitiesFor(useProfile().kind);
+    const facilities = localise(facilitiesFor(useProfile().kind), locale);
     const ref = useReveal<HTMLDivElement>();
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState<number | null>(null);
@@ -58,12 +61,9 @@ export function Gallery(): React.JSX.Element {
         <section className={styles.section} id="facilities">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>Have a look round</p>
-                    <h2 className={styles.title}>The place itself, not a stock photo</h2>
-                    <p className={styles.lede}>
-                        You can see every room before you arrive. Select any photo to open it
-                        larger.
-                    </p>
+                    <p className={styles.kicker}>{tr("Have a look round", locale)}</p>
+                    <h2 className={styles.title}>{tr("The place itself, not a stock photo", locale)}</h2>
+                    <p className={styles.lede}>{tr("You can see every room before you arrive. Select any photo to open it larger.", locale)}</p>
                 </div>
 
                 <ul className={styles.grid} role="list">
@@ -94,7 +94,7 @@ export function Gallery(): React.JSX.Element {
                                 </span>
                                 <span className={styles.caption}>
                                     <span className={styles.capTitle}>{facility.title}</span>
-                                    <span className={styles.capHint}>View larger</span>
+                                    <span className={styles.capHint}>{tr("View larger", locale)}</span>
                                 </span>
                             </button>
                             <ul className={styles.points} role="list">
@@ -110,7 +110,7 @@ export function Gallery(): React.JSX.Element {
             <dialog
                 ref={dialogRef}
                 className={styles.dialog}
-                aria-label="Facility photo"
+                aria-label={tr("Facility photo", locale)}
                 onClose={() => setOpen(null)}
             >
                 {active ? (
@@ -130,7 +130,7 @@ export function Gallery(): React.JSX.Element {
                                     type="button"
                                     className={styles.round}
                                     onClick={() => step(-1)}
-                                    aria-label="Previous photo"
+                                    aria-label={tr("Previous photo", locale)}
                                 >
                                     <ChevronLeft size={18} aria-hidden="true" />
                                 </button>
@@ -138,7 +138,7 @@ export function Gallery(): React.JSX.Element {
                                     type="button"
                                     className={styles.round}
                                     onClick={() => step(1)}
-                                    aria-label="Next photo"
+                                    aria-label={tr("Next photo", locale)}
                                 >
                                     <ChevronRight size={18} aria-hidden="true" />
                                 </button>
@@ -146,7 +146,7 @@ export function Gallery(): React.JSX.Element {
                                     type="button"
                                     className={styles.round}
                                     onClick={() => dialogRef.current?.close()}
-                                    aria-label="Close"
+                                    aria-label={tr("Close", locale)}
                                 >
                                     <X size={18} aria-hidden="true" />
                                 </button>

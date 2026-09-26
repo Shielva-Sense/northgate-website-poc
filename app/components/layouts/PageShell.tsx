@@ -12,9 +12,15 @@ import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
 import { DemoBar } from "@/app/features/clinic/components/DemoBar";
 import { isIndexable } from "@/app/core/seo";
+import { overridesFor } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
+import { tr } from "@/app/core/content-ar";
 import styles from "./PageShell.module.scss";
+import { localise } from "@/app/core/content-ar";
 
 interface ShellProps {
+    /** Which language this page is being read in, from the route param. */
+    readonly locale: Locale;
     readonly title: string;
     readonly lede?: string | undefined;
     readonly kicker?: string | undefined;
@@ -61,6 +67,7 @@ async function ResolveHost(props: ShellProps): Promise<React.JSX.Element> {
 
 async function CachedShell({
     host,
+    locale,
     title,
     lede,
     kicker,
@@ -72,11 +79,16 @@ async function CachedShell({
     "use cache";
     const site = await siteFromHost(host);
     const brand = site.brand;
-    const content = contentFor(site.profile, brand, site.overrides);
+    /* A clinic's own Arabic, where the registry row carries it, otherwise the
+       default content put through the phrase table. Resolved here and not in
+       `siteFromHost`, which is cached per host and knows nothing of the route
+       param. */
+    const overrides = overridesFor(site.overrides, site.overridesByLocale, locale);
+    const content = contentFor(site.profile, brand, overrides, locale);
     const shot = imageKey === undefined ? image : mediaFor(site.profile.kind)[imageKey];
 
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={content}>
+        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={content}>
             <BookingProvider>
             <ScrollProgress />
             {/* The colour switcher has to be reachable from whatever page a
@@ -86,7 +98,13 @@ async function CachedShell({
             <AnnounceBar />
             <SiteHeader />
             <main id="main-content" tabIndex={-1}>
-                <Head title={title} lede={lede} kicker={kicker} image={shot} imageAlt={imageAlt} />
+                <Head
+                    title={tr(title, locale)}
+                    lede={lede === undefined ? undefined : tr(lede, locale)}
+                    kicker={kicker === undefined ? undefined : tr(kicker, locale)}
+                    image={shot}
+                    imageAlt={imageAlt}
+                />
                 {children}
             </main>
             <SiteFooter />
@@ -102,7 +120,7 @@ async function CachedShell({
  * without knowing the tenant — so the first paint is the actual page rather
  * than a spinner, and only the chrome arrives a beat later.
  */
-function ShellFallback({ title, lede, kicker, image, imageAlt }: ShellProps): React.JSX.Element {
+function ShellFallback({ locale, title, lede, kicker, image, imageAlt }: ShellProps): React.JSX.Element {
     return (
         <main id="main-content" tabIndex={-1}>
             {/* No imageKey here on purpose: the static shell is rendered
@@ -110,7 +128,13 @@ function ShellFallback({ title, lede, kicker, image, imageAlt }: ShellProps): Re
                 use is exactly the thing it cannot answer yet. A page that
                 names a key simply paints its heading first and the picture a
                 beat later, which is the trade the shell exists to make. */}
-            <Head title={title} lede={lede} kicker={kicker} image={image} imageAlt={imageAlt} />
+            <Head
+                title={tr(title, locale)}
+                lede={lede === undefined ? undefined : tr(lede, locale)}
+                kicker={kicker === undefined ? undefined : tr(kicker, locale)}
+                image={image}
+                imageAlt={imageAlt}
+            />
         </main>
     );
 }
@@ -121,7 +145,7 @@ function Head({
     kicker,
     image,
     imageAlt,
-}: Omit<ShellProps, "children">): React.JSX.Element {
+}: Omit<ShellProps, "children" | "locale" | "imageKey">): React.JSX.Element {
     return (
         <header className={styles.head}>
             <div className={`wrap ${image === undefined ? "" : styles.split}`}>

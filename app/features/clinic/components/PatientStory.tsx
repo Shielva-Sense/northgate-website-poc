@@ -6,6 +6,9 @@ import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { PATIENT_STORY, REVIEWS } from "../constants";
 import styles from "./PatientStory.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { localise } from "@/app/core/content-ar";
 
 /**
  * One filmed patient story.
@@ -17,6 +20,7 @@ import styles from "./PatientStory.module.scss";
  * who never presses play — which is most people.
  */
 export function PatientStory(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [started, setStarted] = useState(false);
@@ -34,21 +38,19 @@ export function PatientStory(): React.JSX.Element {
     return (
         <section className={styles.section} id="story">
             <div className="wrap" ref={ref}>
-                <h2 className={styles.title} data-reveal="">
-                    In their words
-                </h2>
+                <h2 className={styles.title} data-reveal="">{tr("In their words", locale)}</h2>
 
                 <div className={styles.grid}>
                     <div className={styles.player} data-reveal="">
                         <video
                             ref={videoRef}
                             className={styles.video}
-                            poster={PATIENT_STORY.poster}
+                            poster={localise(PATIENT_STORY, locale).poster}
                             playsInline
                             preload="none"
-                            aria-label={`${PATIENT_STORY.name}'s story`}
+                            aria-label={`${localise(PATIENT_STORY, locale).name}'s story`}
                         >
-                            <source src={PATIENT_STORY.video} type="video/mp4" />
+                            <source src={localise(PATIENT_STORY, locale).video} type="video/mp4" />
                         </video>
 
                         {started ? null : (
@@ -56,11 +58,11 @@ export function PatientStory(): React.JSX.Element {
                                 type="button"
                                 className={styles.cover}
                                 onClick={start}
-                                aria-label={`Play ${PATIENT_STORY.name}'s story`}
+                                aria-label={`Play ${localise(PATIENT_STORY, locale).name}'s story`}
                             >
                                 <Image
-                                    src={PATIENT_STORY.poster}
-                                    alt={PATIENT_STORY.posterAlt}
+                                    src={localise(PATIENT_STORY, locale).poster}
+                                    alt={localise(PATIENT_STORY, locale).posterAlt}
                                     width={1080}
                                     height={1080}
                                     sizes="(min-width: 980px) 460px, 90vw"
@@ -75,13 +77,13 @@ export function PatientStory(): React.JSX.Element {
 
                     <figure className={styles.quoteWrap} data-reveal="">
                         <blockquote className={styles.quote}>
-                            &ldquo;{PATIENT_STORY.quote}&rdquo;
+                            &ldquo;{localise(PATIENT_STORY, locale).quote}&rdquo;
                         </blockquote>
                         <figcaption className={styles.who}>
                             <span className={styles.name}>
-                                <b>{PATIENT_STORY.name}</b>, {PATIENT_STORY.age}
+                                <b>{localise(PATIENT_STORY, locale).name}</b>, {localise(PATIENT_STORY, locale).age}
                             </span>
-                            <span className={styles.context}>{PATIENT_STORY.context}</span>
+                            <span className={styles.context}>{localise(PATIENT_STORY, locale).context}</span>
                         </figcaption>
                     </figure>
                 </div>
@@ -110,6 +112,7 @@ export function PatientStory(): React.JSX.Element {
  * never drifts.
  */
 function Voices(): React.JSX.Element {
+    const { locale } = useLocale();
     const railRef = useRef<HTMLDivElement>(null);
     const paused = useRef(false);
 
@@ -202,7 +205,7 @@ function Voices(): React.JSX.Element {
                 // so a screen reader announces what the region is.
                 tabIndex={0}
                 role="group"
-                aria-label="What patients say"
+                aria-label={tr("What patients say", locale)}
             >
                 {[0, 1].map((copy) => (
                     <ul
@@ -211,7 +214,7 @@ function Voices(): React.JSX.Element {
                         role={copy === 0 ? "list" : "presentation"}
                         aria-hidden={copy === 1 ? true : undefined}
                     >
-                        {REVIEWS.map((review) => (
+                        {localise(REVIEWS, locale).map((review) => (
                             <li key={review.name} className={styles.voice}>
                                 <blockquote className={styles.voiceQuote}>
                                     &ldquo;{review.quote}&rdquo;
@@ -231,7 +234,7 @@ function Voices(): React.JSX.Element {
                     type="button"
                     className={styles.round}
                     onClick={() => nudge(-1)}
-                    aria-label="Previous quotes"
+                    aria-label={tr("Previous quotes", locale)}
                 >
                     <ChevronLeft size={18} aria-hidden="true" />
                 </button>
@@ -239,7 +242,7 @@ function Voices(): React.JSX.Element {
                     type="button"
                     className={styles.round}
                     onClick={() => nudge(1)}
-                    aria-label="More quotes"
+                    aria-label={tr("More quotes", locale)}
                 >
                     <ChevronRight size={18} aria-hidden="true" />
                 </button>

@@ -16,8 +16,11 @@ import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandCon
 import { mediaFor } from "@/app/features/clinic/content";
 import type { Service } from "@/app/features/clinic/types";
 import styles from "./Service.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const profile = useProfile();
     const { clinicians } = useContent();
@@ -36,7 +39,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
             <main id="main-content" tabIndex={-1}>
                 <article className={styles.page} ref={ref}>
                     <div className="wrap">
-                        <nav aria-label="Breadcrumb" className={styles.crumb}>
+                        <nav aria-label={tr("Breadcrumb", locale)} className={styles.crumb}>
                             <Link href="/">
                                 <ArrowLeft size={14} aria-hidden="true" />
                                 {brand.name}
@@ -51,9 +54,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                                 {service.duration} appointment
                             </p>
                             <div className={styles.cta}>
-                                <LinkButton href="#book" size="lg">
-                                    Request an appointment
-                                </LinkButton>
+                                <LinkButton href="#book" size="lg">{tr("Request an appointment", locale)}</LinkButton>
                                 <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
                                     {brand.phone}
                                 </LinkButton>
@@ -65,7 +66,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                                 data-reveal=""
                                 data-reveal-style="wipe"
                                 src={mediaFor(profile.kind).consulting}
-                                alt="A bright consulting room with an examination couch and a window"
+                                alt={tr("A bright consulting room with an examination couch and a window", locale)}
                                 width={1536}
                                 height={864}
                                 priority
@@ -75,7 +76,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                         </div>
 
                         <div className={styles.body} data-reveal="">
-                            <h2 className={styles.h2}>What to expect</h2>
+                            <h2 className={styles.h2}>{tr("What to expect", locale)}</h2>
                             <ul className={styles.points} role="list">
                                 <li>
                                     <Check size={16} aria-hidden="true" />
@@ -83,21 +84,14 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                                     for the time it actually takes.
                                 </li>
                                 <li>
-                                    <Check size={16} aria-hidden="true" />
-                                    A written summary of what was said and what happens next.
-                                </li>
+                                    <Check size={16} aria-hidden="true" />{tr("A written summary of what was said and what happens next.", locale)}</li>
                                 <li>
-                                    <Check size={16} aria-hidden="true" />
-                                    The price before you come, and a check of what your insurer
-                                    covers.
-                                </li>
+                                    <Check size={16} aria-hidden="true" />{tr("The price before you come, and a check of what your insurer covers.", locale)}</li>
                                 <li>
-                                    <Check size={16} aria-hidden="true" />
-                                    Onward referral arranged here if you need it.
-                                </li>
+                                    <Check size={16} aria-hidden="true" />{tr("Onward referral arranged here if you need it.", locale)}</li>
                             </ul>
 
-                            <h2 className={styles.h2}>Who you would see</h2>
+                            <h2 className={styles.h2}>{tr("Who you would see", locale)}</h2>
                             <ul className={styles.people} role="list">
                                 {clinicians.filter((person) =>
                                     department === undefined
@@ -114,7 +108,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                                 ))}
                             </ul>
 
-                            <h2 className={styles.h2}>Other things we do</h2>
+                            <h2 className={styles.h2}>{tr("Other things we do", locale)}</h2>
                             <ul className={styles.others} role="list">
                                 {others.map((item) => (
                                     <li key={item.slug}>
@@ -128,10 +122,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                             <h2 className={styles.h2}>
                                 Book a {service.name.toLowerCase()} appointment
                             </h2>
-                            <p className={styles.bookSub}>
-                                Pick who you would like to see, then choose from their real
-                                availability. No phone queue.
-                            </p>
+                            <p className={styles.bookSub}>{tr("Pick who you would like to see, then choose from their real availability. No phone queue.", locale)}</p>
                             <AppointmentFlow
                                 department={department?.id}
                                 serviceName={service.name}

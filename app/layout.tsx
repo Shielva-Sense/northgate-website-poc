@@ -85,9 +85,10 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                     <ProposalNotice />
                 </Suspense>
-                <a href="#main-content" className="skip-link">
-                    Skip to main content
-                </a>
+                {/* The skip link is rendered by app/[locale]/layout.tsx, not
+                    here: it is the first thing a screen-reader user hears, and
+                    the root layout sits outside the language segment, so it
+                    could only ever say it in English. */}
                 {children}
             </body>
         </html>

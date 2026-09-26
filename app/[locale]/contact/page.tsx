@@ -3,9 +3,11 @@ import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { Faq } from "@/app/features/clinic/components/Faq";
 import { ContactClient } from "./ContactClient";
 import styles from "./Contact.module.scss";
+import { tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -17,12 +19,18 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default function Page(): React.JSX.Element {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     return (
         <PageShell
-            kicker="Contact"
-            title="Three ways to reach us"
-            lede="Use whichever you would rather. All three reach the same reception desk, and all three are answered by a person."
+            locale={locale}
+            kicker={tr("Contact", locale)}
+            title={tr("Three ways to reach us", locale)}
+            lede={tr("Use whichever you would rather. All three reach the same reception desk, and all three are answered by a person.", locale)}
             imageKey="waiting"
             imageAlt="A quiet waiting area with soft seating, plants and natural light"
         >

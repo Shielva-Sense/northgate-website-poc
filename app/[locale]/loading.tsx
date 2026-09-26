@@ -1,4 +1,8 @@
+"use client";
+
 import styles from "./Loading.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * Route-level loading surface.
@@ -12,11 +16,12 @@ import styles from "./Loading.module.scss";
  * visible loading state without the movement.
  */
 export default function Loading(): React.JSX.Element {
+    const { locale } = useLocale();
     return (
         <div className={styles.screen} role="status" aria-live="polite">
             <div className={styles.card}>
-                <p className={styles.title}>Getting the practice details</p>
-                <p className={styles.detail}>One moment — this is usually instant.</p>
+                <p className={styles.title}>{tr("Getting the practice details", locale)}</p>
+                <p className={styles.detail}>{tr("One moment — this is usually instant.", locale)}</p>
                 <div className={styles.track}>
                     <span className={styles.bar} />
                 </div>

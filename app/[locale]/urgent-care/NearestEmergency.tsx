@@ -8,6 +8,8 @@ import { emergencySites, nearestSites, siteForPostcode } from "@/app/features/cl
 import type { EmergencySite } from "@/app/features/clinic/urgent";
 import { useBrand } from "@/app/features/clinic/BrandContext";
 import styles from "./Urgent.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 function mapsHref(address: string): string {
     return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
@@ -32,6 +34,7 @@ type Result =
  * anywhere: the sites and the arithmetic are in the page.
  */
 export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: boolean }): React.JSX.Element | null {
+    const { locale } = useLocale();
     const brand = useBrand();
     /* The sites follow the tenant, so they are derived here rather than read
        from a module constant that would name the default clinic on every host. */
@@ -81,13 +84,8 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
     return (
         <section className={styles.nearest} aria-labelledby="nearest-heading">
             <h3 className={styles.nearestTitle} id="nearest-heading">
-                <MapPin size={17} aria-hidden="true" />
-                Which emergency department is nearest to you?
-            </h3>
-            <p className={styles.nearestLede}>
-                We run more than one. Rather than send you to the biggest, we will tell you the
-                closest one that can treat this.
-            </p>
+                <MapPin size={17} aria-hidden="true" />{tr("Which emergency department is nearest to you?", locale)}</h3>
+            <p className={styles.nearestLede}>{tr("We run more than one. Rather than send you to the biggest, we will tell you the closest one that can treat this.", locale)}</p>
 
             <div className={styles.nearestControls}>
                 <Button
@@ -100,7 +98,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                 </Button>
                 <span className={styles.nearestOr}>or</span>
                 <div className={styles.nearestPostcode}>
-                    <Field label="Your postcode" help="We only read the first part, like M20.">
+                    <Field label={tr("Your postcode", locale)} help="We only read the first part, like M20.">
                         {(id, describedBy) => (
                             <Input
                                 id={id}
@@ -115,16 +113,14 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                             />
                         )}
                     </Field>
-                    <Button variant="ghost" onClick={byPostcode} disabled={postcode.trim() === ""}>
-                        Find
-                    </Button>
+                    <Button variant="ghost" onClick={byPostcode} disabled={postcode.trim() === ""}>{tr("Find", locale)}</Button>
                 </div>
             </div>
 
             <div aria-live="polite">
                 {result.state === "found" ? (
                     <div className={styles.nearestResult}>
-                        <p className={styles.nearestLabel}>Nearest to you</p>
+                        <p className={styles.nearestLabel}>{tr("Nearest to you", locale)}</p>
                         <p className={styles.nearestName}>{result.site.name}</p>
                         <p className={styles.nearestMeta}>
                             {result.site.address} · {result.site.hours}
@@ -133,10 +129,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                                 : ` · about ${result.km.toFixed(1)} km away in a straight line`}
                         </p>
                         {result.site.full ? null : (
-                            <p className={styles.nearestWarn}>
-                                This is a minor injuries unit, not a full emergency department. If
-                                this could be life-threatening, do not come here.
-                            </p>
+                            <p className={styles.nearestWarn}>{tr("This is a minor injuries unit, not a full emergency department. If this could be life-threatening, do not come here.", locale)}</p>
                         )}
                         <div className={styles.nearestActions}>
                             <a
@@ -152,9 +145,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                <MapPin size={16} aria-hidden="true" />
-                                Directions
-                            </a>
+                                <MapPin size={16} aria-hidden="true" />{tr("Directions", locale)}</a>
                         </div>
                     </div>
                 ) : null}
@@ -168,9 +159,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                                 ? "We could not read your location"
                                 : "We could not match that postcode"}
                         </p>
-                        <p className={styles.nearestMeta}>
-                            Rather than guess, here is every emergency department we run:
-                        </p>
+                        <p className={styles.nearestMeta}>{tr("Rather than guess, here is every emergency department we run:", locale)}</p>
                         <ul className={styles.nearestList} role="list">
                             {sites.map((site) => (
                                 <li key={site.id}>
@@ -185,9 +174,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                                         href={mapsHref(site.address)}
                                         target="_blank"
                                         rel="noreferrer"
-                                    >
-                                        Directions
-                                    </a>
+                                    >{tr("Directions", locale)}</a>
                                 </li>
                             ))}
                         </ul>

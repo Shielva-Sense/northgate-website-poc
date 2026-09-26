@@ -18,6 +18,8 @@ import { siteLabel } from "@/app/features/clinic/constants";
 import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import type { Clinician, SiteKey } from "@/app/features/clinic/types";
 import styles from "./Directory.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 type Sort = "soonest" | "rated" | "experience" | "price";
 
@@ -79,6 +81,7 @@ export function DoctorDirectory({
 }: {
     readonly onBook: (departmentId: string, clinician: string) => void;
 }): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const { departments, clinicians } = useContent();
     const [query, setQuery] = useState("");
@@ -131,8 +134,8 @@ export function DoctorDirectory({
                     type="search"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search by name, speciality or language"
-                    aria-label="Search clinicians"
+                    placeholder={tr("Search by name, speciality or language", locale)}
+                    aria-label={tr("Search clinicians", locale)}
                     autoComplete="off"
                 />
                 {query === "" ? null : (
@@ -140,7 +143,7 @@ export function DoctorDirectory({
                         className={styles.clear}
                         type="button"
                         onClick={() => setQuery("")}
-                        aria-label="Clear search"
+                        aria-label={tr("Clear search", locale)}
                     >
                         <X size={16} aria-hidden="true" />
                     </button>
@@ -149,9 +152,7 @@ export function DoctorDirectory({
 
             <div className={styles.filters}>
                 <p className={styles.filtersLabel}>
-                    <SlidersHorizontal size={14} aria-hidden="true" />
-                    Filter
-                </p>
+                    <SlidersHorizontal size={14} aria-hidden="true" />{tr("Filter", locale)}</p>
 
                 <Facet
                     legend="Department"
@@ -181,9 +182,7 @@ export function DoctorDirectory({
                     aria-pressed={todayOnly}
                     onClick={() => setTodayOnly((value) => !value)}
                 >
-                    <Clock size={14} aria-hidden="true" />
-                    Free today
-                </button>
+                    <Clock size={14} aria-hidden="true" />{tr("Free today", locale)}</button>
             </div>
 
             <div className={styles.resultsBar}>
@@ -193,7 +192,7 @@ export function DoctorDirectory({
                 </p>
 
                 <div className={styles.sorts}>
-                    <span className={styles.sortLabel}>Sort</span>
+                    <span className={styles.sortLabel}>{tr("Sort", locale)}</span>
                     {SORTS.map((option) => (
                         <button
                             key={option.id}
@@ -210,15 +209,13 @@ export function DoctorDirectory({
 
             {results.length === 0 ? (
                 <div className={styles.none}>
-                    <p className={styles.noneTitle}>Nobody matches all of those</p>
+                    <p className={styles.noneTitle}>{tr("Nobody matches all of those", locale)}</p>
                     <p className={styles.noneBody}>
                         Try removing one filter — language and &ldquo;free today&rdquo; together
                         narrow things quickly. Reception can always find someone:{" "}
                         <b>they hold slots back that are not published here.</b>
                     </p>
-                    <Button variant="ghost" onClick={clearAll}>
-                        Clear all filters
-                    </Button>
+                    <Button variant="ghost" onClick={clearAll}>{tr("Clear all filters", locale)}</Button>
                 </div>
             ) : (
                 <ul className={styles.grid} role="list">
@@ -290,9 +287,7 @@ export function DoctorDirectory({
                                     onBook(person.departments[0] ?? "general", person.name)
                                 }
                                 rightIcon={<ArrowRight size={15} aria-hidden="true" />}
-                            >
-                                See availability
-                            </Button>
+                            >{tr("See availability", locale)}</Button>
                         </li>
                     ))}
                 </ul>

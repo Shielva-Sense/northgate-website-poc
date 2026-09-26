@@ -6,8 +6,11 @@ import { AlertTriangle, Loader2, LogIn } from "lucide-react";
 import { Field, Input } from "@/app/components/ui/Field";
 import { Button } from "@/app/components/ui/Button";
 import styles from "./Login.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 export function LoginClient(): React.JSX.Element {
+    const { locale } = useLocale();
     const router = useRouter();
     const params = useSearchParams();
     const [username, setUsername] = useState("");
@@ -54,12 +57,8 @@ export function LoginClient(): React.JSX.Element {
                 <div className={styles.mark} aria-hidden="true">
                     S
                 </div>
-                <h1 className={styles.title} id="login-title">
-                    Private preview
-                </h1>
-                <p className={styles.lede}>
-                    This build is shared by invitation. Enter the details you were sent.
-                </p>
+                <h1 className={styles.title} id="login-title">{tr("Private preview", locale)}</h1>
+                <p className={styles.lede}>{tr("This build is shared by invitation. Enter the details you were sent.", locale)}</p>
 
                 {error ? (
                     <p className={styles.alert} role="alert">
@@ -68,7 +67,7 @@ export function LoginClient(): React.JSX.Element {
                     </p>
                 ) : null}
 
-                <Field label="Username" required>
+                <Field label={tr("Username", locale)} required>
                     {(id) => (
                         <Input
                             id={id}
@@ -83,7 +82,7 @@ export function LoginClient(): React.JSX.Element {
                     )}
                 </Field>
 
-                <Field label="Access code" required>
+                <Field label={tr("Access code", locale)} required>
                     {(id) => (
                         <Input
                             id={id}
@@ -114,7 +113,7 @@ export function LoginClient(): React.JSX.Element {
                     {busy ? "Checking…" : "View the preview"}
                 </Button>
 
-                <p className={styles.foot}>Shielva Sense — shared privately, not indexed.</p>
+                <p className={styles.foot}>{tr("Shielva Sense — shared privately, not indexed.", locale)}</p>
             </form>
         </main>
     );

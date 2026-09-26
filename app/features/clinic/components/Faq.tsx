@@ -6,8 +6,12 @@ import { useReveal } from "@/app/core/hooks/useReveal";
 import { FAQS } from "../constants";
 import sections from "./Sections.module.scss";
 import styles from "./Faq.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { localise } from "@/app/core/content-ar";
 
 export function Faq(): React.JSX.Element {
+    const { locale } = useLocale();
     const reveal = useReveal<HTMLDivElement>();
     const baseId = useId();
     const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -16,12 +20,12 @@ export function Faq(): React.JSX.Element {
         <section className={sections.section} id="faq">
             <div className="wrap" ref={reveal}>
                 <div className={sections.head} data-reveal="">
-                    <p className={sections.kicker}>Questions</p>
-                    <h2 className={sections.title}>Before you book</h2>
+                    <p className={sections.kicker}>{tr("Questions", locale)}</p>
+                    <h2 className={sections.title}>{tr("Before you book", locale)}</h2>
                 </div>
 
                 <div className={styles.list} data-reveal="">
-                    {FAQS.map((faq, index) => {
+                    {localise(FAQS, locale).map((faq, index) => {
                         const open = openIndex === index;
                         const panelId = `${baseId}-panel-${index}`;
                         const buttonId = `${baseId}-button-${index}`;

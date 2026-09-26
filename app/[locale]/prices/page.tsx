@@ -3,7 +3,9 @@ import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { PriceTable } from "./PriceTable";
+import { tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -24,15 +26,21 @@ export async function generateMetadata(): Promise<Metadata> {
  * without hunting for it. A section halfway down another page satisfies
  * neither.
  */
-export default function Page(): React.JSX.Element {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     return (
         <PageShell
-            kicker="Our prices"
-            title="Every standard price, published"
+            locale={locale}
+            kicker={tr("Our prices", locale)}
+            title={tr("Every standard price, published", locale)}
             imageKey="reception"
             imageAlt="A practice reception desk with daylight from a window behind it"
         >
-            <PriceTable />
+            <PriceTable locale={locale} />
         </PageShell>
     );
 }

@@ -11,6 +11,9 @@ import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ThemePicker } from "@/app/features/clinic/components/ThemePicker";
 import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
 import styles from "./Templates.module.scss";
+import { overridesFor } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
+import { localise, tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -23,31 +26,28 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default async function Page(): Promise<React.JSX.Element> {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     const site = await siteFromHost((await headers()).get("host"));
     const brand = site.brand;
     const indexable = isIndexable();
 
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
+        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
             <BookingProvider>
             <main id="main-content" tabIndex={-1} className={styles.page}>
                 <div className="wrap">
                     <p className={styles.kicker}>
-                        <Layers size={15} aria-hidden="true" />
-                        Layouts
-                    </p>
-                    <h1 className={styles.h1}>Same site, your layout and your colours</h1>
-                    <p className={styles.lede}>
-                        Every layout below is the same build — the same booking flow, the same
-                        content, the same code. What changes is what a visitor meets first, which
-                        is the part that actually differs between a family practice, a hospital and
-                        a single-procedure clinic. Pick one and we set it as the default; switching
-                        later is a one-line change, not a rebuild.
-                    </p>
+                        <Layers size={15} aria-hidden="true" />{tr("Layouts", locale)}</p>
+                    <h1 className={styles.h1}>{tr("Same site, your layout and your colours", locale)}</h1>
+                    <p className={styles.lede}>{tr("Every layout below is the same build — the same booking flow, the same content, the same code. What changes is what a visitor meets first, which is the part that actually differs between a family practice, a hospital and a single-procedure clinic. Pick one and we set it as the default; switching later is a one-line change, not a rebuild.", locale)}</p>
 
                     <ul className={styles.grid} role="list">
-                        {TEMPLATES.map((template) => (
+                        {localise(TEMPLATES, locale).map((template) => (
                             <li
                                 key={template.id}
                                 className={styles.card}
@@ -83,22 +83,26 @@ export default async function Page(): Promise<React.JSX.Element> {
 
                                 <dl className={styles.specs}>
                                     <div>
-                                        <dt>Corners</dt>
+                                        <dt>{tr("Corners", locale)}</dt>
                                         <dd>{template.design.radius}</dd>
                                     </div>
                                     <div>
-                                        <dt>Headings</dt>
+                                        <dt>{tr("Headings", locale)}</dt>
                                         <dd>{template.design.display}</dd>
                                     </div>
                                     <div>
-                                        <dt>Hero</dt>
+                                        <dt>{tr("Hero", locale)}</dt>
                                         <dd>{template.design.heroStyle}</dd>
                                     </div>
                                 </dl>
 
                                 <p className={styles.orderLabel}>
-                                    Running order: {template.sections.slice(0, 5).join(" · ")} +
-                                    {template.sections.length - 5} more
+                                    {tr("Running order:", locale)}{" "}
+                                    {template.sections
+                                        .slice(0, 5)
+                                        .map((section) => tr(section, locale))
+                                        .join(" · ")}{" "}
+                                    + {template.sections.length - 5} {tr("more", locale)}
                                 </p>
 
                                 <Link
@@ -106,7 +110,7 @@ export default async function Page(): Promise<React.JSX.Element> {
                                     href={`/?template=${template.id}`}
                                     prefetch={false}
                                 >
-                                    Preview this layout
+                                    {tr("Preview this layout", locale)}
                                     <ArrowRight size={16} aria-hidden="true" />
                                 </Link>
                             </li>
@@ -118,11 +122,16 @@ export default async function Page(): Promise<React.JSX.Element> {
                     <ThemePicker />
 
                     <p className={styles.note}>
-                        {indexable
-                            ? "This page is not indexed."
-                            : "This whole build is invite-only and not indexed."}{" "}
-                        Each prospect can have their own subdomain, brand name, palette and icon —
-                        that costs a DNS record, not a deploy.
+                        {tr(
+                            indexable
+                                ? "This page is not indexed."
+                                : "This whole build is invite-only and not indexed.",
+                            locale,
+                        )}{" "}
+                        {tr(
+                            "Each prospect can have their own subdomain, brand name, palette and icon — that costs a DNS record, not a deploy.",
+                            locale,
+                        )}
                     </p>
                 </div>
             </main>

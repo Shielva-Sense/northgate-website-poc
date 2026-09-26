@@ -5,6 +5,8 @@ import { Check, Palette } from "lucide-react";
 import { THEMES } from "../brands";
 import { applyTheme, clearTheme, readStoredTheme } from "../theme";
 import styles from "./DemoBar.module.scss";
+import { localise, tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * The colour swatches in the demo bar.
@@ -14,6 +16,7 @@ import styles from "./DemoBar.module.scss";
  * colours is a live DOM change and does. Only this strip is a client bundle.
  */
 export function DemoThemes(): React.JSX.Element {
+    const { locale } = useLocale();
     const [active, setActive] = useState<string | null>(null);
 
     useEffect(() => {
@@ -27,10 +30,10 @@ export function DemoThemes(): React.JSX.Element {
         <div className={styles.themes}>
             <span className={styles.label}>
                 <Palette size={14} aria-hidden="true" />
-                <span className={styles.labelText}>Colours</span>
+                <span className={styles.labelText}>{tr("Colours", locale)}</span>
             </span>
             <ul className={styles.swatches} role="list">
-                {THEMES.map((theme) => (
+                {localise(THEMES, locale).map((theme) => (
                     <li key={theme.id}>
                         <button
                             type="button"
@@ -65,9 +68,7 @@ export function DemoThemes(): React.JSX.Element {
                         clearTheme();
                         setActive(null);
                     }}
-                >
-                    Reset
-                </button>
+                >{tr("Reset", locale)}</button>
             )}
         </div>
     );

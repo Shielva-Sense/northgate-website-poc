@@ -3,8 +3,10 @@ import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { FindDoctorClient } from "./FindDoctorClient";
 import styles from "./FindDoctor.module.scss";
+import { tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -22,12 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
  * footer — which is the duplication PageShell exists to stop. It also meant the
  * one page missing a hero image and the demo bar was this one.
  */
-export default function Page(): React.JSX.Element {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     return (
         <PageShell
-            kicker="Our clinicians"
-            title="Find a doctor"
-            lede="Nine clinicians, what each one costs, the languages they speak and the next time they are actually free. Filter to what matters to you — or, if you are not sure who you need, answer a few questions instead."
+            locale={locale}
+            kicker={tr("Our clinicians", locale)}
+            title={tr("Find a doctor", locale)}
+            lede={tr("Nine clinicians, what each one costs, the languages they speak and the next time they are actually free. Filter to what matters to you — or, if you are not sure who you need, answer a few questions instead.", locale)}
             imageKey="corridor"
             imageAlt="A bright clinic corridor lined with consulting room doors in pale oak"
         >
