@@ -20,7 +20,7 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { BookingForm } from "@/app/features/booking/BookingForm";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { ACCREDITATIONS, FAQS, JOURNEY, OPENING, PROMISES, SERVICES, STATS } from "../constants";
+import { ACCREDITATIONS, FAQS, JOURNEY, OPENING, PROMISES, STATS } from "../constants";
 import type { Stat } from "../types";
 import { DepartmentCarousel } from "./DepartmentCarousel";
 import { templateById } from "../templates";
@@ -28,7 +28,8 @@ import type { TemplateId } from "../templates";
 import { ServiceGlyph } from "./ServiceGlyph";
 import { Faq } from "./Faq";
 import { Gallery } from "./Gallery";
-import { useBrand, useContent } from "../BrandContext";
+import { useBrand, useContent, useProfile } from "../BrandContext";
+import type { ServiceIcon } from "../types";
 import styles from "./Sections.module.scss";
 
 /* Stagger is a data concern, not a style one, so it is set as a CSS variable
@@ -218,6 +219,24 @@ export function Team(): React.JSX.Element {
     );
 }
 
+/**
+ * An icon for a service, chosen from its name.
+ *
+ * The six glyphs are a fixed set and a trade's services are free text, so
+ * this matches on what the service actually is rather than adding an icon
+ * field to fifty entries across ten trades. Anything unrecognised gets the
+ * stethoscope, which reads as "clinical" without claiming a speciality.
+ */
+function glyphFor(name: string): ServiceIcon {
+    const n = name.toLowerCase();
+    if (/vaccin|immunis|immuniz|inject|booster/.test(n)) return "syringe";
+    if (/child|baby|infant|paediatr|pediatr|puppy|kitten/.test(n)) return "baby";
+    if (/mental|therap|anxiet|mood|psych|counsell/.test(n)) return "brain";
+    if (/blood|diagnost|lab|patholog|imaging|scan|x-ray|screen/.test(n)) return "flaskConical";
+    if (/heart|cardio|pressure|diabet|pulse/.test(n)) return "heartPulse";
+    return "stethoscope";
+}
+
 /* ── pricing ──────────────────────────────────── */
 
 export function Pricing(): React.JSX.Element {
@@ -283,6 +302,10 @@ export function Pricing(): React.JSX.Element {
 
 export function Services({ template }: { readonly template: TemplateId }): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    /* This practice's own services. SERVICES was one general practice's six,
+       so a dental site advertised travel vaccinations and child health. */
+    const profile = useProfile();
+    const { appointmentTypes } = useContent();
     const { servicesTitle, servicesLede } = templateById(template);
 
     return (
@@ -295,7 +318,14 @@ export function Services({ template }: { readonly template: TemplateId }): React
                 </div>
 
                 <ul className={`${styles.grid} ${styles.grid3}`} role="list">
-                    {SERVICES.map((service, index) => {
+                    {profile.services.map((service, index) => {
+                        /* Length comes from this practice's own appointment
+                           list where one matches, so the card and the price
+                           table agree. Where nothing matches, no length is
+                           shown — better silent than invented. */
+                        const minutes = appointmentTypes.find(
+                            (type) => type.id === service.slug || type.department === service.slug,
+                        )?.minutes;
                         return (
                             <li
                                 className={styles.card}
@@ -304,11 +334,13 @@ export function Services({ template }: { readonly template: TemplateId }): React
                                 style={delay(index)}
                             >
                                 <span className={styles.ico} aria-hidden="true">
-                                    <ServiceGlyph icon={service.icon} />
+                                    <ServiceGlyph icon={glyphFor(service.name)} />
                                 </span>
                                 <h3 className={styles.cardTitle}>{service.name}</h3>
-                                <p className={styles.cardBody}>{service.summary}</p>
-                                <span className={styles.duration}>{service.duration}</span>
+                                <p className={styles.cardBody}>{service.blurb}</p>
+                                {minutes === undefined ? null : (
+                                    <span className={styles.duration}>{minutes} min</span>
+                                )}
                             </li>
                         );
                     })}

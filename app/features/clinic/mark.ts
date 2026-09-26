@@ -104,25 +104,34 @@ const GEOMETRY: Readonly<Record<MarkId, readonly MarkShape[]>> = {
 
     /* ── dental ───────────────────────────────── */
     // A molar: two crowns over two roots.
+    /* A tooth silhouette with a highlight, not an outlined molar.
+       The molar's two roots sat four units apart on a 64 grid, and at a
+       five-unit stroke that gap closed: at 38px in the header the mark read
+       as a solid blob, and at 16px in a tab it was unreadable. It was also
+       the only mark in the set drawn in one colour, which is the other half
+       of why it did not look like the rest of the family. */
     tooth: [
         {
             s: "path",
-            d: "M20 28c0-7 5-11 12-11s12 4 12 11c0 7-2 10-3.6 15-1 3.4-2 5.5-3.4 5.5-2 0-2-6-2.6-8.6-.4-2-1.3-3-2.4-3s-2 1-2.4 3C29 42.5 29 48.5 27 48.5c-1.4 0-2.4-2.1-3.4-5.5C22 38 20 35 20 28z",
+            d: "M32 17c-7 0-12 4.5-12 11 0 8.5 3.6 13.5 5.6 17.5 1.2 2.4 2.4 3.5 6.4 3.5s5.2-1.1 6.4-3.5C40.4 41.5 44 36.5 44 28c0-6.5-5-11-12-11z",
             ink: "on",
             w: 5,
             join: true,
         },
+        { s: "path", d: "M26 28c0-3.4 2.6-5.6 6-5.6", ink: "accent", w: 4.5, cap: true },
     ],
     // The same tooth with a highlight, for the second dental practice along.
+    /* The same silhouette with a wide root notch instead of a highlight, so
+       two dental practices still differ at a glance. The notch is eight units
+       across rather than four, which survives the stroke weight. */
     toothShine: [
         {
             s: "path",
-            d: "M20 28c0-7 5-11 12-11s12 4 12 11c0 7-2 10-3.6 15-1 3.4-2 5.5-3.4 5.5-2 0-2-6-2.6-8.6-.4-2-1.3-3-2.4-3s-2 1-2.4 3C29 42.5 29 48.5 27 48.5c-1.4 0-2.4-2.1-3.4-5.5C22 38 20 35 20 28z",
+            d: "M32 17c-7 0-12 4.5-12 11 0 8.5 3.6 13.5 5.6 17.5 1.4 2.8 3.4 2.2 3.4-1.5v-5.5h6V44c0 3.7 2 4.3 3.4 1.5C40.4 41.5 44 36.5 44 28c0-6.5-5-11-12-11z",
             ink: "on",
             w: 5,
             join: true,
         },
-        { s: "path", d: "M26 26c1-3 3-4 5-4", ink: "accent", w: 4, cap: true },
     ],
 
     /* ── physiotherapy and chiropractic ───────── */

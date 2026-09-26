@@ -1,6 +1,7 @@
 import type { Brand } from "./brands";
 import type { Department } from "./care";
-import type { AdditionalService, CatalogueIcon, Treatment } from "./catalogue";
+import { ARTICLES } from "./catalogue";
+import type { AdditionalService, Article, CatalogueIcon, Treatment } from "./catalogue";
 import type { KindProfile, PracticeKind, Service } from "./practice-kinds";
 import type { Clinician, Package } from "./types";
 
@@ -45,6 +46,16 @@ export interface ClinicContent {
     readonly clinicians: readonly Clinician[];
     /** Price cards, built from the appointments above so they cannot disagree. */
     readonly packages: readonly Package[];
+    /**
+     * The health library, narrowed to this practice.
+     *
+     * The built-in articles were written for a general practice and filed
+     * under its departments, so a dental site published a library about
+     * contraception and travel vaccination. Only articles whose department
+     * this practice actually has are kept, which usually means none — and a
+     * library with nothing in it should not be linked at all.
+     */
+    readonly articles: readonly Article[];
     /**
      * How the numbers above should be read.
      *
@@ -487,6 +498,8 @@ export interface ContentOverrides {
      * things you can book.
      */
     readonly services?: readonly Service[];
+    /** This clinic's own health-library articles, images and all. */
+    readonly articles?: readonly Article[];
     readonly departments?: readonly Department[];
     readonly treatments?: readonly Treatment[];
     readonly additionalServices?: readonly AdditionalService[];
@@ -521,6 +534,11 @@ export function contentFor(
         additionalServices: o.additionalServices ?? set.additional,
         appointmentTypes,
         clinicians: o.clinicians ?? cliniciansFor(profile, brand),
+        articles:
+            o.articles ??
+            (profile.hasHealthLibrary
+                ? ARTICLES.filter((a) => departments.some((d) => d.id === a.department))
+                : []),
         packages: o.packages ?? packagesFor(profile, brand, appointmentTypes, format),
         priceMode,
     };
