@@ -35,6 +35,17 @@ export interface AppointmentType {
     readonly minutes: number;
     /** Index price; format with `priceLabel`. Zero means "no charge". */
     readonly price: number;
+    /**
+     * The price is a starting point, not the bill.
+     *
+     * Some procedures genuinely cannot be quoted up front. A veterinary dental
+     * is the clearest case: roughly two thirds of a tooth sits below the gum,
+     * so extractions are only priced once the animal is under anaesthetic and
+     * the x-rays are read. Printing a firm number beside "quoted after
+     * assessment" says two contradictory things on one card, and the number is
+     * the one the client remembers. Marked types render as "from <price>".
+     */
+    readonly estimate?: boolean;
     readonly note?: string;
 }
 
@@ -80,6 +91,22 @@ export function formatPrice(brand: Brand, value: number, mode: PriceMode): strin
     return mode === "local" ? priceLabelLocal(brand, value) : priceLabel(brand, value);
 }
 
+/**
+ * A price as the client should read it.
+ *
+ * `from £320` where the total genuinely is not knowable in advance, the exact
+ * figure otherwise. Kept beside formatPrice so a caller cannot print a firm
+ * number for a type the data says is an estimate.
+ */
+export function formatAppointmentPrice(
+    brand: Brand,
+    appointment: AppointmentType,
+    mode: PriceMode,
+): string {
+    const price = formatPrice(brand, appointment.price, mode);
+    return appointment.estimate === true ? `from ${price}` : price;
+}
+
 interface DeptSpec {
     readonly id: string;
     readonly name: string;
@@ -103,6 +130,8 @@ interface ApptSpec {
     readonly department: string;
     readonly minutes: number;
     readonly price: number;
+    /** See AppointmentType.estimate — renders as "from <price>". */
+    readonly estimate?: boolean;
     readonly note?: string;
 }
 
@@ -422,8 +451,8 @@ const VETERINARY: KindContent = {
         { id: "consult", name: "Standard consultation", department: "consultations", minutes: 15, price: 48 },
         { id: "consult-long", name: "Extended consultation", department: "consultations", minutes: 30, price: 72 },
         { id: "vaccination", name: "Vaccination appointment", department: "preventive", minutes: 15, price: 45 },
-        { id: "neuter", name: "Neutering", department: "surgery", minutes: 60, price: 240 },
-        { id: "dental", name: "Dental procedure", department: "dentistry", minutes: 90, price: 320, note: "Quoted after assessment." },
+        { id: "neuter", name: "Neutering", department: "surgery", minutes: 60, price: 240, estimate: true, note: "Priced on weight, confirmed when we see your pet." },
+        { id: "dental", name: "Dental procedure", department: "dentistry", minutes: 90, price: 320, estimate: true, note: "Extractions and x-rays are quoted once your pet is under anaesthetic." },
         { id: "emergency", name: "Emergency appointment", department: "out-of-hours", minutes: 20, price: 140 },
     ],
 };
@@ -600,7 +629,7 @@ const FIRST_NAMES = [
  * impression a proposal site cannot afford — and the demo bar already says
  * the people shown are illustrative.
  */
-const PHOTO_NAMES = ["Whitfield", "Nandakumar", "Okonkwo", "Duarte"] as const;
+const PHOTO_NAMES = ["Whitfield", "Nandakumar", "Okonkwo", "Duarte", "Osei"] as const;
 
 const LAST_NAMES = [
     "Whitfield", "Okafor", "Nandakumar", "Bennett", "Haddad", "Lindqvist",
@@ -806,7 +835,7 @@ export function packagesFor(
         packages.push({
             slug: "single",
             name: `Single ${profile.visit}`,
-            price: format(cheapest.price),
+            price: cheapest.estimate === true ? `from ${format(cheapest.price)}` : format(cheapest.price),
             cadence: "per visit",
             summary: `One ${profile.visit} with the ${profile.clinician} you choose. Nothing to join.`,
             includes: [
@@ -832,7 +861,7 @@ export function packagesFor(
         packages.push({
             slug: "thorough",
             name: longest.name,
-            price: format(longest.price),
+            price: longest.estimate === true ? `from ${format(longest.price)}` : format(longest.price),
             cadence: "one off",
             summary: `${longest.minutes} minutes, and time afterwards to go through every result.`,
             includes: [

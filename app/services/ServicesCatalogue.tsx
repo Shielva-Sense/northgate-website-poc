@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { siteFromHost } from "@/app/core/site";
 import { CatalogueGlyph } from "@/app/features/clinic/components/CatalogueGlyph";
-import { contentFor, formatPrice } from "@/app/features/clinic/content";
+import { contentFor, formatAppointmentPrice } from "@/app/features/clinic/content";
 import styles from "./Index.module.scss";
 
 /**
@@ -223,7 +223,7 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
                                                     </span>
                                                 </span>
                                                 <span className={styles.rowPrice}>
-                                                    {formatPrice(brand, type.price, priceMode)}
+                                                    {formatAppointmentPrice(brand, type, priceMode)}
                                                 </span>
                                                 <ArrowRight size={16} aria-hidden="true" />
                                             </Link>

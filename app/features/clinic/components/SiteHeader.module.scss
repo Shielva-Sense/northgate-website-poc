@@ -29,6 +29,25 @@
     flex: none;
 }
 
+/* The wordmark is one line, always.
+ *
+ * `short` comes from the registry row and is not always one word — "High
+ * Plains", and on a host with no row at all it falls back to the whole slug
+ * ("High Plains Veterinary"). Left to wrap, the wordmark became two lines, the
+ * lockup grew to three, and `align-items: center` floated the mark against the
+ * middle of that stack: the mark sat beside the gap between the two words
+ * rather than beside the name. That is the misalignment — not the gap, the
+ * wrap that caused it.
+ *
+ * min-width: 0 lets the flex child actually shrink, which it will not do by
+ * default, so a long name ellipses instead of pushing the nav off the header. */
+.logo > span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .logo small {
     display: block;
     white-space: nowrap;
