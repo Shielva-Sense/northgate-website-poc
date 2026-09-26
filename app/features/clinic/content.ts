@@ -2,7 +2,7 @@ import type { Brand } from "./brands";
 import type { Department } from "./care";
 import type { AdditionalService, CatalogueIcon, Treatment } from "./catalogue";
 import type { KindProfile, PracticeKind } from "./practice-kinds";
-import type { Clinician } from "./types";
+import type { Clinician, Package } from "./types";
 
 /**
  * What this practice actually offers, derived from its trade.
@@ -43,6 +43,8 @@ export interface ClinicContent {
     readonly appointmentTypes: readonly AppointmentType[];
     /** Filed under this practice's own departments, so the filters match. */
     readonly clinicians: readonly Clinician[];
+    /** Price cards, built from the appointments above so they cannot disagree. */
+    readonly packages: readonly Package[];
 }
 
 interface DeptSpec {
@@ -447,6 +449,7 @@ export function contentFor(profile: KindProfile, brand: Brand): ClinicContent {
         additionalServices: set.additional,
         appointmentTypes: set.appointments,
         clinicians: cliniciansFor(profile, brand),
+        packages: packagesFor(profile, brand),
     };
 }
 
@@ -629,3 +632,100 @@ export function cliniciansFor(profile: KindProfile, brand: Brand): readonly Clin
 const EXTRA_LANGUAGES = ["Spanish", "Arabic", "Hindi", "Mandarin", "Portuguese", "French"] as const;
 const NEXT_DAYS = ["Today", "Tomorrow", "Thursday", "Tomorrow", "Friday", "Today"] as const;
 const SLOT_TIMES = ["09:20", "11:40", "14:10", "16:30", "08:50", "15:00"] as const;
+
+/* ────────────────────────────────────────────────────────────────
+   Packages
+
+   Three cards priced in pounds and written for a general practice —
+   "childhood vaccinations at no extra cost", "60-minute review with a GP
+   partner" — shown on dental, veterinary and optometry sites alike.
+
+   Derived rather than written out ten times over. The single visit and the
+   thorough one are this trade's own cheapest and longest appointments, so
+   they can never contradict the price list on the same page. Only the
+   membership plan needs saying per trade, because what a plan covers is the
+   one part that is genuinely a commercial choice.
+   ──────────────────────────────────────────────────────────────── */
+
+interface PlanSpec {
+    readonly name: string;
+    readonly price: number;
+    readonly summary: string;
+    readonly includes: readonly string[];
+}
+
+const PLANS: Readonly<Record<PracticeKind, PlanSpec>> = {
+    hospital: { name: "Outpatient membership", price: 55, summary: "Direct access to consultant clinics without a referral wait.", includes: ["Two consultant appointments a year", "Priority imaging slots", "Results explained by phone", "Cancel any month"] },
+    "general-practice": { name: "Family cover", price: 39, summary: "Two adults and up to three children, seen as often as you need.", includes: ["Unlimited appointments for everyone named", "Same-week booking, guaranteed in writing", "Annual health check for each adult", "Blood tests on site, results in two days", "Cancel any month, no notice period"] },
+    dental: { name: "Dental plan", price: 22, summary: "Check-ups and hygiene spread over monthly payments.", includes: ["Two examinations a year", "Two hygiene appointments", "X-rays when they are needed", "20% off treatment", "Worldwide dental trauma cover"] },
+    physio: { name: "Recovery plan", price: 45, summary: "A course of sessions at a lower rate than booking one at a time.", includes: ["Four sessions a month", "A written programme, reviewed each visit", "Direct message access between sessions", "Cancel any month"] },
+    chiro: { name: "Maintenance plan", price: 40, summary: "Regular adjustment at a lower rate than single visits.", includes: ["Three adjustments a month", "Posture review every quarter", "Priority booking", "Cancel any month"] },
+    dermatology: { name: "Skin surveillance", price: 30, summary: "Annual mole mapping with the photographs kept for comparison.", includes: ["Yearly full-body dermoscopy", "Images stored and compared", "One lesion check included", "Priority appointments for anything new"] },
+    optometry: { name: "Eye care plan", price: 15, summary: "Examinations and lens supply on a monthly payment.", includes: ["Annual examination with OCT", "Contact lenses delivered", "Aftercare appointments included", "Repairs and adjustments free"] },
+    "mental-health": { name: "Weekly therapy", price: 320, summary: "A standing hour each week with the same therapist.", includes: ["Four sessions a month", "The same hour held for you", "Between-session message support", "Four weeks' notice to end"] },
+    podiatry: { name: "Foot care plan", price: 25, summary: "Routine treatment at the interval your feet actually need.", includes: ["Treatment every six weeks", "Diabetic checks included", "Nail care and callus", "Priority booking"] },
+    veterinary: { name: "Pet health plan", price: 18, summary: "Vaccinations, worming and check-ups spread over the year.", includes: ["Annual booster and health check", "Year-round flea and worm treatment", "Two nurse clinics a year", "10% off food and treatment"] },
+};
+
+/**
+ * Three price cards for this practice, in its own currency.
+ *
+ * The first and third are real appointments from the list above, so the cards
+ * and the price table are the same numbers by construction.
+ */
+export function packagesFor(profile: KindProfile, brand: Brand): readonly Package[] {
+    const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
+    const paid = set.appointments.filter((a) => a.price > 0);
+    const cheapest = paid.reduce<ApptSpec | null>((low, a) => (low === null || a.price < low.price ? a : low), null);
+    const longest = set.appointments.reduce<ApptSpec | null>(
+        (top, a) => (top === null || a.minutes > top.minutes ? a : top),
+        null,
+    );
+    const plan = PLANS[profile.kind] ?? PLANS["general-practice"];
+
+    const packages: Package[] = [];
+
+    if (cheapest !== null) {
+        packages.push({
+            slug: "single",
+            name: `Single ${profile.visit}`,
+            price: priceLabel(brand, cheapest.price),
+            cadence: "per visit",
+            summary: `One ${profile.visit} with the ${profile.clinician} you choose. Nothing to join.`,
+            includes: [
+                `${cheapest.minutes} minutes with a named ${profile.clinician}`,
+                "Written summary of what was said",
+                "A price agreed before anything starts",
+                "A follow-up message if results are pending",
+            ],
+        });
+    }
+
+    packages.push({
+        slug: "plan",
+        name: plan.name,
+        price: priceLabel(brand, plan.price),
+        cadence: "per month",
+        summary: plan.summary,
+        includes: plan.includes,
+        featured: true,
+    });
+
+    if (longest !== null && longest.id !== cheapest?.id) {
+        packages.push({
+            slug: "thorough",
+            name: longest.name,
+            price: priceLabel(brand, longest.price),
+            cadence: "one off",
+            summary: `${longest.minutes} minutes, and time afterwards to go through every result.`,
+            includes: [
+                `${longest.minutes} minutes with a ${profile.clinician}`,
+                ...(longest.note === undefined ? [] : [longest.note]),
+                "A written report you keep and can share",
+                "Referral letters arranged where needed",
+            ],
+        });
+    }
+
+    return packages;
+}

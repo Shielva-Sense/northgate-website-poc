@@ -5,8 +5,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, ShieldCheck } from "lucide-react";
 import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { Button } from "@/app/components/ui/Button";
-import { useBrand } from "@/app/features/clinic/BrandContext";
-import { CLINICIANS } from "@/app/features/clinic/constants";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import { slotsFor } from "@/app/features/clinic/care";
 import type { Slot } from "@/app/features/clinic/care";
 import type { Clinician } from "@/app/features/clinic/types";
@@ -56,6 +55,7 @@ type Props = {
  */
 export function AppointmentFlow({ department, serviceName }: Props): React.JSX.Element {
     const brand = useBrand();
+    const { clinicians } = useContent();
     const [step, setStep] = useState<Step>("clinician");
     const [clinician, setClinician] = useState<Clinician | null>(null);
     const [slot, setSlot] = useState<Slot | null>(null);
@@ -70,9 +70,9 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
     const people = useMemo(
         () =>
             department === undefined
-                ? CLINICIANS
-                : CLINICIANS.filter((person) => person.departments.includes(department)),
-        [department],
+                ? clinicians
+                : clinicians.filter((person) => person.departments.includes(department)),
+        [clinicians, department],
     );
 
     const slots = clinician === null ? [] : slotsFor(clinician.name);

@@ -7,7 +7,6 @@ import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { Checkbox, ChoiceGroup } from "@/app/components/ui/Choice";
 import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
-import { CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
 import { CONTACT_LABELS, EMPTY_FORM, URGENCY_LABELS, URGENT_NOTICE, WINDOW_LABELS } from "./constants";
 import { hasErrors, validate } from "./validate";
 import type {
@@ -19,7 +18,7 @@ import type {
     TimeWindow,
     Urgency,
 } from "./types";
-import { useBrand } from "@/app/features/clinic/BrandContext";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import styles from "./BookingForm.module.scss";
 
 const PATIENT_OPTIONS: readonly ChoiceOption<PatientType>[] = [
@@ -31,15 +30,48 @@ const URGENCY_OPTIONS: readonly ChoiceOption<Urgency>[] = (
     Object.keys(URGENCY_LABELS) as Urgency[]
 ).map((value) => ({ value, label: URGENCY_LABELS[value] }));
 
-const SERVICE_OPTIONS: readonly ChoiceOption<string>[] = [
-    ...SERVICES.map((service) => ({ value: service.slug, label: service.name })),
-    { value: "other", label: "Something else" },
-];
+/* Both lists belong to whichever practice this host is, so neither can be a
+   module constant. At module scope they were one general practice's services
+   and one general practice's nine partners — offered as the choices on a
+   dental site, where none of them existed.
 
-const CLINICIAN_OPTIONS: readonly ChoiceOption<string>[] = [
-    { value: "any", label: "No preference" },
-    ...CLINICIANS.map((person) => ({ value: person.name, label: person.name })),
-];
+   The appointment list is grouped by department and the clinician list is
+   narrowed to whoever staffs the chosen one, because "what is it for" and
+   "who would you like to see" are the same question asked twice otherwise. */
+function appointmentOptions(
+    departments: readonly { readonly id: string; readonly name: string }[],
+    types: readonly { readonly id: string; readonly name: string; readonly department: string }[],
+): readonly ChoiceOption<string>[] {
+    const grouped = departments.flatMap((department) =>
+        types
+            .filter((type) => type.department === department.id)
+            .map((type) => ({
+                value: type.id,
+                label: `${department.name} — ${type.name}`,
+            })),
+    );
+    return [...grouped, { value: "other", label: "Something else" }];
+}
+
+function clinicianOptions(
+    team: readonly { readonly name: string; readonly departments: readonly string[] }[],
+    types: readonly { readonly id: string; readonly department: string }[],
+    chosen: string,
+): readonly ChoiceOption<string>[] {
+    const department = types.find((type) => type.id === chosen)?.department;
+    const relevant =
+        department === undefined
+            ? team
+            : team.filter((person) => person.departments.includes(department));
+    /* Falling back to the whole team rather than showing an empty list: a
+       department with nobody in it is a data bug, and the person booking
+       should still be able to finish. */
+    const shown = relevant.length > 0 ? relevant : team;
+    return [
+        { value: "any", label: "No preference" },
+        ...shown.map((person) => ({ value: person.name, label: person.name })),
+    ];
+}
 
 const WINDOW_OPTIONS: readonly ChoiceOption<TimeWindow>[] = (
     Object.keys(WINDOW_LABELS) as TimeWindow[]
@@ -51,6 +83,7 @@ const CONTACT_OPTIONS: readonly ChoiceOption<ContactMethod>[] = (
 
 export function BookingForm(): React.JSX.Element {
     const brand = useBrand();
+    const { departments, appointmentTypes, clinicians } = useContent();
     const [form, setForm] = useState<BookingFormValues>(EMPTY_FORM);
     const [errors, setErrors] = useState<BookingErrors>({});
     const [state, setState] = useState<SubmitState>("idle");
@@ -210,7 +243,7 @@ export function BookingForm(): React.JSX.Element {
                 legend="What is it for?"
                 name="service"
                 value={form.service}
-                options={SERVICE_OPTIONS}
+                options={appointmentOptions(departments, appointmentTypes)}
                 onChange={(value) => set("service", value)}
                 error={errors.service}
             />
@@ -219,7 +252,7 @@ export function BookingForm(): React.JSX.Element {
                 legend="Preferred clinician"
                 name="clinician"
                 value={form.clinician}
-                options={CLINICIAN_OPTIONS}
+                options={clinicianOptions(clinicians, appointmentTypes, form.service)}
                 onChange={(value) => set("clinician", value)}
             />
 

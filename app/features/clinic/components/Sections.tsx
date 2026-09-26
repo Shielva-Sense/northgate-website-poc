@@ -20,7 +20,7 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { BookingForm } from "@/app/features/booking/BookingForm";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { ACCREDITATIONS, CLINICIANS, FAQS, JOURNEY, OPENING, PACKAGES, PROMISES, SERVICES, STATS } from "../constants";
+import { ACCREDITATIONS, FAQS, JOURNEY, OPENING, PROMISES, SERVICES, STATS } from "../constants";
 import type { Stat } from "../types";
 import { DepartmentCarousel } from "./DepartmentCarousel";
 import { templateById } from "../templates";
@@ -28,7 +28,7 @@ import type { TemplateId } from "../templates";
 import { ServiceGlyph } from "./ServiceGlyph";
 import { Faq } from "./Faq";
 import { Gallery } from "./Gallery";
-import { useBrand } from "../BrandContext";
+import { useBrand, useContent } from "../BrandContext";
 import styles from "./Sections.module.scss";
 
 /* Stagger is a data concern, not a style one, so it is set as a CSS variable
@@ -124,6 +124,9 @@ export function Departments(): React.JSX.Element {
 export function Team(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
     const brand = useBrand();
+    /* This practice's own team. It was nine GP partners with fees in pounds,
+       shown as the staff of every clinic on the farm. */
+    const { clinicians } = useContent();
 
     return (
         <section className={styles.section} id="team">
@@ -138,7 +141,7 @@ export function Team(): React.JSX.Element {
                 </div>
 
                 <ul className={styles.teamGrid} role="list">
-                    {CLINICIANS.map((person, index) => (
+                    {clinicians.map((person, index) => (
                         <li
                             key={person.name}
                             className={styles.person}
@@ -219,6 +222,10 @@ export function Team(): React.JSX.Element {
 
 export function Pricing(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    /* Built from this practice's own appointments, so the cards here and the
+       price table on /services are the same numbers by construction — and in
+       the currency the patient actually spends. */
+    const { packages } = useContent();
 
     return (
         <section className={`${styles.section} ${styles.alt}`} id="pricing">
@@ -233,7 +240,7 @@ export function Pricing(): React.JSX.Element {
                 </div>
 
                 <ul className={styles.priceGrid} role="list">
-                    {PACKAGES.map((item, index) => (
+                    {packages.map((item, index) => (
                         <li
                             key={item.slug}
                             className={`${styles.price} ${item.featured ? styles.featured : ""}`}

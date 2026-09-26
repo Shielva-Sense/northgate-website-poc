@@ -11,13 +11,14 @@ import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress"
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
 import { DEPARTMENTS } from "@/app/features/clinic/care";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { CLINICIANS, SERVICES } from "@/app/features/clinic/constants";
-import { useBrand } from "@/app/features/clinic/BrandContext";
+import { SERVICES } from "@/app/features/clinic/constants";
+import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
 import type { Service } from "@/app/features/clinic/types";
 import styles from "./Service.module.scss";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
     const brand = useBrand();
+    const { clinicians } = useContent();
     /* A service maps to one or more departments; the first is the one that
        normally runs it, and it pre-filters the clinician list. */
     const department = DEPARTMENTS.find((d) => d.services.includes(service.slug));
@@ -96,7 +97,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
 
                             <h2 className={styles.h2}>Who you would see</h2>
                             <ul className={styles.people} role="list">
-                                {CLINICIANS.filter((person) =>
+                                {clinicians.filter((person) =>
                                     department === undefined
                                         ? true
                                         : person.departments.includes(department.id),
