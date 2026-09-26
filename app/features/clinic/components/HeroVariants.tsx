@@ -7,9 +7,8 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { LeadCapture } from "@/app/features/booking/LeadCapture";
 import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { useBrand } from "../BrandContext";
+import { useBrand, useContent } from "../BrandContext";
 import { DEPARTMENTS } from "../care";
-import { PACKAGES } from "../constants";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
 import { HeroMedia } from "./HeroMedia";
@@ -165,7 +164,10 @@ function HeroSplit(): React.JSX.Element {
 function HeroPanel(): React.JSX.Element {
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
-    const cheapest = PACKAGES[0];
+    /* This practice's own cheapest card, in its own currency. PACKAGES[0] was
+       a general practice's £68 appointment, quoted in the hero of every site. */
+    const { packages } = useContent();
+    const cheapest = packages[0];
 
     return (
         <section className={`${styles.hero} ${styles.panel}`} id="top">
