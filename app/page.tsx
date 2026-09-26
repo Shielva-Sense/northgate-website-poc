@@ -7,11 +7,12 @@ import { siteFromHost } from "./core/site";
 import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
 import { BookingProvider } from "./features/booking/BookingPanel";
-import { contentFor } from "./features/clinic/content";
+import { contentFor, mediaFor } from "./features/clinic/content";
 import { DemoBar } from "./features/clinic/components/DemoBar";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const brand = (await siteFromHost((await headers()).get("host"))).brand;
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
     const canonical = siteUrl();
     return {
         alternates: { canonical },
@@ -21,7 +22,15 @@ export async function generateMetadata(): Promise<Metadata> {
             description: brand.strapline,
             url: canonical,
             type: "website",
-            images: [{ url: `${canonical}/img/consultation.jpg`, width: 1800, height: 1016 }],
+            /* The share card follows the trade too. This is the picture that
+               appears when somebody posts the link — and for the veterinary
+               practices on this list, Facebook is their entire web presence,
+               so it is the first thing their clients would see. A human
+               consulting room on a vet's post is the whole problem in one
+               image. */
+            images: [
+                { url: `${canonical}${mediaFor(site.profile.kind).consultation}`, width: 1800, height: 1016 },
+            ],
         },
     };
 }

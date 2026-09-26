@@ -12,12 +12,14 @@ import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
 import { DEPARTMENTS } from "@/app/features/clinic/care";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { SERVICES } from "@/app/features/clinic/constants";
-import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
+import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
+import { mediaFor } from "@/app/features/clinic/content";
 import type { Service } from "@/app/features/clinic/types";
 import styles from "./Service.module.scss";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
     const brand = useBrand();
+    const profile = useProfile();
     const { clinicians } = useContent();
     /* A service maps to one or more departments; the first is the one that
        normally runs it, and it pre-filters the clinician list. */
@@ -62,7 +64,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                             <Image
                                 data-reveal=""
                                 data-reveal-style="wipe"
-                                src="/img/consulting.jpg"
+                                src={mediaFor(profile.kind).consulting}
                                 alt="A bright consulting room with an examination couch and a window"
                                 width={1536}
                                 height={864}

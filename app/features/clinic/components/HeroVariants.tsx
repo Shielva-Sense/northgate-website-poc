@@ -7,7 +7,8 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { LeadCapture } from "@/app/features/booking/LeadCapture";
 import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { useBrand, useContent } from "../BrandContext";
+import { useBrand, useContent, useProfile } from "../BrandContext";
+import { mediaFor } from "../content";
 import { DEPARTMENTS } from "../care";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
@@ -53,6 +54,7 @@ export function Hero({ template }: { readonly template: TemplateId }): React.JSX
 
 /* ── cinematic: the footage does the persuading ──────────────────────── */
 function HeroCinematic(): React.JSX.Element {
+    const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
     const back = useParallax<HTMLDivElement>(-0.12);
@@ -60,7 +62,7 @@ function HeroCinematic(): React.JSX.Element {
     return (
         <section className={`${styles.hero} ${styles.cinematic}`} id="top">
             <div className={styles.back} ref={back} aria-hidden="true">
-                <HeroMedia poster="/img/consultation.jpg" src="/video/hero.mp4" />
+                <HeroMedia poster={mediaFor(profile.kind).consultation} src="/video/hero.mp4" />
             </div>
             <div className={styles.scrim} aria-hidden="true" />
 
@@ -107,6 +109,7 @@ function HeroCinematic(): React.JSX.Element {
 
 /* ── split: institutional, departments first ─────────────────────────── */
 function HeroSplit(): React.JSX.Element {
+    const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
 
@@ -148,7 +151,7 @@ function HeroSplit(): React.JSX.Element {
             </div>
             <div className={styles.splitShot} data-reveal="">
                 <Image
-                    src="/img/exterior.jpg"
+                    src={mediaFor(profile.kind).exterior}
                     alt="The practice building on a quiet leafy street"
                     fill
                     priority
@@ -162,6 +165,7 @@ function HeroSplit(): React.JSX.Element {
 
 /* ── panel: price and proof, form front and centre ───────────────────── */
 function HeroPanel(): React.JSX.Element {
+    const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
     /* This practice's own cheapest card, in its own currency. PACKAGES[0] was
@@ -209,7 +213,7 @@ function HeroPanel(): React.JSX.Element {
                     walk into, and a hero of pure copy reads unfinished. */}
                 <div className={styles.panelMedia} data-reveal="">
                     <Image
-                        src="/img/treatment.jpg"
+                        src={mediaFor(profile.kind).treatment}
                         alt="A spotless minor-procedures room with a sterile instrument trolley"
                         fill
                         priority

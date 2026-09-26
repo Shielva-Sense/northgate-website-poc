@@ -1,9 +1,10 @@
 import type { Brand } from "./brands";
 import type { Department } from "./care";
 import { ARTICLES } from "./catalogue";
+import { FACILITIES } from "./constants";
 import type { AdditionalService, Article, CatalogueIcon, Treatment } from "./catalogue";
 import type { KindProfile, PracticeKind, Service } from "./practice-kinds";
-import type { Clinician, Package } from "./types";
+import type { Clinician, Facility, Package } from "./types";
 
 /**
  * What this practice actually offers, derived from its trade.
@@ -973,4 +974,48 @@ const MEDIA: Readonly<Partial<Record<PracticeKind, Partial<SiteMedia>>>> = {
 
 export function mediaFor(kind: PracticeKind): SiteMedia {
     return { ...DEFAULT_MEDIA, ...(MEDIA[kind] ?? {}) };
+}
+
+/* ────────────────────────────────────────────────────────────────
+   The gallery
+
+   Four rooms, with a line about each. The shared set is written about a
+   human clinic — "registration done before you arrive", a fig tree in the
+   waiting room — and points at human clinic photographs. A veterinary
+   practice gets its own rooms and its own reasons.
+   ──────────────────────────────────────────────────────────────── */
+
+const VET_FACILITIES: readonly Facility[] = [
+    {
+        src: "/img/vet/waiting.jpg",
+        alt: "Waiting area with a wooden bench, a cat in a carrier on the floor and light from a window",
+        title: "Somewhere an anxious animal can settle",
+        points: ["Separate space for cats", "Seats away from the door", "In and seen, not left waiting"],
+    },
+    {
+        src: "/img/vet/reception.jpg",
+        alt: "Reception area of a small veterinary practice with a dog resting on the floor by a bench",
+        title: "A person, not a queuing system",
+        points: ["Reception answers in person", "No phone queue at opening", "We know your animal's name"],
+    },
+    {
+        src: "/img/vet/consulting.jpg",
+        alt: "Veterinary consulting room with an examination table, daylight and pale wood cabinetry",
+        title: "Room to examine properly",
+        points: ["Unhurried appointments", "Everything explained as we go", "The same vet where we can"],
+    },
+    {
+        src: "/img/vet/treatment.jpg",
+        alt: "Veterinary treatment room with stainless surfaces, a surgical lamp and instrument trays",
+        title: "Surgery and dentistry on site",
+        points: ["Day procedures, home the same evening", "A call before and after", "Bloods run here, most back same visit"],
+    },
+];
+
+const FACILITY_SETS: Readonly<Partial<Record<PracticeKind, readonly Facility[]>>> = {
+    veterinary: VET_FACILITIES,
+};
+
+export function facilitiesFor(kind: PracticeKind): readonly Facility[] {
+    return FACILITY_SETS[kind] ?? FACILITIES;
 }
