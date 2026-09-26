@@ -62,3 +62,19 @@ export function pathForLocale(pathname: string, locale: Locale): string {
     if (locale === DEFAULT_LOCALE) return bare;
     return bare === "/" ? "/ar" : `/ar${bare}`;
 }
+
+/**
+ * This clinic's content in the language being served.
+ *
+ * Falls back to the default-language content rather than to nothing: a
+ * practice that has translated its departments but not its treatments should
+ * get Arabic departments and English treatments, not an empty page. Half
+ * translated is a visible, fixable state; empty is neither.
+ */
+export function overridesFor<T>(
+    base: T | null,
+    byLocale: Readonly<Partial<Record<Locale, T>>>,
+    locale: Locale,
+): T | null {
+    return byLocale[locale] ?? base;
+}

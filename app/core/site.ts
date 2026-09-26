@@ -3,6 +3,7 @@ import { brandFromRecord, identifierFromHost } from "@/app/features/clinic/brand
 import type { Brand } from "@/app/features/clinic/brands";
 import { profileFor } from "@/app/features/clinic/practice-kinds";
 import type { ContentOverrides } from "@/app/features/clinic/content";
+import type { Locale } from "./locale";
 import type { CustomPage } from "@/app/features/clinic/pages";
 import type { KindProfile } from "@/app/features/clinic/practice-kinds";
 import { siteByIdentifier } from "./site-store";
@@ -26,8 +27,16 @@ export interface Site {
     readonly iconUrl: string | null;
     /** What this practice actually is, and therefore what the site may claim. */
     readonly profile: KindProfile;
-    /** This clinic's own content, where it has supplied any. */
+    /** This clinic's own content in the default language, where supplied. */
     readonly overrides: ContentOverrides | null;
+    /**
+     * The same content per language, for `overridesFor` to choose from.
+     *
+     * Resolution cannot happen here: this object is built once per host and
+     * the language is a route param, so picking one now would bake the wrong
+     * language into a cached render.
+     */
+    readonly overridesByLocale: Readonly<Partial<Record<Locale, ContentOverrides>>>;
     /** Extra pages this clinic has been given. */
     readonly pages: readonly CustomPage[];
 }
@@ -89,6 +98,7 @@ export async function siteFromHost(host: string | null | undefined): Promise<Sit
         template: record?.template ?? null,
         profile,
         overrides: record?.content ?? null,
+        overridesByLocale: record?.contentByLocale ?? {},
         pages: record?.pages ?? [],
         iconUrl: record?.iconPath ? cdnUrl(record.iconPath) : null,
     };
