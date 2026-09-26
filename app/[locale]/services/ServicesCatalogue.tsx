@@ -7,6 +7,9 @@ import { siteFromHost } from "@/app/core/site";
 import { CatalogueGlyph } from "@/app/features/clinic/components/CatalogueGlyph";
 import { contentFor, formatAppointmentPrice } from "@/app/features/clinic/content";
 import styles from "./Index.module.scss";
+import { overridesFor } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
+import { tr } from "@/app/core/content-ar";
 
 /**
  * Everything this practice offers, for this host.
@@ -22,25 +25,31 @@ import styles from "./Index.module.scss";
  * the farm. A dental practice advertised travel vaccinations and a
  * cardiometabolic department, and quoted both in pounds.
  */
-export function ServicesCatalogue(): React.JSX.Element {
+export function ServicesCatalogue({ locale }: { readonly locale: Locale }): React.JSX.Element {
     return (
-        <Suspense fallback={<CatalogueFallback />}>
-            <ResolveHost />
+        <Suspense fallback={<CatalogueFallback locale={locale} />}>
+            <ResolveHost locale={locale} />
         </Suspense>
     );
 }
 
-async function ResolveHost(): Promise<React.JSX.Element> {
+async function ResolveHost({ locale }: { readonly locale: Locale }): Promise<React.JSX.Element> {
     const host = (await headers()).get("host") ?? "";
-    return <Catalogue host={host} />;
+    return <Catalogue host={host} locale={locale} />;
 }
 
-async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX.Element> {
+async function Catalogue({
+    host,
+    locale,
+}: {
+    readonly host: string;
+    readonly locale: Locale;
+}): Promise<React.JSX.Element> {
     "use cache";
     const site = await siteFromHost(host);
     const brand = site.brand;
     const { departments, treatments, additionalServices, appointmentTypes, clinicians, priceMode } =
-        contentFor(site.profile, brand, site.overrides);
+        contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale);
 
     return (
         <>
@@ -110,10 +119,8 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
                 <div className="wrap">
                     <div className={styles.twoUp}>
                         <div>
-                            <h2 className={styles.h2}>Treatments</h2>
-                            <p className={styles.lede}>
-                                Things you may have been told you need, or booked before.
-                            </p>
+                            <h2 className={styles.h2}>{tr("Treatments", locale)}</h2>
+                            <p className={styles.lede}>{tr("Things you may have been told you need, or booked before.", locale)}</p>
                             <ul className={styles.rows} role="list">
                                 {treatments.map((treatment) => (
                                     <li key={treatment.slug}>
@@ -140,11 +147,8 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
                         </div>
 
                         <div>
-                            <h2 className={styles.h2}>Additional services</h2>
-                            <p className={styles.lede}>
-                                The practical things. Some are bookable, some are walk-in or by
-                                referral — it says which.
-                            </p>
+                            <h2 className={styles.h2}>{tr("Additional services", locale)}</h2>
+                            <p className={styles.lede}>{tr("The practical things. Some are bookable, some are walk-in or by referral — it says which.", locale)}</p>
                             <ul className={styles.rows} role="list">
                                 {additionalServices.map((service) => (
                                     <li key={service.slug}>
@@ -176,7 +180,7 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
                                                         {service.summary}
                                                     </span>
                                                 </span>
-                                                <span className={styles.tag}>No booking needed</span>
+                                                <span className={styles.tag}>{tr("No booking needed", locale)}</span>
                                             </div>
                                         )}
                                     </li>
@@ -190,7 +194,7 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
             {/* ── appointment types, by department ────────────── */}
             <section className={styles.section}>
                 <div className="wrap">
-                    <h2 className={styles.h2}>Appointment types</h2>
+                    <h2 className={styles.h2}>{tr("Appointment types", locale)}</h2>
                     <p className={styles.lede}>
                         What each {site.profile.visit} is, how long it takes and what it costs —
                         grouped by the department that provides it.
@@ -245,12 +249,12 @@ async function Catalogue({ host }: { readonly host: string }): Promise<React.JSX
  * Deliberately not a spinner: the headings are true of every practice, so they
  * can be painted immediately, and only the lists arrive a beat later.
  */
-function CatalogueFallback(): React.JSX.Element {
+function CatalogueFallback({ locale }: { readonly locale: Locale }): React.JSX.Element {
     return (
         <section className={styles.section}>
             <div className="wrap">
-                <h2 className={styles.h2}>Specialities and departments</h2>
-                <p className={styles.lede}>Loading this practice&rsquo;s services…</p>
+                <h2 className={styles.h2}>{tr("Specialities and departments", locale)}</h2>
+                <p className={styles.lede}>{tr("Loading this practice’s services…", locale)}</p>
             </div>
         </section>
     );

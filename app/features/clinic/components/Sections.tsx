@@ -32,6 +32,9 @@ import { useBrand, useContent, useProfile } from "../BrandContext";
 import { mediaFor } from "../content";
 import type { ServiceIcon } from "../types";
 import styles from "./Sections.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { localise } from "@/app/core/content-ar";
 
 /* Stagger is a data concern, not a style one, so it is set as a CSS variable
    rather than a class per index. */
@@ -54,12 +57,13 @@ function StatValue({ stat }: { stat: Stat }): React.JSX.Element {
 }
 
 export function Proof(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const brand = useBrand();
     /* Naming a regulator the client's country does not have is a fabricated
        credential, not a placeholder. Where the market is unknown, claim only
        things that are true anywhere. */
-    const accreditations =
+    const accreditations = localise(
         brand.regulators === null
             ? ([
                   { label: "Registered", detail: "All clinicians licensed to practise" },
@@ -67,13 +71,15 @@ export function Proof(): React.JSX.Element {
                   { label: "Audited", detail: "Infection control reviewed yearly" },
                   { label: "ISO 27001", detail: "Patient records held to standard" },
               ] as const)
-            : ACCREDITATIONS;
+            : ACCREDITATIONS,
+        locale,
+    );
 
     return (
-        <section className={styles.proof} aria-label="Practice at a glance">
+        <section className={styles.proof} aria-label={tr("Practice at a glance", locale)}>
             <div className="wrap" ref={ref}>
                 <ul className={styles.statRow} role="list">
-                    {STATS.map((stat, index) => (
+                    {localise(STATS, locale).map((stat, index) => (
                         <li key={stat.label} data-reveal="" style={delay(index)}>
                             <StatValue stat={stat} />
                             <span className={styles.statLabel}>{stat.label}</span>
@@ -97,17 +103,18 @@ export function Proof(): React.JSX.Element {
 /* ── departments ──────────────────────────────── */
 
 export function Departments(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
 
     return (
         <section className={`${styles.section} ${styles.alt}`} id="departments">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>Departments</p>
-                    <h2 className={styles.title}>Find the right team</h2>
+                    <p className={styles.kicker}>{tr("Departments", locale)}</p>
+                    <h2 className={styles.title}>{tr("Find the right team", locale)}</h2>
                     <p className={styles.lede}>
                         Choose a department to see who staffs it and when they are free. Not sure?{" "}
-                        <Link href="/find-a-doctor">Let us point you at the right one.</Link>
+                        <Link href="/find-a-doctor">{tr("Let us point you at the right one.", locale)}</Link>
                     </p>
                 </div>
 
@@ -124,6 +131,7 @@ export function Departments(): React.JSX.Element {
 /* ── clinicians ───────────────────────────────── */
 
 export function Team(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const brand = useBrand();
     /* This practice's own team. It was nine GP partners with fees in pounds,
@@ -134,12 +142,9 @@ export function Team(): React.JSX.Element {
         <section className={styles.section} id="team">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>Meet the team</p>
-                    <h2 className={styles.title}>Pick the person, then the time</h2>
-                    <p className={styles.lede}>
-                        Every clinician here is named, registered and bookable. Continuity matters
-                        for anything ongoing, so you can ask for the same person every visit.
-                    </p>
+                    <p className={styles.kicker}>{tr("Meet the team", locale)}</p>
+                    <h2 className={styles.title}>{tr("Pick the person, then the time", locale)}</h2>
+                    <p className={styles.lede}>{tr("Every clinician here is named, registered and bookable. Continuity matters for anything ongoing, so you can ask for the same person every visit.", locale)}</p>
                 </div>
 
                 <ul className={styles.teamGrid} role="list">
@@ -196,7 +201,7 @@ export function Team(): React.JSX.Element {
 
                                 <p className={styles.slot}>
                                     <span className={styles.slotDot} aria-hidden="true" />
-                                    <span>Next free</span>
+                                    <span>{tr("Next free", locale)}</span>
                                     <b>
                                         {person.nextSlot.day}, {person.nextSlot.time}
                                     </b>
@@ -207,9 +212,7 @@ export function Team(): React.JSX.Element {
                                         {person.fee}
                                         <span>per appointment</span>
                                     </p>
-                                    <LinkButton href="#book" variant="ghost">
-                                        Book
-                                    </LinkButton>
+                                    <LinkButton href="#book" variant="ghost">{tr("Book", locale)}</LinkButton>
                                 </div>
                             </div>
                         </li>
@@ -241,6 +244,7 @@ function glyphFor(name: string): ServiceIcon {
 /* ── pricing ──────────────────────────────────── */
 
 export function Pricing(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     /* Built from this practice's own appointments, so the cards here and the
        price table on /services are the same numbers by construction — and in
@@ -251,12 +255,9 @@ export function Pricing(): React.JSX.Element {
         <section className={`${styles.section} ${styles.alt}`} id="pricing">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>What it costs</p>
-                    <h2 className={styles.title}>Every price, on the page</h2>
-                    <p className={styles.lede}>
-                        You should not have to ring a clinic to find out what it charges. There is
-                        no booking fee and no fee to ask a question.
-                    </p>
+                    <p className={styles.kicker}>{tr("What it costs", locale)}</p>
+                    <h2 className={styles.title}>{tr("Every price, on the page", locale)}</h2>
+                    <p className={styles.lede}>{tr("You should not have to ring a clinic to find out what it charges. There is no booking fee and no fee to ask a question.", locale)}</p>
                 </div>
 
                 <ul className={styles.priceGrid} role="list">
@@ -268,7 +269,7 @@ export function Pricing(): React.JSX.Element {
                             style={delay(index)}
                         >
                             {item.featured ? (
-                                <p className={styles.badge}>Most families choose this</p>
+                                <p className={styles.badge}>{tr("Most families choose this", locale)}</p>
                             ) : null}
                             <h3 className={styles.cardTitle}>{item.name}</h3>
                             <p className={styles.amount}>
@@ -288,9 +289,7 @@ export function Pricing(): React.JSX.Element {
                                 href="#book"
                                 variant={item.featured ? "primary" : "ghost"}
                                 size="lg"
-                            >
-                                Request this
-                            </LinkButton>
+                            >{tr("Request this", locale)}</LinkButton>
                         </li>
                     ))}
                 </ul>
@@ -302,6 +301,7 @@ export function Pricing(): React.JSX.Element {
 /* ── services ─────────────────────────────────── */
 
 export function Services({ template }: { readonly template: TemplateId }): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     /* This practice's own services. SERVICES was one general practice's six,
        so a dental site advertised travel vaccinations and child health. */
@@ -313,7 +313,7 @@ export function Services({ template }: { readonly template: TemplateId }): React
         <section className={styles.section} id="services">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>What we do</p>
+                    <p className={styles.kicker}>{tr("What we do", locale)}</p>
                     <h2 className={styles.title}>{servicesTitle}</h2>
                     <p className={styles.lede}>{servicesLede}</p>
                 </div>
@@ -361,6 +361,7 @@ const PROMISE_ICONS_MAP = {
 } as const;
 
 export function Promises(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const media = mediaFor(useProfile().kind);
 
@@ -379,14 +380,12 @@ export function Promises(): React.JSX.Element {
 
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>What we take off you</p>
-                    <h2 className={styles.title}>
-                        The medicine is the easy part. We handle the rest.
-                    </h2>
+                    <p className={styles.kicker}>{tr("What we take off you", locale)}</p>
+                    <h2 className={styles.title}>{tr("The medicine is the easy part. We handle the rest.", locale)}</h2>
                 </div>
 
                 <ul className={styles.opsGrid} role="list">
-                    {PROMISES.map((item, index) => {
+                    {localise(PROMISES, locale).map((item, index) => {
                         const Icon = PROMISE_ICONS_MAP[item.icon];
                         return (
                             <li key={item.title} data-reveal="" style={delay(index)}>
@@ -407,18 +406,19 @@ export function Promises(): React.JSX.Element {
 /* ── journey ──────────────────────────────────── */
 
 export function Journey(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
 
     return (
         <section className={`${styles.section} ${styles.alt}`} id="how">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>How it works</p>
-                    <h2 className={styles.title}>Four steps, no phone queue</h2>
+                    <p className={styles.kicker}>{tr("How it works", locale)}</p>
+                    <h2 className={styles.title}>{tr("Four steps, no phone queue", locale)}</h2>
                 </div>
 
                 <ol className={styles.steps}>
-                    {JOURNEY.map((item, index) => (
+                    {localise(JOURNEY, locale).map((item, index) => (
                         <li key={item.step} data-reveal="" style={delay(index)}>
                             <span className={styles.stepNo} aria-hidden="true">
                                 {item.step}
@@ -436,6 +436,7 @@ export function Journey(): React.JSX.Element {
 /* ── visiting ─────────────────────────────────── */
 
 export function Visiting(): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
 
@@ -443,22 +444,22 @@ export function Visiting(): React.JSX.Element {
         <section className={`${styles.section} ${styles.alt}`} id="visiting">
             <div className="wrap" ref={ref}>
                 <div className={styles.head} data-reveal="">
-                    <p className={styles.kicker}>Visiting</p>
-                    <h2 className={styles.title}>Where to find us</h2>
+                    <p className={styles.kicker}>{tr("Visiting", locale)}</p>
+                    <h2 className={styles.title}>{tr("Where to find us", locale)}</h2>
                 </div>
 
                 <div className={`${styles.grid} ${styles.grid2}`}>
                     <div className={styles.card} data-reveal="">
-                        <h3 className={styles.cardTitle}>Opening hours</h3>
+                        <h3 className={styles.cardTitle}>{tr("Opening hours", locale)}</h3>
                         <table className={styles.hours}>
                             <thead>
                                 <tr>
-                                    <th scope="col">Day</th>
-                                    <th scope="col">Hours</th>
+                                    <th scope="col">{tr("Day", locale)}</th>
+                                    <th scope="col">{tr("Hours", locale)}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {OPENING.map((entry) => (
+                                {localise(OPENING, locale).map((entry) => (
                                     <tr key={entry.day}>
                                         <td>{entry.day}</td>
                                         <td>{entry.hours}</td>
@@ -469,7 +470,7 @@ export function Visiting(): React.JSX.Element {
                     </div>
 
                     <div className={styles.card} data-reveal="" style={delay(1)}>
-                        <h3 className={styles.cardTitle}>Getting here</h3>
+                        <h3 className={styles.cardTitle}>{tr("Getting here", locale)}</h3>
                         <p className={styles.detail}>
                             <MapPin size={18} aria-hidden="true" />
                             <span>{brand.address}</span>
@@ -484,10 +485,7 @@ export function Visiting(): React.JSX.Element {
                         </p>
                         <p className={styles.detail}>
                             <Clock size={18} aria-hidden="true" />
-                            <span>
-                                Step-free access from the street. Two accessible parking bays at
-                                the rear.
-                            </span>
+                            <span>{tr("Step-free access from the street. Two accessible parking bays at the rear.", locale)}</span>
                         </p>
                     </div>
                 </div>
@@ -499,6 +497,7 @@ export function Visiting(): React.JSX.Element {
 /* ── booking ──────────────────────────────────── */
 
 export function Booking(): React.JSX.Element {
+    const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const media = mediaFor(useProfile().kind);
 
@@ -519,14 +518,11 @@ export function Booking(): React.JSX.Element {
 
             <div className={`wrap ${styles.bookGrid}`} ref={ref}>
                 <div data-reveal="">
-                    <p className={styles.kicker}>Book</p>
-                    <h2 className={styles.title}>Request an appointment</h2>
-                    <p className={styles.lede}>
-                        It takes about a minute. You will get a confirmation with a time, not a
-                        promise to call you back at some point.
-                    </p>
+                    <p className={styles.kicker}>{tr("Book", locale)}</p>
+                    <h2 className={styles.title}>{tr("Request an appointment", locale)}</h2>
+                    <p className={styles.lede}>{tr("It takes about a minute. You will get a confirmation with a time, not a promise to call you back at some point.", locale)}</p>
                     <ul className={styles.darkList} role="list">
-                        {FAQS.slice(0, 3).map((item) => (
+                        {localise(FAQS, locale).slice(0, 3).map((item) => (
                             <li key={item.question}>
                                 <Check size={15} aria-hidden="true" />
                                 {item.question}

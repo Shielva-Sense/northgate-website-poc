@@ -8,6 +8,8 @@ import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Button } from "@/app/components/ui/Button";
 import { useContent, useBrand } from "@/app/features/clinic/BrandContext";
 import styles from "./Contact.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /* Built inside the component, not at module scope: the departments belong to
    whichever practice this host is, and a module constant froze one clinic's
@@ -27,6 +29,7 @@ const WHATSAPP_OPENER =
     "Hello, I would like to ask about an appointment. My name is ";
 
 export function ContactClient(): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const { departments } = useContent();
     const [name, setName] = useState("");
@@ -96,18 +99,13 @@ export function ContactClient(): React.JSX.Element {
                 <span className={styles.routeIco} aria-hidden="true">
                     <MessageCircle size={22} />
                 </span>
-                <h2 className={styles.routeTitle}>WhatsApp</h2>
-                <p className={styles.routeBody}>
-                    Best for quick questions, moving an appointment, or asking whether you need one
-                    at all. Answered during opening hours.
-                </p>
+                <h2 className={styles.routeTitle}>{tr("WhatsApp", locale)}</h2>
+                <p className={styles.routeBody}>{tr("Best for quick questions, moving an appointment, or asking whether you need one at all. Answered during opening hours.", locale)}</p>
                 <span className={styles.routeAction}>
                     Message us
                     <ArrowRight size={16} aria-hidden="true" />
                 </span>
-                <span className={styles.routeNote}>
-                    Opens WhatsApp. Please do not send clinical photographs or test results here.
-                </span>
+                <span className={styles.routeNote}>{tr("Opens WhatsApp. Please do not send clinical photographs or test results here.", locale)}</span>
             </a>
 
             {/* Phone */}
@@ -115,11 +113,8 @@ export function ContactClient(): React.JSX.Element {
                 <span className={styles.routeIco} aria-hidden="true">
                     <Phone size={22} />
                 </span>
-                <h2 className={styles.routeTitle}>Call us</h2>
-                <p className={styles.routeBody}>
-                    Reception answers in person. Best if it is urgent, if you would rather talk, or
-                    if you need a same-day slot — ring before 10am for those.
-                </p>
+                <h2 className={styles.routeTitle}>{tr("Call us", locale)}</h2>
+                <p className={styles.routeBody}>{tr("Reception answers in person. Best if it is urgent, if you would rather talk, or if you need a same-day slot — ring before 10am for those.", locale)}</p>
                 <span className={styles.routeAction}>
                     {brand.phone}
                     <ArrowRight size={16} aria-hidden="true" />
@@ -139,19 +134,14 @@ export function ContactClient(): React.JSX.Element {
                         <h2 className={styles.routeTitle} role="status">
                             Thank you, {name.trim().split(" ")[0]}
                         </h2>
-                        <p className={styles.routeBody}>
-                            We have your message. During opening hours we reply the same day, and
-                            first thing the next morning otherwise.
-                        </p>
+                        <p className={styles.routeBody}>{tr("We have your message. During opening hours we reply the same day, and first thing the next morning otherwise.", locale)}</p>
                     </>
                 ) : (
                     <form onSubmit={(event) => void handleSubmit(event)} noValidate>
-                        <h2 className={styles.routeTitle}>Send a message</h2>
-                        <p className={styles.routeBody}>
-                            Best if it is not urgent and you would rather write it down.
-                        </p>
+                        <h2 className={styles.routeTitle}>{tr("Send a message", locale)}</h2>
+                        <p className={styles.routeBody}>{tr("Best if it is not urgent and you would rather write it down.", locale)}</p>
 
-                        <Field label="Your name" required error={errors.name}>
+                        <Field label={tr("Your name", locale)} required error={errors.name}>
                             {(id, describedBy) => (
                                 <Input
                                     id={id}
@@ -164,7 +154,7 @@ export function ContactClient(): React.JSX.Element {
                             )}
                         </Field>
 
-                        <Field label="Phone" error={errors.phone}>
+                        <Field label={tr("Phone", locale)} error={errors.phone}>
                             {(id, describedBy) => (
                                 <Input
                                     id={id}
@@ -179,7 +169,7 @@ export function ContactClient(): React.JSX.Element {
                             )}
                         </Field>
 
-                        <Field label="Email">
+                        <Field label={tr("Email", locale)}>
                             {(id) => (
                                 <Input
                                     id={id}
@@ -201,7 +191,7 @@ export function ContactClient(): React.JSX.Element {
 
 
                         <Field
-                            label="Your message"
+                            label={tr("Your message", locale)}
                             required
                             error={errors.message}
                             help="Only what you are comfortable writing down."
@@ -229,9 +219,7 @@ export function ContactClient(): React.JSX.Element {
                         </Button>
 
                         <p className={styles.routeNote}>
-                            <ShieldCheck size={14} aria-hidden="true" />
-                            Used to answer you and nothing else. Never passed on.
-                        </p>
+                            <ShieldCheck size={14} aria-hidden="true" />{tr("Used to answer you and nothing else. Never passed on.", locale)}</p>
                     </form>
                 )}
             </div>

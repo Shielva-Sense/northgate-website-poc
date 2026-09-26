@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { LOCALES, dirFor, isLocale } from "@/app/core/locale";
 import { LocaleProvider } from "@/app/features/clinic/LocaleContext";
+import { stringsFor } from "@/app/core/strings";
 
 /**
  * The language segment.
@@ -36,6 +37,12 @@ export default async function LocaleLayout({
 
     return (
         <div lang={locale} dir={dirFor(locale)}>
+            {/* First focusable element in the language segment, and said in
+                that language — a skip link a reader cannot read is a skip link
+                that does not work. */}
+            <a href="#main-content" className="skip-link">
+                {stringsFor(locale).skipToContent}
+            </a>
             <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </div>
     );

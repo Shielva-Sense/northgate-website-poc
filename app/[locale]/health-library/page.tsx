@@ -6,9 +6,12 @@ import { ArrowRight } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { contentFor } from "@/app/features/clinic/content";
 import { EmptyLibrary } from "./EmptyLibrary";
 import styles from "./Library.module.scss";
+import { overridesFor } from "@/app/core/locale";
+import { tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -21,9 +24,14 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default async function Page(): Promise<React.JSX.Element> {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     const site = await siteFromHost((await headers()).get("host"));
-    const { articles } = contentFor(site.profile, site.brand, site.overrides);
+    const { articles } = contentFor(site.profile, site.brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale);
     /* Topics come from the articles this practice actually has, not from the
        full built-in list — otherwise a dental site printed six empty headings
        above nothing. */
@@ -31,9 +39,10 @@ export default async function Page(): Promise<React.JSX.Element> {
 
     return (
         <PageShell
-            kicker="Health library"
-            title="Written to be read, not to rank"
-            lede="Plain-language information about the things we are asked about most. Every article ends with when to stop reading and speak to a person."
+            locale={locale}
+            kicker={tr("Health library", locale)}
+            title={tr("Written to be read, not to rank", locale)}
+            lede={tr("Plain-language information about the things we are asked about most. Every article ends with when to stop reading and speak to a person.", locale)}
             imageKey="consultation"
             imageAlt="A clinician and a patient talking across a desk, both leaning in"
         >
@@ -84,11 +93,7 @@ export default async function Page(): Promise<React.JSX.Element> {
                         </div>
                     ))}
 
-                    <p className={styles.disclaimer}>
-                        This library is general information. It is not medical advice, it cannot
-                        account for your history, and nothing in it replaces being seen by someone
-                        who can examine you.
-                    </p>
+                    <p className={styles.disclaimer}>{tr("This library is general information. It is not medical advice, it cannot account for your history, and nothing in it replaces being seen by someone who can examine you.", locale)}</p>
                 </div>
             </section>
         </PageShell>

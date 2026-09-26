@@ -17,6 +17,7 @@ import type { Locale } from "@/app/core/locale";
 import type { Brand } from "../brands";
 import { ordersPriceList } from "../price-list";
 import styles from "./SiteHeader.module.scss";
+import { tr } from "@/app/core/content-ar";
 
 /* Absolute, not bare hashes: these have to work from /privacy and /services/*
    as well as from the home page. */
@@ -102,7 +103,7 @@ export function SiteHeader(): React.JSX.Element {
                     </span>
                 </Link>
 
-                <nav className={`${styles.nav} ${styles.links}`} aria-label="Main">
+                <nav className={`${styles.nav} ${styles.links}`} aria-label={tr("Main", locale)}>
                     {links.map((link) => (
                         <a key={link.href} href={link.href} className={styles.navLink}>
                             {link.label}
@@ -140,7 +141,7 @@ export function SiteHeader(): React.JSX.Element {
 
             {open ? (
                 <div className="wrap">
-                    <nav className={styles.panel} id="mobile-nav" aria-label="Main">
+                    <nav className={styles.panel} id="mobile-nav" aria-label={tr("Main", locale)}>
                         {links.map((link) => (
                             <a
                                 key={link.href}

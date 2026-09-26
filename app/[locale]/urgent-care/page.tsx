@@ -3,8 +3,10 @@ import { headers } from "next/headers";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { UrgentClient } from "./UrgentClient";
 import { NoEmergency } from "./NoEmergency";
+import { tr } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -17,7 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default async function Page(): Promise<React.JSX.Element> {
+export default async function Page({
+    params,
+}: {
+    readonly params: Promise<{ readonly locale: Locale }>;
+}): Promise<React.JSX.Element> {
+    const { locale } = await params;
     /* A dental practice, a physiotherapist or an optometrist does not have an
        emergency department, and a page claiming otherwise is the most
        dangerous thing this build could publish.
@@ -31,8 +38,9 @@ export default async function Page(): Promise<React.JSX.Element> {
         const { brand, profile } = site;
         return (
             <PageShell
-                kicker="Urgent help"
-                title="We are not an emergency service"
+            locale={locale}
+                kicker={tr("Urgent help", locale)}
+                title={tr("We are not an emergency service", locale)}
                 lede={`${brand.name} is a ${profile.label}. We do not have an emergency department, and nobody is here overnight.`}
             >
                 <div className="wrap">
@@ -50,9 +58,10 @@ export default async function Page(): Promise<React.JSX.Element> {
 
     return (
         <PageShell
-            kicker="Urgent and emergency care"
-            title="Something that will not wait"
-            lede="Tell us what has happened and we will show you which door to come to. Our emergency department is open 24 hours, and urgent care is walk-in — so there is no slot to choose either way."
+            locale={locale}
+            kicker={tr("Urgent and emergency care", locale)}
+            title={tr("Something that will not wait", locale)}
+            lede={tr("Tell us what has happened and we will show you which door to come to. Our emergency department is open 24 hours, and urgent care is walk-in — so there is no slot to choose either way.", locale)}
             imageKey="exterior"
             imageAlt="The lit entrance of the hospital at dusk, with the way in clearly signed"
         >

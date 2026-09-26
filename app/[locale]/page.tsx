@@ -9,6 +9,9 @@ import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { contentFor, mediaFor } from "@/app/features/clinic/content";
 import { DemoBar } from "@/app/features/clinic/components/DemoBar";
+import { overridesFor } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
+import { localise } from "@/app/core/content-ar";
 
 export async function generateMetadata(): Promise<Metadata> {
     const site = await siteFromHost((await headers()).get("host"));
@@ -38,9 +41,11 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Server shell. All interactivity lives in HomeClient. */
 type Props = {
     readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+    readonly params: Promise<{ readonly locale: Locale }>;
 };
 
-export default async function Page({ searchParams }: Props): Promise<React.JSX.Element> {
+export default async function Page({ searchParams, params }: Props): Promise<React.JSX.Element> {
+    const { locale } = await params;
     const site = await siteFromHost((await headers()).get("host"));
     const brand = site.brand;
     /* ?template= lets a client click through all four on one URL. A prospect's
@@ -50,7 +55,7 @@ export default async function Page({ searchParams }: Props): Promise<React.JSX.E
     const asked = Array.isArray(requested) ? requested[0] : requested;
     const template = isTemplateId(asked) ? asked : DEFAULT_TEMPLATE;
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
+        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
             <BookingProvider>
             <JsonLd data={clinicJsonLd(brand, site.profile)} />
             <JsonLd data={faqJsonLd()} />

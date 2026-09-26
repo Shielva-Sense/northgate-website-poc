@@ -9,8 +9,11 @@ import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { contentFor } from "@/app/features/clinic/content";
 import { ServiceClient } from "./ServiceClient";
+import { overridesFor } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
+import { localise } from "@/app/core/content-ar";
 
-type Params = { readonly params: Promise<{ readonly slug: string }> };
+type Params = { readonly params: Promise<{ readonly slug: string; readonly locale: Locale }> };
 
 /** One static page per service, so each has a URL a search engine can rank. */
 export function generateStaticParams(): { slug: string }[] {
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Params): Promise<React.JSX.Element> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const service = SERVICES.find((item) => item.slug === slug);
     if (!service) notFound();
 
@@ -51,7 +54,7 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
     const data = serviceJsonLd(slug);
 
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
+        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
             <BookingProvider>
             {data ? <JsonLd data={data} /> : null}
             <ServiceClient service={service} />

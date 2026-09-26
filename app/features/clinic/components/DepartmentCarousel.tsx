@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { DEPARTMENTS } from "../care";
 import styles from "./DepartmentCarousel.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 const INTERVAL_MS = 5_000;
 
@@ -31,6 +33,7 @@ export function DepartmentCarousel({
     /** Omit when the surrounding section already carries a heading. */
     readonly heading?: string | undefined;
 } = {}): React.JSX.Element {
+    const { locale } = useLocale();
     const [index, setIndex] = useState(0);
     const [playing, setPlaying] = useState(true);
     const holdRef = useRef(false);
@@ -106,7 +109,7 @@ export function DepartmentCarousel({
                 ref={regionRef}
                 role="group"
                 aria-roledescription="carousel"
-                aria-label="Departments"
+                aria-label={tr("Departments", locale)}
             >
                 {DEPARTMENTS.map((dept, i) => (
                     <div
@@ -149,7 +152,7 @@ export function DepartmentCarousel({
                     type="button"
                     className={`${styles.arrow} ${styles.prev}`}
                     onClick={() => go(index - 1)}
-                    aria-label="Previous department"
+                    aria-label={tr("Previous department", locale)}
                 >
                     <ChevronLeft size={20} aria-hidden="true" />
                 </button>
@@ -157,7 +160,7 @@ export function DepartmentCarousel({
                     type="button"
                     className={`${styles.arrow} ${styles.next}`}
                     onClick={() => go(index + 1)}
-                    aria-label="Next department"
+                    aria-label={tr("Next department", locale)}
                 >
                     <ChevronRight size={20} aria-hidden="true" />
                 </button>

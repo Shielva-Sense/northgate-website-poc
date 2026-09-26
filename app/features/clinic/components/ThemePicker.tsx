@@ -5,6 +5,8 @@ import { Check, Palette as PaletteIcon } from "lucide-react";
 import { THEMES } from "../brands";
 import { applyTheme, clearTheme, readStoredTheme } from "../theme";
 import styles from "./ThemePicker.module.scss";
+import { localise, tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * Live brand-colour chooser.
@@ -20,6 +22,7 @@ import styles from "./ThemePicker.module.scss";
  * throws on read, and the picker must still work.
  */
 export function ThemePicker(): React.JSX.Element {
+    const { locale } = useLocale();
     const [active, setActive] = useState<string | null>(null);
 
     /* Restore after mount, never during render: the server has already sent
@@ -28,7 +31,7 @@ export function ThemePicker(): React.JSX.Element {
     useEffect(() => {
         const stored = readStoredTheme();
         if (stored === null) return;
-        const theme = THEMES.find((t) => t.id === stored);
+        const theme = localise(THEMES, locale).find((t) => t.id === stored);
         if (theme === undefined) return;
 
         /* The CSS variables can be written straight away — that is the whole
@@ -38,22 +41,21 @@ export function ThemePicker(): React.JSX.Element {
         applyTheme(theme.id, false);
         const frame = window.requestAnimationFrame(() => setActive(theme.id));
         return () => window.cancelAnimationFrame(frame);
+        /* Runs once, on mount. The stored theme is read from localStorage and
+           applied before the first paint; re-running it when the language
+           changes would re-apply a theme the visitor may since have changed by
+           hand. `locale` is not read here. */
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <section className={styles.picker} aria-labelledby="theme-heading">
             <h2 className={styles.title} id="theme-heading">
-                <PaletteIcon size={18} aria-hidden="true" />
-                Brand colours
-            </h2>
-            <p className={styles.lede}>
-                Click one and the whole site changes — this page, every other page, the buttons,
-                the badges and the charts. It writes the same variables your deployment would
-                ship, so nothing here is preview-only.
-            </p>
+                <PaletteIcon size={18} aria-hidden="true" />{tr("Brand colours", locale)}</h2>
+            <p className={styles.lede}>{tr("Click one and the whole site changes — this page, every other page, the buttons, the badges and the charts. It writes the same variables your deployment would ship, so nothing here is preview-only.", locale)}</p>
 
             <ul className={styles.grid} role="list">
-                {THEMES.map((theme) => (
+                {localise(THEMES, locale).map((theme) => (
                     <li key={theme.id}>
                         <button
                             type="button"
@@ -89,9 +91,7 @@ export function ThemePicker(): React.JSX.Element {
                     clearTheme();
                     setActive(null);
                 }}
-            >
-                Reset to this practice&rsquo;s own colours
-            </button>
+            >{tr("Reset to this practice’s own colours", locale)}</button>
         </section>
     );
 }

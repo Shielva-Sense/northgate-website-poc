@@ -5,6 +5,8 @@ import { Check, Palette } from "lucide-react";
 import { THEMES } from "../brands";
 import { applyTheme, clearTheme, readStoredTheme } from "../theme";
 import styles from "./ThemeMenu.module.scss";
+import { localise, tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * The colour chooser, in the header, on every page.
@@ -19,6 +21,7 @@ import styles from "./ThemeMenu.module.scss";
  * closes, and the trigger reports its state with aria-expanded.
  */
 export function ThemeMenu(): React.JSX.Element {
+    const { locale } = useLocale();
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState<string | null>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,7 @@ export function ThemeMenu(): React.JSX.Element {
         };
     }, [open]);
 
-    const current = THEMES.find((theme) => theme.id === active);
+    const current = localise(THEMES, locale).find((theme) => theme.id === active);
 
     return (
         <div className={styles.wrap} ref={wrapRef}>
@@ -84,10 +87,10 @@ export function ThemeMenu(): React.JSX.Element {
             </button>
 
             {open ? (
-                <div className={styles.menu} role="group" aria-label="Brand colours">
-                    <p className={styles.menuHead}>Brand colours</p>
+                <div className={styles.menu} role="group" aria-label={tr("Brand colours", locale)}>
+                    <p className={styles.menuHead}>{tr("Brand colours", locale)}</p>
                     <ul className={styles.list} role="list">
-                        {THEMES.map((theme) => (
+                        {localise(THEMES, locale).map((theme) => (
                             <li key={theme.id}>
                                 <button
                                     type="button"
@@ -118,9 +121,7 @@ export function ThemeMenu(): React.JSX.Element {
                             clearTheme();
                             setActive(null);
                         }}
-                    >
-                        Reset to this practice&rsquo;s colours
-                    </button>
+                    >{tr("Reset to this practice’s colours", locale)}</button>
                 </div>
             ) : null}
         </div>

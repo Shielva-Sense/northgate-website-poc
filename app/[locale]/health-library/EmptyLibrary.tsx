@@ -1,5 +1,7 @@
 import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import styles from "./Library.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * What the library shows before a practice has one.
@@ -14,21 +16,14 @@ import styles from "./Library.module.scss";
  * this needs no deploy.
  */
 export function EmptyLibrary(): React.JSX.Element {
+    const { locale } = useLocale();
     return (
         <div className={styles.empty}>
-            <h2 className={styles.emptyTitle}>Articles are on their way</h2>
-            <p className={styles.emptyBody}>
-                We are writing plain-language guides for the questions we are asked most, and they
-                will appear here as they are ready. In the meantime, these cover what we treat and
-                how to be seen.
-            </p>
+            <h2 className={styles.emptyTitle}>{tr("Articles are on their way", locale)}</h2>
+            <p className={styles.emptyBody}>{tr("We are writing plain-language guides for the questions we are asked most, and they will appear here as they are ready. In the meantime, these cover what we treat and how to be seen.", locale)}</p>
             <p className={styles.emptyActions}>
-                <Link className={styles.emptyLink} href="/services">
-                    See what we treat
-                </Link>
-                <Link className={styles.emptyLink} href="/appointments">
-                    Book an appointment
-                </Link>
+                <Link className={styles.emptyLink} href="/services">{tr("See what we treat", locale)}</Link>
+                <Link className={styles.emptyLink} href="/appointments">{tr("Book an appointment", locale)}</Link>
             </p>
         </div>
     );

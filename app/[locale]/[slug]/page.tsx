@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { pageBySlug } from "@/app/features/clinic/pages";
 import type { CustomPage } from "@/app/features/clinic/pages";
 import styles from "./Custom.module.scss";
@@ -31,7 +32,7 @@ import styles from "./Custom.module.scss";
 export async function generateMetadata({
     params,
 }: {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string; locale: Locale }>;
 }): Promise<Metadata> {
     const { slug } = await params;
     const site = await siteFromHost((await headers()).get("host"));
@@ -49,9 +50,9 @@ export async function generateMetadata({
 export default async function Page({
     params,
 }: {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string; locale: Locale }>;
 }): Promise<React.JSX.Element> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const site = await siteFromHost((await headers()).get("host"));
     const page = pageBySlug(site.pages, slug);
 
@@ -63,6 +64,7 @@ export default async function Page({
 
     return (
         <PageShell
+            locale={locale}
             title={page.title}
             {...(page.kicker === undefined ? {} : { kicker: page.kicker })}
             {...(page.lede === undefined ? {} : { lede: page.lede })}

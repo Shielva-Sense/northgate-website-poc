@@ -9,6 +9,8 @@ import type { PriceList } from "./price-list";
 import { urgentUnitsFor } from "./urgent";
 import type { UrgentUnit } from "./urgent";
 import { redFlagsFor } from "./care";
+import { localise } from "../../core/content-ar";
+import type { Locale } from "../../core/locale";
 import type { SymptomOption } from "./care";
 
 /**
@@ -569,6 +571,7 @@ export function contentFor(
     profile: KindProfile,
     brand: Brand,
     overrides?: ContentOverrides | null,
+    locale: Locale = "en",
 ): ClinicContent {
     const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
     const o = overrides ?? {};
@@ -584,7 +587,13 @@ export function contentFor(
     const appointmentTypes = o.appointmentTypes ?? set.appointments;
     const departments = o.departments ?? set.departments;
 
-    return {
+    /* Translated here rather than in each component. The content object is
+       the one place every page's departments, treatments, appointment types
+       and packages pass through, so a page added next week is in Arabic
+       without anybody remembering to translate it. A clinic's own `contentAr`
+       arrives already in Arabic and passes through the table unchanged, since
+       nothing in it will match an English key. */
+    return localise({
         departments,
         treatments: o.treatments ?? set.treatments,
         additionalServices: o.additionalServices ?? set.additional,
@@ -599,7 +608,7 @@ export function contentFor(
         urgentUnits: o.urgentUnits ?? urgentUnitsFor(profile.kind),
         redFlags: o.redFlags ?? redFlagsFor(profile.kind),
         priceMode,
-    };
+    }, locale);
 }
 
 /** The appointment types bookable within one department. */

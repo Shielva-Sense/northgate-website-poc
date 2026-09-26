@@ -24,6 +24,8 @@ import { triageFor } from "@/app/features/clinic/content";
 import type { UrgentUnit } from "@/app/features/clinic/urgent";
 import { NearestEmergency } from "./NearestEmergency";
 import styles from "./Urgent.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * Arrival windows rather than appointment times.
@@ -51,6 +53,7 @@ interface Sent {
 }
 
 export function UrgentClient(): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const profile = useProfile();
     const isVet = profile.kind === "veterinary";
@@ -155,9 +158,7 @@ export function UrgentClient(): React.JSX.Element {
     const emergency = (
         <aside className={styles.emergency} role="note" aria-labelledby="emergency-heading">
             <p className={styles.emergencyTag}>
-                <AlertTriangle size={16} aria-hidden="true" />
-                If this could be life-threatening
-            </p>
+                <AlertTriangle size={16} aria-hidden="true" />{tr("If this could be life-threatening", locale)}</p>
             <h2 className={styles.emergencyTitle} id="emergency-heading">
                 {isVet
                     ? `Ring us on ${brand.aeLine} and bring them straight in`
@@ -218,15 +219,8 @@ export function UrgentClient(): React.JSX.Element {
 
             {stage === "find" ? (
                 <section className={styles.panel} aria-labelledby="find-heading">
-                    <h2 className={styles.h2} id="find-heading">
-                        What has happened?
-                    </h2>
-                    <p className={styles.lede}>
-                        Describe it in your own words — &ldquo;cut my hand&rdquo;, &ldquo;fever
-                        since last night&rdquo;, &ldquo;twisted ankle&rdquo;. We will show you which
-                        door to come to. No slot to pick: you tell us you are coming, and the desk
-                        expects you.
-                    </p>
+                    <h2 className={styles.h2} id="find-heading">{tr("What has happened?", locale)}</h2>
+                    <p className={styles.lede}>{tr("Describe it in your own words — “cut my hand”, “fever since last night”, “twisted ankle”. We will show you which door to come to. No slot to pick: you tell us you are coming, and the desk expects you.", locale)}</p>
 
                     <div className={styles.searchRow}>
                         <Search className={styles.searchIcon} size={18} aria-hidden="true" />
@@ -235,8 +229,8 @@ export function UrgentClient(): React.JSX.Element {
                             type="search"
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Cut hand, fever, chest pain, child unwell…"
-                            aria-label="Describe what has happened"
+                            placeholder={tr("Cut hand, fever, chest pain, child unwell…", locale)}
+                            aria-label={tr("Describe what has happened", locale)}
                             autoComplete="off"
                         />
                         {query === "" ? null : (
@@ -244,7 +238,7 @@ export function UrgentClient(): React.JSX.Element {
                                 className={styles.clear}
                                 type="button"
                                 onClick={() => setQuery("")}
-                                aria-label="Clear search"
+                                aria-label={tr("Clear search", locale)}
                             >
                                 <X size={16} aria-hidden="true" />
                             </button>
@@ -263,16 +257,9 @@ export function UrgentClient(): React.JSX.Element {
                            deliberately. */
                         <div className={styles.stop}>
                             <p className={styles.stopTag}>
-                                <AlertTriangle size={16} aria-hidden="true" />
-                                Stop
-                            </p>
+                                <AlertTriangle size={16} aria-hidden="true" />{tr("Stop", locale)}</p>
                             <p className={styles.stopWhat}>{result.redFlag.label}</p>
-                            <p className={styles.stopBody}>
-                                This is not something to join a list for. Come straight to our
-                                emergency department — it is open 24 hours, you do not need an
-                                appointment, and you will be seen ahead of everyone waiting. Ring
-                                the A&amp;E line on the way and we will be ready for you.
-                            </p>
+                            <p className={styles.stopBody}>{tr("This is not something to join a list for. Come straight to our emergency department — it is open 24 hours, you do not need an appointment, and you will be seen ahead of everyone waiting. Ring the A&E line on the way and we will be ready for you.", locale)}</p>
                             <div className={styles.emergencyActions}>
                                 <a className={styles.emergencyCall} href={brand.aeLineHref}>
                                     <Phone size={17} aria-hidden="true" />
@@ -302,15 +289,13 @@ export function UrgentClient(): React.JSX.Element {
 
                     {result.redFlag !== null ? null : result.units.length === 0 ? (
                         <div className={styles.none}>
-                            <p className={styles.noneTitle}>Nothing matched those words</p>
+                            <p className={styles.noneTitle}>{tr("Nothing matched those words", locale)}</p>
                             <p className={styles.cardBody}>
                                 That is a limit of the search, not a judgement about whether you
                                 need seeing. Ring {brand.phone} and a person will sort it out, or
                                 clear the box to see every urgent service we run.
                             </p>
-                            <Button variant="ghost" onClick={() => setQuery("")}>
-                                Show everything
-                            </Button>
+                            <Button variant="ghost" onClick={() => setQuery("")}>{tr("Show everything", locale)}</Button>
                         </div>
                     ) : (
                         <ul className={styles.units} role="list">
@@ -340,7 +325,7 @@ export function UrgentClient(): React.JSX.Element {
                                         <div className={styles.metaItem}>
                                             <dt>
                                                 <Clock size={14} aria-hidden="true" />
-                                                <span className="visually-hidden">Open</span>
+                                                <span className="visually-hidden">{tr("Open", locale)}</span>
                                             </dt>
                                             <dd>{item.hours}</dd>
                                         </div>
@@ -373,9 +358,7 @@ export function UrgentClient(): React.JSX.Element {
                                                 target="_blank"
                                                 rel="noreferrer"
                                             >
-                                                <MapPin size={15} aria-hidden="true" />
-                                                Directions
-                                            </a>
+                                                <MapPin size={15} aria-hidden="true" />{tr("Directions", locale)}</a>
                                         ) : null}
                                     </div>
                                 </li>
@@ -388,9 +371,7 @@ export function UrgentClient(): React.JSX.Element {
             {stage === "details" && unit !== null ? (
                 <section className={styles.panel} aria-labelledby="details-heading">
                     <button className={styles.back} type="button" onClick={() => go("find")}>
-                        <ArrowLeft size={15} aria-hidden="true" />
-                        Back to urgent services
-                    </button>
+                        <ArrowLeft size={15} aria-hidden="true" />{tr("Back to urgent services", locale)}</button>
                     <h2 className={styles.h2} id="details-heading">
                         {unit.name}
                     </h2>
@@ -401,7 +382,7 @@ export function UrgentClient(): React.JSX.Element {
                     </p>
 
                     <div className={styles.form}>
-                        <Field label="Your name" required error={errors.fullName}>
+                        <Field label={tr("Your name", locale)} required error={errors.fullName}>
                             {(id, describedBy) => (
                                 <Input
                                     id={id}
@@ -414,7 +395,7 @@ export function UrgentClient(): React.JSX.Element {
                         </Field>
 
                         <Field
-                            label="Mobile number"
+                            label={tr("Mobile number", locale)}
                             required
                             help="Only used to ring you before you travel if the queue changes."
                             error={errors.phone}
@@ -441,7 +422,7 @@ export function UrgentClient(): React.JSX.Element {
                         />
 
                         <Field
-                            label="What has happened?"
+                            label={tr("What has happened?", locale)}
                             help="A sentence is plenty. It lets the desk put the right person in front of you."
                         >
                             {(id, describedBy) => (
@@ -497,12 +478,7 @@ export function UrgentClient(): React.JSX.Element {
                         </h2>
                         <p className={styles.lede}>
                             {sent.unit.kind === "emergency" ? (
-                                <>
-                                    Come straight to the emergency department entrance and give
-                                    your name. You do not need an appointment, and you will be
-                                    assessed on arrival — the order people are seen in is decided
-                                    by how unwell they are, never by who arrived first.
-                                </>
+                                <>{tr("Come straight to the emergency department entrance and give your name. You do not need an appointment, and you will be assessed on arrival — the order people are seen in is decided by how unwell they are, never by who arrived first.", locale)}</>
                             ) : (
                                 <>
                                     {sent.unit.name} is expecting you{" "}
@@ -519,7 +495,7 @@ export function UrgentClient(): React.JSX.Element {
 
                         <dl className={styles.receipt}>
                             <div className={styles.receiptRow}>
-                                <dt>Reference</dt>
+                                <dt>{tr("Reference", locale)}</dt>
                                 <dd className={styles.ref}>{sent.reference}</dd>
                             </div>
                             <div className={styles.receiptRow}>
@@ -531,7 +507,7 @@ export function UrgentClient(): React.JSX.Element {
                                 </dd>
                             </div>
                             <div className={styles.receiptRow}>
-                                <dt>Where</dt>
+                                <dt>{tr("Where", locale)}</dt>
                                 <dd>{brand.address}</dd>
                             </div>
                         </dl>
@@ -540,11 +516,7 @@ export function UrgentClient(): React.JSX.Element {
                             not wired the patient is told to ring, not left waiting
                             for a queue they were never actually added to. */}
                         {sent.delivered ? null : (
-                            <p className={styles.notDelivered} role="alert">
-                                This demo is not connected to a live clinic system, so nobody has
-                                actually been notified. On a real site this reaches the desk
-                                immediately.
-                            </p>
+                            <p className={styles.notDelivered} role="alert">{tr("This demo is not connected to a live clinic system, so nobody has actually been notified. On a real site this reaches the desk immediately.", locale)}</p>
                         )}
 
                         <p className={styles.doneFoot}>
@@ -566,9 +538,7 @@ export function UrgentClient(): React.JSX.Element {
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                <MapPin size={15} aria-hidden="true" />
-                                Directions
-                            </a>
+                                <MapPin size={15} aria-hidden="true" />{tr("Directions", locale)}</a>
                             <Button
                                 variant="ghost"
                                 onClick={() => {
@@ -581,9 +551,7 @@ export function UrgentClient(): React.JSX.Element {
                                     setQuery("");
                                     go("find");
                                 }}
-                            >
-                                Add someone else
-                            </Button>
+                            >{tr("Add someone else", locale)}</Button>
                         </div>
                     </div>
                 </section>

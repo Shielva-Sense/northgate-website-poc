@@ -11,6 +11,7 @@ import type { Slot } from "@/app/features/clinic/care";
 import type { Clinician } from "@/app/features/clinic/types";
 import styles from "./AppointmentFlow.module.scss";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { tr } from "@/app/core/content-ar";
 
 type Step = "clinician" | "details" | "slot" | "done";
 
@@ -55,6 +56,7 @@ type Props = {
  * their phone number.
  */
 export function AppointmentFlow({ department, serviceName }: Props): React.JSX.Element {
+    const { locale } = useLocale();
     const { t } = useLocale();
     const brand = useBrand();
     const { clinicians } = useContent();
@@ -149,42 +151,37 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                 <div className={styles.doneMark} aria-hidden="true">
                     <CalendarCheck size={30} />
                 </div>
-                <h2 className={styles.doneTitle} role="status">
-                    Your appointment is scheduled
-                </h2>
+                <h2 className={styles.doneTitle} role="status">{tr("Your appointment is scheduled", locale)}</h2>
                 <dl className={styles.summary}>
                     <div>
-                        <dt>Who</dt>
+                        <dt>{tr("Who", locale)}</dt>
                         <dd>
                             {clinician.name} &middot; {clinician.role}
                         </dd>
                     </div>
                     <div>
-                        <dt>When</dt>
+                        <dt>{tr("When", locale)}</dt>
                         <dd>
                             {slot.day}, {slot.time}
                         </dd>
                     </div>
                     <div>
-                        <dt>Where</dt>
+                        <dt>{tr("Where", locale)}</dt>
                         <dd>{brand.address}</dd>
                     </div>
                     <div>
-                        <dt>Confirmation to</dt>
+                        <dt>{tr("Confirmation to", locale)}</dt>
                         <dd>{phone.trim() !== "" ? phone : email}</dd>
                     </div>
                 </dl>
-                <p className={styles.doneNote}>
-                    We have sent a confirmation. Reply to it to move or cancel — cancelling frees
-                    the slot for someone else, which is why we ask.
-                </p>
+                <p className={styles.doneNote}>{tr("We have sent a confirmation. Reply to it to move or cancel — cancelling frees the slot for someone else, which is why we ask.", locale)}</p>
             </div>
         );
     }
 
     return (
         <div className={styles.panel}>
-            <ol className={styles.steps} aria-label="Booking progress">
+            <ol className={styles.steps} aria-label={tr("Booking progress", locale)}>
                 {ORDER.map((id, index) => {
                     const position = ORDER.indexOf(step as Exclude<Step, "done">);
                     const state = index < position ? "done" : index === position ? "now" : "todo";
@@ -255,7 +252,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
 
             {step === "details" && clinician !== null ? (
                 <>
-                    <h2 className={styles.title}>Your details</h2>
+                    <h2 className={styles.title}>{tr("Your details", locale)}</h2>
                     <p className={styles.sub}>
                         So {familiarName(clinician)} knows who is coming, and so we
                         can confirm.
@@ -289,7 +286,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                                 />
                             )}
                         </Field>
-                        <Field label="Email" error={errors.email}>
+                        <Field label={tr("Email", locale)} error={errors.email}>
                             {(id, describedBy) => (
                                 <Input
                                     id={id}
@@ -305,7 +302,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                     </div>
 
                     <Field
-                        label="Anything we should know"
+                        label={tr("Anything we should know", locale)}
                         help="Optional. Only what you are comfortable writing down."
                     >
                         {(id, describedBy) => (
@@ -324,9 +321,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                             variant="ghost"
                             onClick={() => setStep("clinician")}
                             leftIcon={<ArrowLeft size={16} />}
-                        >
-                            Back
-                        </Button>
+                        >{tr("Back", locale)}</Button>
                         <Button
                             size="lg"
                             rightIcon={<ArrowRight size={16} />}
@@ -383,13 +378,9 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
                             variant="ghost"
                             onClick={() => setStep("details")}
                             leftIcon={<ArrowLeft size={16} />}
-                        >
-                            Back
-                        </Button>
+                        >{tr("Back", locale)}</Button>
                         <p className={styles.privacy}>
-                            <ShieldCheck size={14} aria-hidden="true" />
-                            Used to arrange this appointment. Never passed on.
-                        </p>
+                            <ShieldCheck size={14} aria-hidden="true" />{tr("Used to arrange this appointment. Never passed on.", locale)}</p>
                     </div>
                 </>
             ) : null}

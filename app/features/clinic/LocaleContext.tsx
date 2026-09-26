@@ -1,8 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo } from "react";
-import { usePathname } from "next/navigation";
-import { DEFAULT_LOCALE, isLocale } from "@/app/core/locale";
+import { DEFAULT_LOCALE } from "@/app/core/locale";
 import type { Locale } from "@/app/core/locale";
 import { stringsFor } from "@/app/core/strings";
 import type { UiKey } from "@/app/core/strings";
@@ -25,19 +24,21 @@ interface LocaleApi {
 
 const LocaleCtx = createContext<LocaleApi | null>(null);
 
+/* The fallback for a component rendered with no provider above it — a test,
+   a preview, a fragment. It reads the default language rather than the path:
+   an earlier version derived the locale from `usePathname()`, which makes
+   every consumer depend on request URL data, and Next refuses to prerender a
+   client component that does so outside a Suspense boundary. The whole point
+   of moving routes under `app/[locale]` was that the language is known
+   statically, so reading it back off the URL at runtime was both redundant
+   and the thing that broke the build. */
+const FALLBACK: LocaleApi = {
+    locale: DEFAULT_LOCALE,
+    t: (key) => stringsFor(DEFAULT_LOCALE)[key],
+};
+
 export function useLocale(): LocaleApi {
-    const fromContext = useContext(LocaleCtx);
-    /* Deliberately not throwing when there is no provider. Every route sits
-       under one, but a component rendered in isolation — a test, a preview —
-       should show English rather than crash the page. */
-    const pathname = usePathname();
-    const derived = useMemo<LocaleApi>(() => {
-        const segment = /^\/(ar|en)(?=\/|$)/.exec(pathname)?.[1];
-        const locale = isLocale(segment) ? segment : DEFAULT_LOCALE;
-        const table = stringsFor(locale);
-        return { locale, t: (key) => table[key] };
-    }, [pathname]);
-    return fromContext ?? derived;
+    return useContext(LocaleCtx) ?? FALLBACK;
 }
 
 export function LocaleProvider({

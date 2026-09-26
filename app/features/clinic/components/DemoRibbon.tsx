@@ -1,4 +1,6 @@
 import styles from "./DemoRibbon.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * "This is a proposal, not their website."
@@ -13,9 +15,10 @@ import styles from "./DemoRibbon.module.scss";
  * reaches it before the clinic's name.
  */
 export function DemoRibbon({ name }: { readonly name: string }): React.JSX.Element {
+    const { locale } = useLocale();
     return (
         <aside className={styles.ribbon} role="note">
-            <b>Design proposal</b>
+            <b>{tr("Design proposal", locale)}</b>
             <span>
                 A concept site prepared for {name} by Shielva Sense. Not affiliated with,
                 endorsed by, or operated by {name}. People, prices and reviews shown are

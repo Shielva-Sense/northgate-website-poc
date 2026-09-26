@@ -5,6 +5,8 @@ import type { TemplateId } from "../templates";
 import { DemoThemes } from "./DemoThemes";
 import { SuggestionTrigger } from "@/app/features/feedback/SuggestionPanel";
 import styles from "./DemoBar.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 /**
  * Layout switcher, for showing a client the options live.
@@ -24,11 +26,12 @@ export function DemoBar({
         colour switch is not, and the bar has to appear on both. */
     readonly active?: TemplateId | undefined;
 } = {}): React.JSX.Element {
+    const { locale } = useLocale();
     return (
-        <aside className={styles.bar} aria-label="Demo layout switcher">
+        <aside className={styles.bar} aria-label={tr("Demo layout switcher", locale)}>
             <span className={styles.label}>
                 <Layers size={14} aria-hidden="true" />
-                <span className={styles.labelText}>Layout</span>
+                <span className={styles.labelText}>{tr("Layout", locale)}</span>
             </span>
             <ul className={styles.options} role="list">
                 {TEMPLATES.map((template) => (
@@ -47,9 +50,7 @@ export function DemoBar({
 
             <DemoThemes />
 
-            <Link href="/templates" className={styles.compare} prefetch={false}>
-                Compare all
-            </Link>
+            <Link href="/templates" className={styles.compare} prefetch={false}>{tr("Compare all", locale)}</Link>
 
             {/* Last, and visually the loudest thing on the bar: it is the one
                 control here that sends something back to us. */}

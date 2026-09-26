@@ -6,11 +6,13 @@ import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { PageShell } from "@/app/components/layouts/PageShell";
+import type { Locale } from "@/app/core/locale";
 import { ARTICLES, articleBySlug } from "@/app/features/clinic/catalogue";
 import { departmentById } from "@/app/features/clinic/care";
 import styles from "../Library.module.scss";
+import { tr } from "@/app/core/content-ar";
 
-type Params = { readonly params: Promise<{ readonly slug: string }> };
+type Params = { readonly params: Promise<{ readonly slug: string; readonly locale: Locale }> };
 
 export function generateStaticParams(): { slug: string }[] {
     return ARTICLES.map((article) => ({ slug: article.slug }));
@@ -30,13 +32,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Params): Promise<React.JSX.Element> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const article = articleBySlug(slug);
     if (article === undefined) notFound();
     const department = departmentById(article.department);
 
     return (
-        <PageShell kicker={article.topic} title={article.title} lede={article.summary}>
+        <PageShell locale={locale} kicker={article.topic} title={article.title} lede={article.summary}>
             <section className={styles.section}>
                 <div className={`wrap ${styles.articleWrap}`}>
                     <article className={styles.article}>
@@ -51,9 +53,7 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
                             of a long scroll, and deliberately the loudest thing here. */}
                         <div className={styles.redFlags}>
                             <h2 className={styles.redTitle}>
-                                <AlertTriangle size={19} aria-hidden="true" />
-                                Speak to someone if
-                            </h2>
+                                <AlertTriangle size={19} aria-hidden="true" />{tr("Speak to someone if", locale)}</h2>
                             <ul role="list">
                                 {article.seeSomeoneIf.map((item) => (
                                     <li key={item}>{item}</li>
@@ -61,24 +61,16 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
                             </ul>
                         </div>
 
-                        <p className={styles.disclaimer}>
-                            General information only. It is not medical advice, it cannot account
-                            for your history, and it does not replace being seen by someone who can
-                            examine you. If you are worried, that is reason enough to ring us.
-                        </p>
+                        <p className={styles.disclaimer}>{tr("General information only. It is not medical advice, it cannot account for your history, and it does not replace being seen by someone who can examine you. If you are worried, that is reason enough to ring us.", locale)}</p>
                     </article>
 
                     <aside className={styles.aside}>
-                        <p className={styles.asideKicker}>Usually seen by</p>
+                        <p className={styles.asideKicker}>{tr("Usually seen by", locale)}</p>
                         <h2 className={styles.asideTitle}>{department?.name ?? "General medicine"}</h2>
                         <p className={styles.cardBody}>{department?.summary}</p>
-                        <Link className={styles.asideCta} href="/find-a-doctor">
-                            See who is available
-                        </Link>
+                        <Link className={styles.asideCta} href="/find-a-doctor">{tr("See who is available", locale)}</Link>
                         <Link className={styles.asideBack} href="/health-library">
-                            <ArrowLeft size={14} aria-hidden="true" />
-                            All articles
-                        </Link>
+                            <ArrowLeft size={14} aria-hidden="true" />{tr("All articles", locale)}</Link>
                     </aside>
                 </div>
             </section>

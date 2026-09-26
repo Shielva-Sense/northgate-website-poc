@@ -40,6 +40,8 @@ import {
 import type { CategoryIcon, Duration, ForWhom, Severity } from "@/app/features/clinic/triage";
 import { DoctorDirectory } from "./DoctorDirectory";
 import styles from "./FindDoctor.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 type Stage = "safety" | "who" | "category" | "symptom" | "detail" | "result" | "book" | "emergency";
 
@@ -94,6 +96,7 @@ const STEPS: readonly { readonly stage: Stage; readonly label: string }[] = [
  * is offered urgent care rather than the next free slot.
  */
 export function FindDoctorClient(): React.JSX.Element {
+    const { locale } = useLocale();
     const brand = useBrand();
     const profile = useProfile();
     const isVet = profile.kind === "veterinary";
@@ -127,7 +130,7 @@ export function FindDoctorClient(): React.JSX.Element {
         stage === "symptom" ||
         stage === "detail" ||
         stage === "result" ? (
-            <ol className={styles.steps} aria-label="Progress">
+            <ol className={styles.steps} aria-label={tr("Progress", locale)}>
                 {STEPS.map((step, index) => {
                     const current = STEPS.findIndex((s) => s.stage === stage);
                     const done = index < current;
@@ -159,25 +162,21 @@ export function FindDoctorClient(): React.JSX.Element {
     }
 
     const tabs = (
-        <div className={styles.modes} role="tablist" aria-label="How to find a clinician">
+        <div className={styles.modes} role="tablist" aria-label={tr("How to find a clinician", locale)}>
             <button
                 type="button"
                 role="tab"
                 className={styles.mode}
                 aria-selected={mode === "browse"}
                 onClick={() => setMode("browse")}
-            >
-                Browse our clinicians
-            </button>
+            >{tr("Browse our clinicians", locale)}</button>
             <button
                 type="button"
                 role="tab"
                 className={styles.mode}
                 aria-selected={mode === "guided"}
                 onClick={() => setMode("guided")}
-            >
-                I&rsquo;m not sure who to see
-            </button>
+            >{tr("I’m not sure who to see", locale)}</button>
         </div>
     );
 
@@ -203,7 +202,7 @@ export function FindDoctorClient(): React.JSX.Element {
                 <span className={styles.emergencyMark} aria-hidden="true">
                     <AlertTriangle size={30} />
                 </span>
-                <h2 className={styles.emergencyTitle}>Please do not book an appointment</h2>
+                <h2 className={styles.emergencyTitle}>{tr("Please do not book an appointment", locale)}</h2>
                 <p className={styles.emergencyBody}>
                     {/* The red flags are now the trade's own, so this panel is
                         what an owner sees after choosing "hard swollen tummy,
@@ -236,22 +235,16 @@ export function FindDoctorClient(): React.JSX.Element {
             <>
                 {tabs}
                 <div className={styles.panel}>
-                <h2 className={styles.title}>First, one safety check</h2>
-                <p className={styles.sub}>
-                    Does any of this apply right now, to you or the person you are booking for?
-                </p>
+                <h2 className={styles.title}>{tr("First, one safety check", locale)}</h2>
+                <p className={styles.sub}>{tr("Does any of this apply right now, to you or the person you are booking for?", locale)}</p>
                 <ul className={styles.flags} role="list">
                     {redFlagsFor(profile.kind).map((flag) => (
                         <li key={flag.id}>{flag.label}</li>
                     ))}
                 </ul>
                 <div className={styles.actions}>
-                    <Button variant="ghost" size="lg" onClick={() => jump("emergency")}>
-                        Yes, one of these applies
-                    </Button>
-                    <Button size="lg" onClick={() => jump("who")}>
-                        No, none of these
-                    </Button>
+                    <Button variant="ghost" size="lg" onClick={() => jump("emergency")}>{tr("Yes, one of these applies", locale)}</Button>
+                    <Button size="lg" onClick={() => jump("who")}>{tr("No, none of these", locale)}</Button>
                     </div>
                 </div>
             </>
@@ -263,11 +256,8 @@ export function FindDoctorClient(): React.JSX.Element {
             <>
                 {stepper}
                 <div className={styles.panel}>
-                    <h2 className={styles.title}>Who is this for?</h2>
-                    <p className={styles.sub}>
-                        It changes the answer — anyone under 16 is seen by our child health team
-                        whatever the symptom.
-                    </p>
+                    <h2 className={styles.title}>{tr("Who is this for?", locale)}</h2>
+                    <p className={styles.sub}>{tr("It changes the answer — anyone under 16 is seen by our child health team whatever the symptom.", locale)}</p>
                     <div className={styles.choiceRow}>
                         {FOR_WHOM.map((option) => (
                             <button
@@ -298,11 +288,8 @@ export function FindDoctorClient(): React.JSX.Element {
             <>
                 {stepper}
                 <div className={styles.panel}>
-                    <h2 className={styles.title}>Which part of the body?</h2>
-                    <p className={styles.sub}>
-                        Pick the closest area. If nothing fits, &ldquo;Something else&rdquo; is a
-                        real answer and it goes to a general doctor.
-                    </p>
+                    <h2 className={styles.title}>{tr("Which part of the body?", locale)}</h2>
+                    <p className={styles.sub}>{tr("Pick the closest area. If nothing fits, “Something else” is a real answer and it goes to a general doctor.", locale)}</p>
                     <ul className={styles.catGrid} role="list">
                         {SYMPTOM_CATEGORIES.map((item) => (
                             <li key={item.id}>
@@ -338,10 +325,7 @@ export function FindDoctorClient(): React.JSX.Element {
                 {stepper}
                 <div className={styles.panel}>
                     <h2 className={styles.title}>{cat?.label ?? "Your symptom"}</h2>
-                    <p className={styles.sub}>
-                        Which is closest? You can change this later, and nothing here is recorded
-                        as a diagnosis.
-                    </p>
+                    <p className={styles.sub}>{tr("Which is closest? You can change this later, and nothing here is recorded as a diagnosis.", locale)}</p>
                     <ul className={styles.symptoms} role="list">
                         {inCategory.map((option) => (
                             <li key={option.id}>
@@ -371,15 +355,10 @@ export function FindDoctorClient(): React.JSX.Element {
             <>
                 {stepper}
                 <div className={styles.panel}>
-                    <h2 className={styles.title}>How long, and how bad?</h2>
-                    <p className={styles.sub}>
-                        This decides whether the right answer is an appointment or urgent care
-                        today.
-                    </p>
+                    <h2 className={styles.title}>{tr("How long, and how bad?", locale)}</h2>
+                    <p className={styles.sub}>{tr("This decides whether the right answer is an appointment or urgent care today.", locale)}</p>
 
-                    <p className={styles.fieldLabel} id="duration-label">
-                        How long has it been going on?
-                    </p>
+                    <p className={styles.fieldLabel} id="duration-label">{tr("How long has it been going on?", locale)}</p>
                     <div className={styles.choiceRow} role="group" aria-labelledby="duration-label">
                         {DURATIONS.map((option) => (
                             <button
@@ -394,9 +373,7 @@ export function FindDoctorClient(): React.JSX.Element {
                         ))}
                     </div>
 
-                    <p className={styles.fieldLabel} id="severity-label">
-                        How much is it affecting you?
-                    </p>
+                    <p className={styles.fieldLabel} id="severity-label">{tr("How much is it affecting you?", locale)}</p>
                     <div className={styles.choiceRow} role="group" aria-labelledby="severity-label">
                         {SEVERITIES.map((option) => (
                             <button
@@ -412,9 +389,7 @@ export function FindDoctorClient(): React.JSX.Element {
                     </div>
 
                     <div className={styles.actions}>
-                        <Button size="lg" onClick={() => jump("result")}>
-                            See who I should be seeing
-                        </Button>
+                        <Button size="lg" onClick={() => jump("result")}>{tr("See who I should be seeing", locale)}</Button>
                     </div>
                     {backButton("symptom")}
                 </div>
@@ -432,14 +407,10 @@ export function FindDoctorClient(): React.JSX.Element {
                            below, but it is no longer the obvious thing to click. */
                         <div className={styles.urgentNudge} role="alert">
                             <p className={styles.urgentTag}>
-                                <AlertTriangle size={15} aria-hidden="true" />
-                                This should not wait for an appointment
-                            </p>
+                                <AlertTriangle size={15} aria-hidden="true" />{tr("This should not wait for an appointment", locale)}</p>
                             <p className={styles.resultBody}>{routing.urgentBecause}</p>
                             <div className={styles.emergencyActions}>
-                                <LinkButton href="/urgent-care" size="lg">
-                                    Go to urgent care
-                                </LinkButton>
+                                <LinkButton href="/urgent-care" size="lg">{tr("Go to urgent care", locale)}</LinkButton>
                                 <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
                                     Ring {brand.phone}
                                 </LinkButton>
@@ -448,21 +419,17 @@ export function FindDoctorClient(): React.JSX.Element {
                     ) : null}
 
                     {department === undefined ? (
-                        <p className={styles.sub}>Pick a symptom first.</p>
+                        <p className={styles.sub}>{tr("Pick a symptom first.", locale)}</p>
                     ) : (
                         <div className={styles.result}>
                             <p className={styles.resultKicker}>
-                                <Stethoscope size={15} aria-hidden="true" />
-                                Usually seen by
-                            </p>
+                                <Stethoscope size={15} aria-hidden="true" />{tr("Usually seen by", locale)}</p>
                             <h3 className={styles.resultName}>{department.name}</h3>
                             <p className={styles.resultBody}>{department.summary}</p>
                             {routing === null ? null : (
                                 <p className={styles.resultWhy}>{routing.because}</p>
                             )}
-                            <Button size="lg" onClick={() => jump("book")}>
-                                See who is available
-                            </Button>
+                            <Button size="lg" onClick={() => jump("book")}>{tr("See who is available", locale)}</Button>
                         </div>
                     )}
 
@@ -490,13 +457,11 @@ export function FindDoctorClient(): React.JSX.Element {
                         setPreferred(null);
                         jump(direct === null ? "result" : "browse" === mode ? "safety" : "who");
                     }}
-                >
-                    Change
-                </button>
+                >{tr("Change", locale)}</button>
             </p>
             <AppointmentFlow department={departmentId} serviceName={department?.name} />
             <p className={styles.footNote}>
-                Would rather talk to a person? <Link href="/#book">Send us a message</Link> or ring{" "}
+                Would rather talk to a person? <Link href="/#book">{tr("Send us a message", locale)}</Link> or ring{" "}
                 <a href={brand.phoneHref}>{brand.phone}</a>.
             </p>
         </>
@@ -508,10 +473,8 @@ export function FindDoctorClient(): React.JSX.Element {
     function departmentBrowse(): React.JSX.Element {
         return (
             <div className={styles.panel}>
-                <h2 className={styles.title}>Already know? Browse by department</h2>
-                <p className={styles.sub}>
-                    Skip the questions and go straight to who staffs it and when they are free.
-                </p>
+                <h2 className={styles.title}>{tr("Already know? Browse by department", locale)}</h2>
+                <p className={styles.sub}>{tr("Skip the questions and go straight to who staffs it and when they are free.", locale)}</p>
                 <ul className={styles.deptGrid} role="list">
                     {departments.map((item) => (
                         <li key={item.id}>

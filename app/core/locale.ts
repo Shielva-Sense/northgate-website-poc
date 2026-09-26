@@ -53,3 +53,19 @@ export function pathForLocale(pathname: string, locale: Locale): string {
     const bare = pathname.replace(/^\/(ar|en)(?=\/|$)/, "") || "/";
     return bare === "/" ? `/${locale}` : `/${locale}${bare}`;
 }
+
+/**
+ * A clinic's own content in the language being read.
+ *
+ * Falls back to the default-language row rather than to nothing: a practice
+ * that has supplied English copy and no Arabic should show its own English
+ * on the Arabic page, not the generic trade content. Half their own words
+ * beats none of them.
+ */
+export function overridesFor<T>(
+    base: T | null,
+    byLocale: Readonly<Partial<Record<Locale, T>>>,
+    locale: Locale,
+): T | null {
+    return byLocale[locale] ?? base;
+}
