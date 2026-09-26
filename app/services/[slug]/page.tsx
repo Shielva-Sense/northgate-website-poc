@@ -6,6 +6,7 @@ import { SERVICES } from "@/app/features/clinic/constants";
 import { isIndexable, serviceJsonLd, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { contentFor } from "@/app/features/clinic/content";
 import { ServiceClient } from "./ServiceClient";
 
@@ -51,8 +52,10 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
 
     return (
         <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
+            <BookingProvider>
             {data ? <JsonLd data={data} /> : null}
             <ServiceClient service={service} />
+            </BookingProvider>
         </BrandProvider>
     );
 }
