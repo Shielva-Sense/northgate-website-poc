@@ -19,10 +19,6 @@ const en = {
     contact: "Contact",
     prices: "Our prices",
     urgentCare: "Urgent care",
-    findDoctor: "Find a doctor",
-    findVet: "Find a vet",
-    healthLibrary: "Health library",
-    petHealthLibrary: "Pet health library",
 
     book: "Book",
     bookAppointment: "Request an appointment",
@@ -54,10 +50,6 @@ const ar: Record<UiKey, string> = {
     contact: "اتصل بنا",
     prices: "أسعارنا",
     urgentCare: "الرعاية العاجلة",
-    findDoctor: "ابحث عن طبيب",
-    findVet: "ابحث عن طبيب بيطري",
-    healthLibrary: "المكتبة الصحية",
-    petHealthLibrary: "مكتبة صحة الحيوانات الأليفة",
 
     book: "احجز",
     bookAppointment: "اطلب موعداً",

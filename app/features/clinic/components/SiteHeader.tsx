@@ -13,6 +13,7 @@ import { useBrand, useProfile } from "../BrandContext";
 import type { KindProfile } from "../practice-kinds";
 import { useLocale } from "../LocaleContext";
 import type { UiKey } from "@/app/core/strings";
+import type { Locale } from "@/app/core/locale";
 import type { Brand } from "../brands";
 import { ordersPriceList } from "../price-list";
 import styles from "./SiteHeader.module.scss";
@@ -26,33 +27,45 @@ import styles from "./SiteHeader.module.scss";
    were printed on every site, including veterinary ones, and the navigation
    is the first thing anybody reads. A practice with no health library does
    not get a link to an empty one. */
+/** `/services` under the language being read. */
+function withLocale(locale: Locale, href: string): string {
+    return `/${locale}${href === "/" ? "" : href}`;
+}
+
 function linksFor(
     profile: KindProfile,
     brand: Brand,
     t: (key: UiKey) => string,
+    locale: Locale,
 ): readonly { href: string; label: string }[] {
-    /* The trade decides which label, the language decides its words. A
-       veterinary site says "find a vet" in whichever language it is read in,
-       so the choice and the translation happen in the same place — using
-       profile.findLabel here would have put English in the Arabic nav. */
-    const findLabel = profile.kind === "veterinary" ? t("findVet") : t("findDoctor");
-    const libraryLabel =
-        profile.kind === "veterinary" ? t("petHealthLibrary") : t("healthLibrary");
+    /* Ten trades, ten labels, in whichever language the page is read in. A
+       dentist says "find a dentist" and a podiatrist "find a podiatrist";
+       branching on veterinary alone put "find a doctor" on a dental practice
+       in both languages, which is the first thing a dentist notices. */
+    /* The nav renders plain <a> elements, not <Link>, so LocaleLink never
+       touched them: every nav click went to a bare path and was redirected
+       to /en. An Arabic reader lost the language on their first click, which
+       is the one click that matters. Prefixing here keeps the fix in the one
+       place the hrefs are built. */
+    const prefix = (href: string): string => withLocale(locale, href);
+    const ar = locale === "ar";
+    const findLabel = ar ? profile.findLabelAr : profile.findLabel;
+    const libraryLabel = ar ? profile.libraryLabelAr : profile.libraryLabel;
     return [
-        { href: "/services", label: t("services") },
+        { href: prefix("/services"), label: t("services") },
         /* The CMA Order wants the price list one click from the home page, so
            it is a nav link rather than a footer link — and only where the
            Order actually applies, since a dentist publishing a weight-banded
            veterinary table would be answering an obligation it does not have.
            The health library gives way to it: six links crowd the bar, and a
            practice under an order to publish prices should show prices. */
-        ...(ordersPriceList(profile, brand) ? [{ href: "/prices", label: t("prices") }] : []),
-        { href: "/find-a-doctor", label: findLabel },
+        ...(ordersPriceList(profile, brand) ? [{ href: prefix("/prices"), label: t("prices") }] : []),
+        { href: prefix("/find-a-doctor"), label: findLabel },
         ...(profile.hasHealthLibrary && !ordersPriceList(profile, brand)
-            ? [{ href: "/health-library", label: libraryLabel }]
+            ? [{ href: prefix("/health-library"), label: libraryLabel }]
             : []),
-        { href: "/appointments", label: t("appointments") },
-        { href: "/contact", label: t("contact") },
+        { href: prefix("/appointments"), label: t("appointments") },
+        { href: prefix("/contact"), label: t("contact") },
     ];
 }
 
@@ -71,8 +84,8 @@ export function SiteHeader(): React.JSX.Element {
     const booking = useBooking();
     const profile = useProfile();
     const hasEmergency = profile.hasEmergency;
-    const { t } = useLocale();
-    const links = linksFor(profile, brand, t);
+    const { t, locale } = useLocale();
+    const links = linksFor(profile, brand, t, locale);
     const [open, setOpen] = useState(false);
 
     return (
@@ -81,7 +94,7 @@ export function SiteHeader(): React.JSX.Element {
                 {/* "/" not "#top": a bare hash goes nowhere from /services or
                     /urgent-care, so the brand looked dead on every inner page.
                     The home page still scrolls to the top from here. */}
-                <Link href="/" className={styles.logo}>
+                <Link href={withLocale(locale, "/")} className={styles.logo}>
                     <Logo size={38} mark={brand.mark} />
                     <span>
                         {brand.short}
@@ -99,7 +112,7 @@ export function SiteHeader(): React.JSX.Element {
                         and someone who needs it is scanning for red, not reading
                         a nav. Kept at five links so the bar stays uncramped. */}
                     {hasEmergency ? (
-                        <Link className={styles.urgent} href="/urgent-care">
+                        <Link className={styles.urgent} href={withLocale(locale, "/urgent-care")}>
                             <Siren size={15} aria-hidden="true" />
                             {t("urgentCare")}
                         </Link>
@@ -141,7 +154,7 @@ export function SiteHeader(): React.JSX.Element {
                         {hasEmergency ? (
                             <Link
                                 className={styles.urgent}
-                                href="/urgent-care"
+                                href={withLocale(locale, "/urgent-care")}
                                 onClick={() => setOpen(false)}
                             >
                                 <Siren size={15} aria-hidden="true" />

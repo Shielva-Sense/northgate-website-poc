@@ -62,7 +62,15 @@ export interface KindProfile {
      * library, and the labels are the first words a visitor reads.
      */
     readonly findLabel: string;
+    /* The same label in Arabic. Kept beside the English rather than in the UI
+       string table because it is trade vocabulary, not interface chrome: a
+       dentist says "find a dentist" and a podiatrist "find a podiatrist", and
+       splitting the pair across two files is how one of them gets forgotten.
+       Flattening these to a vet/not-vet branch once already put "find a
+       doctor" on a dental practice in both languages. */
+    readonly findLabelAr: string;
     readonly libraryLabel: string;
+    readonly libraryLabelAr: string;
     /** The rotating line above the header, in this trade's own terms. */
     readonly announcements: readonly string[];
 }
@@ -74,7 +82,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: true, hasDepartments: true, hasHealthLibrary: true,
         strapline: "Every specialty under one roof, and someone on duty at every hour",
         findLabel: "Find a consultant",
+findLabelAr: "ابحث عن استشاري",
         libraryLabel: "Health library",
+libraryLabelAr: "المكتبة الصحية",
         announcements: [
             "Every specialty under one roof, and someone on duty at every hour",
             "Most scans reported inside five working days",
@@ -95,7 +105,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: true, hasHealthLibrary: true,
         strapline: "See a named doctor this week, not in three",
         findLabel: "Find a doctor",
+findLabelAr: "ابحث عن طبيب",
         libraryLabel: "Health library",
+libraryLabelAr: "المكتبة الصحية",
         announcements: [
             "Same-week appointments, one phone call",
             "Most blood results back inside two working days",
@@ -117,7 +129,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A dentist who explains what they are doing, and what it costs, first",
         findLabel: "Find a dentist",
+findLabelAr: "ابحث عن طبيب أسنان",
         libraryLabel: "Dental advice",
+libraryLabelAr: "إرشادات الأسنان",
         announcements: [
             "Same-day appointments held back every morning for pain",
             "Every treatment priced in writing before we start",
@@ -139,7 +153,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Hands-on treatment and a plan you can actually keep to",
         findLabel: "Find a physiotherapist",
+findLabelAr: "ابحث عن أخصائي علاج طبيعي",
         libraryLabel: "Injury advice",
+libraryLabelAr: "إرشادات الإصابات",
         announcements: [
             "Forty-five minute first assessments as standard",
             "Hands-on treatment, not a leaflet of exercises",
@@ -160,7 +176,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Back and neck pain treated by someone who explains the plan",
         findLabel: "Find a chiropractor",
+findLabelAr: "ابحث عن أخصائي تقويم العمود الفقري",
         libraryLabel: "Back care advice",
+libraryLabelAr: "إرشادات العناية بالظهر",
         announcements: [
             "A full examination before anything is adjusted",
             "Back and neck pain seen within the week",
@@ -180,7 +198,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Skin looked at properly, by someone who does this all day",
         findLabel: "Find a dermatologist",
+findLabelAr: "ابحث عن طبيب جلدية",
         libraryLabel: "Skin advice",
+libraryLabelAr: "إرشادات العناية بالبشرة",
         announcements: [
             "Mole checks photographed and kept for comparison",
             "Consultant-led, with histology reported back to you",
@@ -201,7 +221,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "A proper eye examination, not a rush to the frames",
         findLabel: "Find an optometrist",
+findLabelAr: "ابحث عن أخصائي بصريات",
         libraryLabel: "Eye care advice",
+libraryLabelAr: "إرشادات العناية بالعيون",
         announcements: [
             "Thirty-minute eye examinations with retinal photography",
             "Contact lens fitting, trial and aftercare in one price",
@@ -221,7 +243,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: true,
         strapline: "Someone to talk to, within the week",
         findLabel: "Find a therapist",
+findLabelAr: "ابحث عن معالج",
         libraryLabel: "Wellbeing library",
+libraryLabelAr: "مكتبة الصحة النفسية",
         announcements: [
             "A first appointment within the week",
             "Fifty minutes, weekly, with the same therapist",
@@ -241,7 +265,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: false, hasDepartments: false, hasHealthLibrary: false,
         strapline: "Feet treated by a specialist, not squeezed into a GP slot",
         findLabel: "Find a podiatrist",
+findLabelAr: "ابحث عن أخصائي القدم",
         libraryLabel: "Foot care advice",
+libraryLabelAr: "إرشادات العناية بالقدم",
         announcements: [
             "Routine treatment at the interval your feet actually need",
             "Diabetic foot checks recorded every visit",
@@ -261,7 +287,9 @@ const PROFILES: Readonly<Record<PracticeKind, KindProfile>> = {
         hasEmergency: true, hasDepartments: false, hasHealthLibrary: false,
         strapline: "The same vet each visit, who remembers your animal",
         findLabel: "Find a vet",
+findLabelAr: "ابحث عن طبيب بيطري",
         libraryLabel: "Pet care advice",
+libraryLabelAr: "إرشادات العناية بالحيوانات الأليفة",
         announcements: [
             "Same-week appointments, one phone call",
             "The same vet each visit, who remembers your animal",
