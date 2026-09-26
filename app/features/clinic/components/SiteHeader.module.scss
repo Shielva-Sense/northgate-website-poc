@@ -60,7 +60,7 @@
 }
 
 .nav {
-    margin-left: auto;
+    margin-inline-start: auto;
     display: flex;
     align-items: center;
     gap: var(--space-5);
@@ -111,7 +111,7 @@
 
 .toggle {
     display: none;
-    margin-left: auto;
+    margin-inline-start: auto;
     background: transparent;
     border: 1.5px solid var(--color-border);
     border-radius: var(--radius-sm);

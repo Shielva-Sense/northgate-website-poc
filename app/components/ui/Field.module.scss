@@ -12,7 +12,7 @@
 
 .req {
     color: var(--color-accent);
-    margin-left: 2px;
+    margin-inline-start: 2px;
 }
 
 .help {
@@ -67,7 +67,7 @@
         calc(100% - 14px) calc(50% + 2px);
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
-    padding-right: 38px;
+    padding-inline-end: 38px;
 }
 
 .textarea {

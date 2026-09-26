@@ -30,14 +30,14 @@
 
 .review {
     background: var(--color-brand-50);
-    border-left: 3px solid var(--color-brand-600);
+    border-inline-start: 3px solid var(--color-brand-600);
     border-radius: var(--radius-sm);
     padding: var(--space-4);
     font-size: var(--text-sm);
 }
 
 .list {
-    padding-left: var(--space-5);
+    padding-inline-start: var(--space-5);
 }
 
 .updated {

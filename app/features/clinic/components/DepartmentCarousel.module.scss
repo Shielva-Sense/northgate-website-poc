@@ -126,11 +126,11 @@
 }
 
 .prev {
-    left: var(--space-4);
+    inset-inline-start: var(--space-4);
 }
 
 .next {
-    right: var(--space-4);
+    inset-inline-end: var(--space-4);
 }
 
 .controls {

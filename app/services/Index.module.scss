@@ -68,7 +68,7 @@
 
 .deptCount {
     position: absolute;
-    left: var(--space-3);
+    inset-inline-start: var(--space-3);
     bottom: var(--space-3);
     padding: 4px 10px;
     border-radius: var(--radius-full);
@@ -304,7 +304,7 @@ a.row:hover {
    column of prices lines up on the decimal. */
 .rowPrice {
     flex: 0 0 auto;
-    margin-left: var(--space-4);
+    margin-inline-start: var(--space-4);
     font-weight: 700;
     font-size: var(--text-sm);
     color: var(--color-text);

@@ -7,7 +7,7 @@
     padding: var(--space-5) var(--space-6);
     background: var(--color-danger-50);
     border: 1px solid var(--color-danger);
-    border-left-width: 5px;
+    border-inline-start-width: 5px;
     border-radius: var(--radius-lg);
 }
 
@@ -112,7 +112,7 @@
 
 .searchIcon {
     position: absolute;
-    left: var(--space-4);
+    inset-inline-start: var(--space-4);
     top: 50%;
     transform: translateY(-50%);
     color: var(--color-text-subtle);
@@ -151,7 +151,7 @@
 
 .clear {
     position: absolute;
-    right: var(--space-3);
+    inset-inline-end: var(--space-3);
     top: 50%;
     transform: translateY(-50%);
     width: 36px;
@@ -179,7 +179,7 @@
 .stop {
     padding: var(--space-6);
     border: 1px solid var(--color-danger);
-    border-left-width: 5px;
+    border-inline-start-width: 5px;
     border-radius: var(--radius-lg);
     background: var(--color-surface);
 }
@@ -318,7 +318,7 @@
    border so it is found by someone scanning in a hurry, not read for. */
 .unitEmergency {
     border-color: var(--color-danger);
-    border-left: 5px solid var(--color-danger);
+    border-inline-start: 5px solid var(--color-danger);
 }
 
 .unitEmergency:hover {
@@ -572,7 +572,7 @@
     padding: var(--space-5);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-left: 4px solid var(--color-danger);
+    border-inline-start: 4px solid var(--color-danger);
     border-radius: var(--radius-md);
 }
 

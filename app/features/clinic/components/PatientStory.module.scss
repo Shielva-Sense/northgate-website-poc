@@ -66,7 +66,7 @@
     color: var(--color-accent-700);
     box-shadow: var(--shadow-lg);
     /* nudge the triangle off its optical centre */
-    padding-left: 5px;
+    padding-inline-start: 5px;
     transition:
         transform var(--dur) var(--ease),
         background-color var(--dur) var(--ease);
@@ -218,6 +218,6 @@
    seam becomes visible on every wrap. */
 @media (min-width: 1180px) {
     .set:first-child {
-        padding-left: max(var(--space-5), calc((100vw - var(--wrap)) / 2 + var(--space-5)));
+        padding-inline-start: max(var(--space-5), calc((100vw - var(--wrap)) / 2 + var(--space-5)));
     }
 }

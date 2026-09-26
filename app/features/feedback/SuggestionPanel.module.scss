@@ -34,14 +34,14 @@
 .panel {
     position: fixed;
     top: 0;
-    right: 0;
+    inset-inline-end: 0;
     bottom: 0;
     z-index: 91;
     width: min(520px, 100vw);
     display: flex;
     flex-direction: column;
     background: var(--color-surface);
-    border-left: 1px solid var(--color-border);
+    border-inline-start: 1px solid var(--color-border);
     box-shadow: var(--shadow-lg);
     animation: slide 220ms var(--ease);
 }
