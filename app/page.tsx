@@ -6,6 +6,7 @@ import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "./core/seo";
 import { siteFromHost } from "./core/site";
 import { DEFAULT_TEMPLATE, isTemplateId } from "./features/clinic/templates";
 import { BrandProvider } from "./features/clinic/BrandContext";
+import { BookingProvider } from "./features/booking/BookingPanel";
 import { contentFor } from "./features/clinic/content";
 import { DemoBar } from "./features/clinic/components/DemoBar";
 
@@ -41,11 +42,13 @@ export default async function Page({ searchParams }: Props): Promise<React.JSX.E
     const template = isTemplateId(asked) ? asked : DEFAULT_TEMPLATE;
     return (
         <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
+            <BookingProvider>
             <JsonLd data={clinicJsonLd(brand, site.profile)} />
             <JsonLd data={faqJsonLd()} />
             {/* Sales control: only while this is an invite-only preview. */}
             {isIndexable() ? null : <DemoBar active={template} />}
             <HomeClient template={template} />
+            </BookingProvider>
         </BrandProvider>
     );
 }

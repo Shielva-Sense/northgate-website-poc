@@ -71,7 +71,8 @@
 .darkList svg {
     flex: none;
     margin-top: 4px;
-    color: var(--color-brand-500);
+    /* Same reason as .opsIco: a mid-tone brand on a brand-900 panel. */
+    color: var(--color-brand-100);
 }
 
 .grid {
@@ -911,7 +912,12 @@
 }
 
 .ops .kicker {
-    color: var(--color-brand-500);
+    /* A light tint, not the mid-tone brand. brand-500 sits at roughly the
+       same luminance as the brand-900 panel behind it, so the label
+       disappeared into the background; brand-100 is ~228 in every theme and
+       stays subordinate to the white title. The .dark sections nearby already
+       do this — .ops was the one that drifted. */
+    color: var(--color-brand-100);
 }
 
 .opsGrid {
@@ -923,8 +929,10 @@
 }
 
 .opsGrid li {
-    background: rgba(var(--color-surface-rgb), 0.07);
-    border: 1px solid rgba(var(--color-surface-rgb), 0.16);
+    /* Enough to read as a card. At 7% over a photograph the panels were only
+       visible where the image behind them happened to be dark. */
+    background: rgba(var(--color-surface-rgb), 0.11);
+    border: 1px solid rgba(var(--color-surface-rgb), 0.24);
     backdrop-filter: blur(8px);
     border-radius: var(--radius-lg);
     padding: var(--space-6);
@@ -942,8 +950,12 @@
     width: 44px;
     height: 44px;
     border-radius: var(--radius-md);
-    background: rgba(var(--color-surface-rgb), 0.12);
-    color: var(--color-brand-500);
+    /* Both raised. At 12% the tile was invisible against the scrim and at
+       brand-500 the glyph inside it was too, so the icons read as faint
+       smudges rather than as icons. */
+    background: rgba(var(--color-surface-rgb), 0.18);
+    border: 1px solid rgba(var(--color-surface-rgb), 0.14);
+    color: var(--color-on-brand);
     display: grid;
     place-items: center;
     margin-bottom: var(--space-4);

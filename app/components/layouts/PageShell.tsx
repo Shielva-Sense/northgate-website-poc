@@ -4,6 +4,7 @@ import Image from "next/image";
 import { siteFromHost } from "@/app/core/site";
 import { contentFor } from "@/app/features/clinic/content";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
@@ -68,6 +69,7 @@ async function CachedShell({
 
     return (
         <BrandProvider brand={brand} profile={site.profile} content={content}>
+            <BookingProvider>
             <ScrollProgress />
             {/* The colour switcher has to be reachable from whatever page a
                 prospect happens to be on, not only the home page. Gated on the
@@ -80,6 +82,7 @@ async function CachedShell({
                 {children}
             </main>
             <SiteFooter />
+            </BookingProvider>
         </BrandProvider>
     );
 }

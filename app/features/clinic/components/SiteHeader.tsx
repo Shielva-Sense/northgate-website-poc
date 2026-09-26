@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, Phone, Siren, X } from "lucide-react";
-import { LinkButton } from "@/app/components/ui/LinkButton";
+import { Button } from "@/app/components/ui/Button";
+import { useBooking } from "@/app/features/booking/BookingPanel";
 import { Logo } from "@/app/components/ui/Logo";
 import { ThemeMenu } from "./ThemeMenu";
 
@@ -30,6 +31,7 @@ export function SiteHeader({
     readonly hasEmergency?: boolean;
 } = {}): React.JSX.Element {
     const brand = useBrand();
+    const booking = useBooking();
     const [open, setOpen] = useState(false);
 
     return (
@@ -66,7 +68,7 @@ export function SiteHeader({
                         <Phone size={15} aria-hidden="true" />
                         {brand.phone}
                     </a>
-                    <LinkButton href="#book">Book</LinkButton>
+                    <Button onClick={booking.open}>Book</Button>
                 </nav>
 
                 <button
@@ -109,7 +111,9 @@ export function SiteHeader({
                             <Phone size={15} aria-hidden="true" />
                             {brand.phone}
                         </a>
-                        <LinkButton href="#book">Book an appointment</LinkButton>
+                        <Button fullWidth onClick={() => { setOpen(false); booking.open(); }}>
+                            Book an appointment
+                        </Button>
                     </nav>
                 </div>
             ) : null}

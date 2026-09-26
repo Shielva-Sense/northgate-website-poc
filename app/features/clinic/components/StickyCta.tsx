@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
-import { LinkButton } from "@/app/components/ui/LinkButton";
+import { Button } from "@/app/components/ui/Button";
+import { useBooking } from "@/app/features/booking/BookingPanel";
 
 import { useBrand } from "../BrandContext";
 import styles from "./StickyCta.module.scss";
@@ -15,6 +16,7 @@ import styles from "./StickyCta.module.scss";
  */
 export function StickyCta(): React.JSX.Element | null {
     const brand = useBrand();
+    const booking = useBooking();
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -57,7 +59,7 @@ export function StickyCta(): React.JSX.Element | null {
                 <a className={styles.tel} href={brand.phoneHref} aria-label="Call the practice">
                     <Phone size={16} aria-hidden="true" />
                 </a>
-                <LinkButton href="#book">Book</LinkButton>
+                <Button onClick={booking.open}>Book</Button>
             </div>
         </aside>
     );
