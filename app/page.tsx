@@ -40,7 +40,7 @@ export default async function Page({ searchParams }: Props): Promise<React.JSX.E
     const asked = Array.isArray(requested) ? requested[0] : requested;
     const template = isTemplateId(asked) ? asked : DEFAULT_TEMPLATE;
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand)}>
+        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
             <JsonLd data={clinicJsonLd(brand, site.profile)} />
             <JsonLd data={faqJsonLd()} />
             {/* Sales control: only while this is an invite-only preview. */}

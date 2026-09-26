@@ -64,7 +64,7 @@ async function CachedShell({
     "use cache";
     const site = await siteFromHost(host);
     const brand = site.brand;
-    const content = contentFor(site.profile, brand);
+    const content = contentFor(site.profile, brand, site.overrides);
 
     return (
         <BrandProvider brand={brand} profile={site.profile} content={content}>

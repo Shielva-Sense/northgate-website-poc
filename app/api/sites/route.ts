@@ -5,6 +5,8 @@ import { clientIp, rateLimited } from "@/app/core/intake";
 import { ensureIndexes, listSites, upsertSite } from "@/app/core/site-store";
 import { iconPrefix } from "@/app/core/site";
 import { PRACTICE_KINDS } from "@/app/features/clinic/practice-kinds";
+import { CATALOGUE_ICONS } from "@/app/features/clinic/catalogue";
+import { RESERVED_SLUGS, SLUG_PATTERN } from "@/app/features/clinic/pages";
 import type { SiteRecord } from "@/app/core/site-store";
 
 /**
@@ -29,6 +31,9 @@ const DENY = {
 /** Subdomain-safe: this becomes a host label, so it cannot carry a dot. */
 const IDENTIFIER = /^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/;
 
+/** Department and appointment ids: same alphabet, no length floor. */
+const IDENTIFIER_LOOSE = /^[a-z0-9][a-z0-9-]*$/;
+
 /**
  * Labels a prospect site may not take.
  *
@@ -50,6 +55,154 @@ function str(v: unknown, max: number): string | undefined {
     if (typeof v !== "string") return undefined;
     const t = v.trim().slice(0, max);
     return t === "" ? undefined : t;
+}
+
+/** An array of plain objects, or a message saying why it is not. */
+function readArray(value: unknown, field: string, max: number): readonly Record<string, unknown>[] | string | null {
+    if (value === undefined || value === null) return null;
+    if (!Array.isArray(value)) return `${field} must be an array.`;
+    if (value.length > max) return `${field} may hold at most ${max} entries.`;
+    for (const entry of value) {
+        if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+            return `${field} entries must be objects.`;
+        }
+    }
+    return value as readonly Record<string, unknown>[];
+}
+
+function strings(value: unknown, max: number): readonly string[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter((v): v is string => typeof v === "string").slice(0, max).map((v) => v.slice(0, 600));
+}
+
+/**
+ * This clinic's own services, departments, prices and team.
+ *
+ * Each list is optional and replaces the trade default wholesale. Unknown
+ * fields are dropped rather than stored: the row decides what a public page
+ * says, so it holds only what the renderer reads.
+ */
+function readContent(value: unknown): Record<string, unknown> | string | null {
+    if (value === undefined || value === null) return null;
+    if (typeof value !== "object" || Array.isArray(value)) return "content must be an object.";
+    const v = value as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+
+    const services = readArray(v.services, "content.services", 24);
+    if (typeof services === "string") return services;
+    if (services !== null) {
+        out.services = services.map((x) => ({
+            slug: str(x.slug, 60) ?? "",
+            name: str(x.name, 140) ?? "",
+            blurb: str(x.blurb, 400) ?? "",
+        }));
+    }
+
+    const departments = readArray(v.departments, "content.departments", 24);
+    if (typeof departments === "string") return departments;
+    if (departments !== null) {
+        out.departments = departments.map((d) => ({
+            id: str(d.id, 60) ?? "",
+            name: str(d.name, 120) ?? "",
+            summary: str(d.summary, 400) ?? "",
+            image: str(d.image, 300) ?? "/img/dept/general.jpg",
+            imageAlt: str(d.imageAlt, 300) ?? "A consulting room",
+            services: strings(d.services, 20),
+        }));
+        if ((out.departments as { id: string }[]).some((d) => d.id === "" || !IDENTIFIER_LOOSE.test(d.id))) {
+            return "Each department needs an id of lowercase letters, digits and hyphens.";
+        }
+    }
+
+    const appointmentTypes = readArray(v.appointmentTypes, "content.appointmentTypes", 60);
+    if (typeof appointmentTypes === "string") return appointmentTypes;
+    if (appointmentTypes !== null) {
+        out.appointmentTypes = appointmentTypes.map((a) => ({
+            id: str(a.id, 60) ?? "",
+            name: str(a.name, 140) ?? "",
+            department: str(a.department, 60) ?? "",
+            minutes: Math.max(5, Math.min(480, Number(a.minutes) || 20)),
+            /* Zero is meaningful — it renders "No charge" — so it is kept,
+               and only a negative or non-numeric price is corrected. */
+            price: Math.max(0, Number(a.price) || 0),
+            ...(str(a.note, 200) === undefined ? {} : { note: str(a.note, 200) }),
+        }));
+    }
+
+    const treatments = readArray(v.treatments, "content.treatments", 60);
+    if (typeof treatments === "string") return treatments;
+    if (treatments !== null) {
+        out.treatments = treatments.map((t) => ({
+            slug: str(t.slug, 60) ?? "",
+            name: str(t.name, 140) ?? "",
+            icon: CATALOGUE_ICONS.includes(t.icon as never) ? t.icon : "clipboard",
+            department: str(t.department, 60) ?? "",
+            summary: str(t.summary, 400) ?? "",
+        }));
+    }
+
+    const additional = readArray(v.additionalServices, "content.additionalServices", 40);
+    if (typeof additional === "string") return additional;
+    if (additional !== null) {
+        out.additionalServices = additional.map((a) => ({
+            slug: str(a.slug, 60) ?? "",
+            name: str(a.name, 140) ?? "",
+            icon: CATALOGUE_ICONS.includes(a.icon as never) ? a.icon : "clipboard",
+            summary: str(a.summary, 400) ?? "",
+            bookable: a.bookable !== false,
+        }));
+    }
+
+    return Object.keys(out).length === 0 ? null : out;
+}
+
+/** Extra pages, each rendered at its own path. */
+function readPages(value: unknown): readonly Record<string, unknown>[] | string | null {
+    const pages = readArray(value, "pages", 30);
+    if (typeof pages === "string" || pages === null) return pages;
+
+    const seen = new Set<string>();
+    const out: Record<string, unknown>[] = [];
+    for (const page of pages) {
+        const slug = (str(page.slug, 60) ?? "").toLowerCase();
+        if (!SLUG_PATTERN.test(slug)) {
+            return `"${slug}" is not a valid page slug: lowercase letters, digits and hyphens.`;
+        }
+        if (RESERVED_SLUGS.has(slug)) {
+            return `"${slug}" is a page this site already has, so a custom page there would never be reached.`;
+        }
+        if (seen.has(slug)) return `"${slug}" appears twice in pages.`;
+        seen.add(slug);
+
+        const blocks = readArray(page.blocks, `pages.${slug}.blocks`, 40);
+        if (typeof blocks === "string") return blocks;
+
+        const cta = page.cta;
+        const ctaLabel = typeof cta === "object" && cta !== null ? str((cta as Record<string, unknown>).label, 60) : undefined;
+        const ctaHref = typeof cta === "object" && cta !== null ? str((cta as Record<string, unknown>).href, 200) : undefined;
+        /* Relative links only. An absolute URL here would let the registry
+           put an off-site link, styled as this clinic's own button, on a page
+           that carries their name. */
+        if (ctaHref !== undefined && !ctaHref.startsWith("/")) {
+            return "A page's cta.href must be a path on this site, beginning with /.";
+        }
+
+        out.push({
+            slug,
+            title: str(page.title, 160) ?? slug,
+            ...(str(page.kicker, 60) === undefined ? {} : { kicker: str(page.kicker, 60) }),
+            ...(str(page.lede, 300) === undefined ? {} : { lede: str(page.lede, 300) }),
+            blocks: (blocks ?? []).map((block) => ({
+                ...(str(block.heading, 160) === undefined ? {} : { heading: str(block.heading, 160) }),
+                body: strings(block.body, 30),
+                bullets: strings(block.bullets, 40),
+            })),
+            ...(ctaLabel === undefined || ctaHref === undefined
+                ? {}
+                : { cta: { label: ctaLabel, href: ctaHref } }),
+        });
+    }
+    return out;
 }
 
 function guard(request: NextRequest): NextResponse | null {
@@ -132,7 +285,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
        exactOptionalPropertyTypes a spread still widens each field to
        `string | undefined`, and the point of the flag is that an absent field
        and a field set to undefined are different things in the stored row. */
-    const record: Record<string, string> = { identifier, businessName };
+    const record: Record<string, unknown> = { identifier, businessName };
     const optional: readonly [string, number][] = [
         ["kind", 40], ["short", 60], ["kicker", 60], ["country", 4], ["city", 80],
         ["address", 200], ["phone", 40], ["aeLine", 40], ["emergencyNumber", 10],
@@ -143,6 +296,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     for (const [key, max] of optional) {
         const value = str(b[key], max);
         if (value !== undefined) record[key] = value;
+    }
+
+    /* Content, pages and the claim flags. Validated rather than trusted: this
+       API decides what a page carrying a real clinic's name says, so a
+       malformed department list should be a 422 here and not a broken render
+       in front of a prospect. */
+    const content = readContent(b.content);
+    if (typeof content === "string") {
+        return NextResponse.json({ error: content }, { status: 422 });
+    }
+    if (content !== null) record.content = content as never;
+
+    const pages = readPages(b.pages);
+    if (typeof pages === "string") {
+        return NextResponse.json({ error: pages }, { status: 422 });
+    }
+    if (pages !== null) record.pages = pages as never;
+
+    for (const flag of ["hasEmergency", "hasDepartments", "hasHealthLibrary"] as const) {
+        if (typeof b[flag] === "boolean") record[flag] = b[flag] as never;
     }
 
     await ensureIndexes();

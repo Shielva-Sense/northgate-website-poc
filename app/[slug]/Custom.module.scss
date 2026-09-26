@@ -1,0 +1,57 @@
+.section {
+    padding: var(--space-8) 0 var(--space-8);
+}
+
+/* A single measured column. Prose set the full width of a page is unreadable,
+   and this is the one page type that is only prose. */
+.prose {
+    max-width: 68ch;
+}
+
+.block + .block {
+    margin-top: var(--space-6);
+}
+
+.h2 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+.list {
+    margin: 0 0 var(--space-3);
+    padding-left: var(--space-5);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+.list li + li {
+    margin-top: var(--space-2);
+}
+
+.cta {
+    margin-top: var(--space-6);
+}
+
+.ctaLink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--color-brand-600);
+    color: var(--color-on-brand);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ctaLink:hover {
+    background: var(--color-brand-500);
+}

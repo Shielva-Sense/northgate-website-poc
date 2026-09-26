@@ -28,7 +28,7 @@ export default async function Page(): Promise<React.JSX.Element> {
     const indexable = isIndexable();
 
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand)}>
+        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
             <main id="main-content" tabIndex={-1} className={styles.page}>
                 <div className="wrap">
                     <p className={styles.kicker}>

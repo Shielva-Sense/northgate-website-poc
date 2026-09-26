@@ -50,7 +50,7 @@ export default async function Page({ params }: Params): Promise<React.JSX.Elemen
     const data = serviceJsonLd(slug);
 
     return (
-        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand)}>
+        <BrandProvider brand={brand} profile={site.profile} content={contentFor(site.profile, brand, site.overrides)}>
             {data ? <JsonLd data={data} /> : null}
             <ServiceClient service={service} />
         </BrandProvider>
