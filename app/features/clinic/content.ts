@@ -961,6 +961,15 @@ const DEFAULT_MEDIA: SiteMedia = {
  * image on a prospect's page.
  */
 const MEDIA: Readonly<Partial<Record<PracticeKind, Partial<SiteMedia>>>> = {
+    dental: {
+        exterior: "/img/dental/exterior.jpg",
+        reception: "/img/dental/reception.jpg",
+        consulting: "/img/dental/consulting.jpg",
+        consultation: "/img/dental/consultation.jpg",
+        treatment: "/img/dental/treatment.jpg",
+        waiting: "/img/dental/waiting.jpg",
+        corridor: "/img/dental/corridor.jpg",
+    },
     veterinary: {
         exterior: "/img/vet/exterior.jpg",
         reception: "/img/vet/reception.jpg",
@@ -1012,8 +1021,36 @@ const VET_FACILITIES: readonly Facility[] = [
     },
 ];
 
+const DENTAL_FACILITIES: readonly Facility[] = [
+    {
+        src: "/img/dental/waiting.jpg",
+        alt: "Waiting area with linen armchairs, a low table and a fig tree beside a sash window",
+        title: "Somewhere you do not mind waiting",
+        points: ["Daylight and quiet", "Seats you can wait in", "Rarely more than a few minutes"],
+    },
+    {
+        src: "/img/dental/reception.jpg",
+        alt: "Pale oak reception counter with upholstered chairs and a vase of eucalyptus",
+        title: "A person, not a queuing system",
+        points: ["Reception answers in person", "Same-day slots held for pain", "Forms done before you arrive"],
+    },
+    {
+        src: "/img/dental/consulting.jpg",
+        alt: "Dental surgery with a chair, the overhead light angled away and daylight from a window",
+        title: "Treatment explained before it starts",
+        points: ["Shown on screen, not described", "A written plan and a price", "Nervous patients given longer"],
+    },
+    {
+        src: "/img/dental/treatment.jpg",
+        alt: "Sterilisation room with stainless worktop, autoclave and sealed instrument pouches",
+        title: "The room nobody shows you",
+        points: ["Instruments sterilised on site", "Pouched and dated", "Audited to standard"],
+    },
+];
+
 const FACILITY_SETS: Readonly<Partial<Record<PracticeKind, readonly Facility[]>>> = {
     veterinary: VET_FACILITIES,
+    dental: DENTAL_FACILITIES,
 };
 
 export function facilitiesFor(kind: PracticeKind): readonly Facility[] {
