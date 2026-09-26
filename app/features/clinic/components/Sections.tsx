@@ -29,6 +29,7 @@ import { ServiceGlyph } from "./ServiceGlyph";
 import { Faq } from "./Faq";
 import { Gallery } from "./Gallery";
 import { useBrand, useContent, useProfile } from "../BrandContext";
+import { mediaFor } from "../content";
 import type { ServiceIcon } from "../types";
 import styles from "./Sections.module.scss";
 
@@ -361,12 +362,13 @@ const PROMISE_ICONS_MAP = {
 
 export function Promises(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    const media = mediaFor(useProfile().kind);
 
     return (
         <section className={styles.ops} id="ops">
             <div className={styles.opsBack} aria-hidden="true">
                 <Image
-                    src="/img/reception.jpg"
+                    src={media.reception}
                     alt=""
                     fill
                     sizes="100vw"
@@ -498,6 +500,7 @@ export function Visiting(): React.JSX.Element {
 
 export function Booking(): React.JSX.Element {
     const ref = useReveal<HTMLDivElement>();
+    const media = mediaFor(useProfile().kind);
 
     return (
         <section className={`${styles.section} ${styles.dark}`} id="book">
@@ -505,7 +508,7 @@ export function Booking(): React.JSX.Element {
                 place they would actually be walking into. */}
             <div className={styles.bookBack} aria-hidden="true">
                 <Image
-                    src="/img/exterior.jpg"
+                    src={media.exterior}
                     alt=""
                     fill
                     sizes="100vw"

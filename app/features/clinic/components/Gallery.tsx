@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { FACILITIES } from "../constants";
+import { facilitiesFor } from "../content";
+import { useProfile } from "../BrandContext";
 import styles from "./Gallery.module.scss";
 
 /**
@@ -15,6 +16,9 @@ import styles from "./Gallery.module.scss";
  * key handling to get wrong. Only arrow-key paging is added on top.
  */
 export function Gallery(): React.JSX.Element {
+    /* This practice's own rooms. The shared set is a human clinic, down to
+       the fig tree in the waiting room. */
+    const facilities = facilitiesFor(useProfile().kind);
     const ref = useReveal<HTMLDivElement>();
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState<number | null>(null);
@@ -24,13 +28,19 @@ export function Gallery(): React.JSX.Element {
         dialogRef.current?.showModal();
     }, []);
 
-    const step = useCallback((delta: number): void => {
-        setOpen((current) =>
-            current === null
-                ? current
-                : (current + delta + FACILITIES.length) % FACILITIES.length,
-        );
-    }, []);
+    /* The length is a real dependency now that the gallery is per-trade: a
+       practice with four rooms and one with six wrap at different points,
+       and an empty dependency list would keep whichever was first seen. */
+    const step = useCallback(
+        (delta: number): void => {
+            setOpen((current) =>
+                current === null
+                    ? current
+                    : (current + delta + facilities.length) % facilities.length,
+            );
+        },
+        [facilities.length],
+    );
 
     useEffect(() => {
         if (open === null) return;
@@ -42,7 +52,7 @@ export function Gallery(): React.JSX.Element {
         return () => window.removeEventListener("keydown", onKey);
     }, [open, step]);
 
-    const active = open === null ? undefined : FACILITIES[open];
+    const active = open === null ? undefined : facilities[open];
 
     return (
         <section className={styles.section} id="facilities">
@@ -57,7 +67,7 @@ export function Gallery(): React.JSX.Element {
                 </div>
 
                 <ul className={styles.grid} role="list">
-                    {FACILITIES.map((facility, index) => (
+                    {facilities.map((facility, index) => (
                         <li
                             key={facility.src}
                             className={styles.tile}
