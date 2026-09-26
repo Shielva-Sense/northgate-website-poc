@@ -10,6 +10,8 @@ import { ThemeMenu } from "./ThemeMenu";
 
 import { useBrand, useProfile } from "../BrandContext";
 import type { KindProfile } from "../practice-kinds";
+import type { Brand } from "../brands";
+import { ordersPriceList } from "../price-list";
 import styles from "./SiteHeader.module.scss";
 
 /* Absolute, not bare hashes: these have to work from /privacy and /services/*
@@ -21,11 +23,21 @@ import styles from "./SiteHeader.module.scss";
    were printed on every site, including veterinary ones, and the navigation
    is the first thing anybody reads. A practice with no health library does
    not get a link to an empty one. */
-function linksFor(profile: KindProfile): readonly { href: string; label: string }[] {
+function linksFor(
+    profile: KindProfile,
+    brand: Brand,
+): readonly { href: string; label: string }[] {
     return [
         { href: "/services", label: "Services" },
+        /* The CMA Order wants the price list one click from the home page, so
+           it is a nav link rather than a footer link — and only where the
+           Order actually applies, since a dentist publishing a weight-banded
+           veterinary table would be answering an obligation it does not have.
+           The health library gives way to it: six links crowd the bar, and a
+           practice under an order to publish prices should show prices. */
+        ...(ordersPriceList(profile, brand) ? [{ href: "/prices", label: "Our prices" }] : []),
         { href: "/find-a-doctor", label: profile.findLabel },
-        ...(profile.hasHealthLibrary
+        ...(profile.hasHealthLibrary && !ordersPriceList(profile, brand)
             ? [{ href: "/health-library", label: profile.libraryLabel }]
             : []),
         { href: "/appointments", label: "Appointments" },
@@ -42,7 +54,7 @@ export function SiteHeader({
     const brand = useBrand();
     const booking = useBooking();
     const profile = useProfile();
-    const links = linksFor(profile);
+    const links = linksFor(profile, brand);
     const [open, setOpen] = useState(false);
 
     return (

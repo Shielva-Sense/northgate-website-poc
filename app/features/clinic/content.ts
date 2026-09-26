@@ -5,6 +5,7 @@ import { FACILITIES } from "./constants";
 import type { AdditionalService, Article, CatalogueIcon, Treatment } from "./catalogue";
 import type { KindProfile, PracticeKind, Service } from "./practice-kinds";
 import type { Clinician, Facility, Package } from "./types";
+import type { PriceList } from "./price-list";
 
 /**
  * What this practice actually offers, derived from its trade.
@@ -536,6 +537,14 @@ export interface ContentOverrides {
     readonly appointmentTypes?: readonly AppointmentType[];
     readonly clinicians?: readonly Clinician[];
     readonly packages?: readonly Package[];
+    /**
+     * The published price list, where a practice is ordered to have one.
+     *
+     * Set per site rather than derived: the schedule comes from the CMA Order
+     * and the numbers are the practice's own, so neither can be guessed from
+     * the trade. See features/clinic/price-list.ts.
+     */
+    readonly priceList?: PriceList;
 }
 
 /** Everything this practice offers, in its own terms. */
