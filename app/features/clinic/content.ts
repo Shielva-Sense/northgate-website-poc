@@ -573,11 +573,21 @@ const FIRST_NAMES = [
     "Claire", "Adam", "Mei", "Samuel", "Rosa", "Idris", "Anna", "Victor",
 ] as const;
 
+/**
+ * Surnames we hold a portrait for.
+ *
+ * Drawn from first, so most cards on a site show a face rather than a
+ * monogram. A grid of initials reads as a placeholder, which is exactly the
+ * impression a proposal site cannot afford — and the demo bar already says
+ * the people shown are illustrative.
+ */
+const PHOTO_NAMES = ["Whitfield", "Nandakumar", "Okonkwo", "Duarte"] as const;
+
 const LAST_NAMES = [
     "Whitfield", "Okafor", "Nandakumar", "Bennett", "Haddad", "Lindqvist",
     "Moreau", "Silva", "Kaur", "Donnelly", "Ferreira", "Novak", "Osei",
     "Marchetti", "Ahmed", "Rasmussen", "Bright", "Calder", "Ibrahim",
-    "Petrov", "Lawson", "Duarte", "Chen", "Mbeki",
+    "Petrov", "Lawson", "Duarte", "Chen", "Mbeki", "Okonkwo",
 ] as const;
 
 interface RoleSpec {
@@ -664,9 +674,19 @@ export function cliniciansFor(profile: KindProfile, brand: Brand): readonly Clin
     const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
     const next = seeded(brand.slug);
 
+    /* Rotated from a per-site starting point rather than drawn at random:
+       two clinicians with the same surname on one team reads as a mistake,
+       and a random draw from 24 names collides more often than feels likely. */
+    const photoStart = Math.floor(next() * PHOTO_NAMES.length);
+    const firstStart = Math.floor(next() * FIRST_NAMES.length);
+    const lastStart = Math.floor(next() * LAST_NAMES.length);
+
     return specs.map((spec, index) => {
-        const first = FIRST_NAMES[Math.floor(next() * FIRST_NAMES.length)] ?? "Alex";
-        const last = LAST_NAMES[Math.floor(next() * LAST_NAMES.length)] ?? "Bennett";
+        const first = FIRST_NAMES[(firstStart + index * 5) % FIRST_NAMES.length] ?? "Alex";
+        const photographed = index < PHOTO_NAMES.length;
+        const last = photographed
+            ? (PHOTO_NAMES[(photoStart + index) % PHOTO_NAMES.length] ?? "Whitfield")
+            : (LAST_NAMES[(lastStart + index * 7) % LAST_NAMES.length] ?? "Bennett");
         const name = `${spec.title === "" ? "" : `${spec.title} `}${first} ${last}`;
 
         /* The cheapest appointment in their own department, so the card and
@@ -693,6 +713,7 @@ export function cliniciansFor(profile: KindProfile, brand: Brand): readonly Clin
             fee: priceLabel(brand, fee),
             languages,
             site: index % 4 === 3 ? "second" : "main",
+            ...(photographed ? { photo: `/img/team/${last.toLowerCase()}.jpg` } : {}),
             departments: spec.departments,
             nextSlot: {
                 day: NEXT_DAYS[index % NEXT_DAYS.length] ?? "This week",

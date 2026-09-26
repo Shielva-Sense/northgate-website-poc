@@ -319,6 +319,16 @@ export function brandFromRecord(
     const base = resolveBrand(identifier, kind);
     if (record === null) return base;
 
+    /* The row's country, not the base brand's.
+     *
+     * `resolveBrand` only ever sees the static registry, so its country pack
+     * is the default one — the United Kingdom. A row saying `country: "US"`
+     * therefore produced a brand whose country was US and whose currency was
+     * still £, and a dental practice in Ohio published its prices in pounds.
+     * Everything a country decides is re-derived here, and each field can
+     * still be overridden individually by the row. */
+    const pack = record.country === undefined ? null : packFor(record.country);
+
     const name = record.businessName ?? base.name;
     const short = record.short ?? name.split(" ")[0] ?? base.short;
     const theme = record.theme === undefined ? undefined : THEMES.find((t) => t.id === record.theme);
@@ -331,12 +341,15 @@ export function brandFromRecord(
         short,
         kicker: record.kicker ?? base.kicker,
         monogram: short.charAt(0).toUpperCase(),
-        city: record.city ?? base.city,
+        city: record.city ?? pack?.defaultCity ?? base.city,
         country: record.country ?? base.country,
         address: record.address ?? base.address,
         email: record.email ?? base.email,
-        currency: record.currency ?? base.currency,
-        emergencyNumber: record.emergencyNumber ?? base.emergencyNumber,
+        currency: record.currency ?? pack?.currency ?? base.currency,
+        emergencyNumber: record.emergencyNumber ?? pack?.emergencyNumber ?? base.emergencyNumber,
+        /* Null for a market we have not checked, rather than inheriting the
+           UK's — a clinic in an unchecked country must not claim the CQC. */
+        regulators: pack === null ? base.regulators : pack.regulators,
         phone,
         phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
         whatsapp: phone.replace(/\D/g, ""),

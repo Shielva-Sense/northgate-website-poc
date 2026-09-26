@@ -34,6 +34,17 @@ const IDENTIFIER = /^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/;
 /** Department and appointment ids: same alphabet, no length floor. */
 const IDENTIFIER_LOOSE = /^[a-z0-9][a-z0-9-]*$/;
 
+/** Rotated through when a row gives departments but no photographs. */
+const DEPT_IMAGES: readonly string[] = [
+    "/img/dept/general.jpg",
+    "/img/dept/cardiometabolic.jpg",
+    "/img/dept/womens.jpg",
+    "/img/dept/skin.jpg",
+    "/img/dept/travel.jpg",
+    "/img/dept/mental-health.jpg",
+    "/img/dept/paediatrics.jpg",
+];
+
 /**
  * Labels a prospect site may not take.
  *
@@ -101,12 +112,15 @@ function readContent(value: unknown): Record<string, unknown> | string | null {
     const departments = readArray(v.departments, "content.departments", 24);
     if (typeof departments === "string") return departments;
     if (departments !== null) {
-        out.departments = departments.map((d) => ({
+        /* A row that supplies no photograph gets a different one per
+           department rather than the same default repeated. Two cards side by
+           side showing the same room is the thing a prospect notices first. */
+        out.departments = departments.map((d, i) => ({
             id: str(d.id, 60) ?? "",
             name: str(d.name, 120) ?? "",
             summary: str(d.summary, 400) ?? "",
-            image: str(d.image, 300) ?? "/img/dept/general.jpg",
-            imageAlt: str(d.imageAlt, 300) ?? "A consulting room",
+            image: str(d.image, 300) ?? (DEPT_IMAGES[i % DEPT_IMAGES.length] ?? DEPT_IMAGES[0]),
+            imageAlt: str(d.imageAlt, 300) ?? "A treatment room at this practice",
             services: strings(d.services, 20),
         }));
         if ((out.departments as { id: string }[]).some((d) => d.id === "" || !IDENTIFIER_LOOSE.test(d.id))) {
