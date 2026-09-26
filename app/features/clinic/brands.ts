@@ -1,7 +1,7 @@
 import { packFor } from "./countries";
 import { markFor } from "./mark";
 import type { MarkId } from "./mark";
-import { DEFAULT_KIND } from "./practice-kinds";
+import { DEFAULT_KIND, profileFor } from "./practice-kinds";
 import type { PracticeKind } from "./practice-kinds";
 /**
  * Per-prospect branding, resolved from the hostname.
@@ -247,7 +247,13 @@ export function resolveBrand(
         short,
         kicker: override.kicker ?? "Health",
         monogram: (override.monogram ?? short.charAt(0)).toUpperCase(),
-        strapline: override.strapline ?? "See a named doctor this week, not in three",
+        /* The trade's own line, not a general practice's.
+         *
+         * resolveBrand already takes `kind` and was ignoring it here, so every
+         * veterinary site carried "See a named doctor this week" — not only in
+         * the hero but in the meta description, the og:description and the
+         * Twitter card, which is the version that gets pasted into a chat. */
+        strapline: override.strapline ?? profileFor(kind).strapline,
         phone,
         phoneHref: `tel:${phone.replace(/[^+\d]/g, "")}`,
         whatsapp: override.whatsapp ?? phone.replace(/\D/g, ""),
