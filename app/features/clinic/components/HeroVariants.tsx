@@ -58,11 +58,14 @@ function HeroCinematic(): React.JSX.Element {
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
     const back = useParallax<HTMLDivElement>(-0.12);
+    /* Resolved once, so the poster and the footage can never come from
+       different trades — the poster is literally the video's first frame. */
+    const media = mediaFor(profile.kind);
 
     return (
         <section className={`${styles.hero} ${styles.cinematic}`} id="top">
             <div className={styles.back} ref={back} aria-hidden="true">
-                <HeroMedia poster={mediaFor(profile.kind).consultation} src="/video/hero.mp4" />
+                <HeroMedia poster={media.consultation} src={media.heroVideo} />
             </div>
             <div className={styles.scrim} aria-hidden="true" />
 
@@ -231,8 +234,10 @@ function HeroPanel(): React.JSX.Element {
 
 /* ── editorial: calm, image below the words ──────────────────────────── */
 function HeroEditorial(): React.JSX.Element {
+    const profile = useProfile();
     const ref = useReveal<HTMLDivElement>();
     const shot = useParallax<HTMLDivElement>(0.05);
+    const media = mediaFor(profile.kind);
 
     return (
         <section className={`${styles.hero} ${styles.editorial}`} id="top">
@@ -264,7 +269,7 @@ function HeroEditorial(): React.JSX.Element {
                         degrade-to-poster path. The poster is this clip's own
                         first frame, so a refused autoplay leaves the same
                         composition rather than a different room. */}
-                    <HeroMedia poster="/img/editorial-poster.jpg" src="/video/editorial.mp4" />
+                    <HeroMedia poster={media.editorialPoster} src={media.editorialVideo} />
                 </div>
             </div>
         </section>

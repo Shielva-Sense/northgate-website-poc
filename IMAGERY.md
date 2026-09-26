@@ -63,6 +63,28 @@ To swap it, drop a new `hero.mp4` in `public/video` and keep a matching still as
 the poster. Keep it short, silent and near-motionless — it sits under text, so
 anything with real movement in it makes the headline unreadable.
 
+### Per-trade clips
+
+`hero.mp4` and `editorial.mp4` are the **fallback** pair, and they show a
+general practice. A trade that has its own clips overrides them in the `MEDIA`
+map in `app/features/clinic/content.ts`, the same way the stills do:
+
+| Trade | Cinematic hero | Editorial hero |
+|---|---|---|
+| `dental` | `dental-hero.mp4` | `dental-editorial.mp4` |
+| `veterinary` | `vet-hero.mp4` | `vet-editorial.mp4` |
+| everything else | `hero.mp4` | `editorial.mp4` |
+
+Every clip is 1600×902, h264, five seconds, **no audio track**, and each one is
+generated from the still that is its own `poster`, so a refused autoplay leaves
+the identical composition rather than a different room. When adding a trade,
+generate the clip from that trade's still and set both fields together —
+a poster from one room over footage of another is a visible cut on first paint.
+
+The reason this is per-trade at all: a photograph can be vaguely wrong and get
+away with it, but five seconds of a GP talking to a human patient tells a dog
+owner immediately that the page is not about them.
+
 ## The patient story video — read this before it goes anywhere near a client
 
 `public/video/story-hannah.mp4` is a **synthetic person speaking a scripted

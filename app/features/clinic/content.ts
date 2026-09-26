@@ -938,6 +938,16 @@ export interface SiteMedia {
     readonly treatment: string;
     readonly waiting: string;
     readonly corridor: string;
+    /**
+     * The looping plate behind the cinematic hero. A video, unlike a
+     * photograph, cannot be quietly wrong: a dog owner meeting five seconds of
+     * a GP talking to a human patient has already learnt this page is not
+     * about them.
+     */
+    readonly heroVideo: string;
+    /** The framed clip in the editorial hero, and the still it degrades to. */
+    readonly editorialVideo: string;
+    readonly editorialPoster: string;
 }
 
 const DEFAULT_MEDIA: SiteMedia = {
@@ -948,6 +958,9 @@ const DEFAULT_MEDIA: SiteMedia = {
     treatment: "/img/treatment.jpg",
     waiting: "/img/waiting.jpg",
     corridor: "/img/corridor.jpg",
+    heroVideo: "/video/hero.mp4",
+    editorialVideo: "/video/editorial.mp4",
+    editorialPoster: "/img/editorial-poster.jpg",
 };
 
 /**
@@ -969,6 +982,9 @@ const MEDIA: Readonly<Partial<Record<PracticeKind, Partial<SiteMedia>>>> = {
         treatment: "/img/dental/treatment.jpg",
         waiting: "/img/dental/waiting.jpg",
         corridor: "/img/dental/corridor.jpg",
+        heroVideo: "/video/dental-hero.mp4",
+        editorialVideo: "/video/dental-editorial.mp4",
+        editorialPoster: "/img/dental/reception.jpg",
     },
     veterinary: {
         exterior: "/img/vet/exterior.jpg",
@@ -978,6 +994,9 @@ const MEDIA: Readonly<Partial<Record<PracticeKind, Partial<SiteMedia>>>> = {
         treatment: "/img/vet/treatment.jpg",
         waiting: "/img/vet/waiting.jpg",
         corridor: "/img/vet/corridor.jpg",
+        heroVideo: "/video/vet-hero.mp4",
+        editorialVideo: "/video/vet-editorial.mp4",
+        editorialPoster: "/img/vet/waiting.jpg",
     },
 };
 
