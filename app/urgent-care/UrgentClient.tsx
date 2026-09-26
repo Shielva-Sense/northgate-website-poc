@@ -18,8 +18,8 @@ import { Checkbox } from "@/app/components/ui/Choice";
 import { ChoiceGroup } from "@/app/components/ui/Choice";
 import type { ChoiceOption } from "@/app/components/ui/Choice";
 import { Field, Input, Textarea } from "@/app/components/ui/Field";
-import { useBrand } from "@/app/features/clinic/BrandContext";
-import { searchUrgent, URGENT_UNITS } from "@/app/features/clinic/urgent";
+import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
+import { searchUrgent } from "@/app/features/clinic/urgent";
 import type { UrgentUnit } from "@/app/features/clinic/urgent";
 import { NearestEmergency } from "./NearestEmergency";
 import styles from "./Urgent.module.scss";
@@ -51,6 +51,8 @@ interface Sent {
 
 export function UrgentClient(): React.JSX.Element {
     const brand = useBrand();
+    const profile = useProfile();
+    const isVet = profile.kind === "veterinary";
     const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(brand.address)}`;
     const [query, setQuery] = useState("");
     const [stage, setStage] = useState<Stage>("find");
@@ -69,7 +71,15 @@ export function UrgentClient(): React.JSX.Element {
        seeing the page change and a screen-reader user hearing nothing at all. */
     const stageTop = useRef<HTMLDivElement>(null);
 
-    const result = useMemo(() => searchUrgent(query), [query]);
+    /* The trade decides the list. A veterinary practice searching the human
+       set offered its owners "Urgent child health" and "Same-day GP", and an
+       owner typing "bloat" — the thing that kills dogs in hours — matched
+       nothing at all. */
+    const { urgentUnits: units, redFlags } = useContent();
+    const result = useMemo(
+        () => searchUrgent(query, profile.kind, units, redFlags),
+        [query, profile.kind, units, redFlags],
+    );
 
     function go(next: Stage): void {
         setStage(next);
@@ -167,17 +177,28 @@ export function UrgentClient(): React.JSX.Element {
                     rel="noreferrer"
                 >
                     <MapPin size={16} aria-hidden="true" />
-                    A&amp;E entrance — {brand.address}
+                    {isVet ? "Our door" : "A&E entrance"} — {brand.address}
                 </a>
             </div>
             {/* The ambulance service is the answer to one question only: can
                 this person travel? It is not the answer to "I need help from
                 this hospital", which is why it no longer leads. */}
-            <p className={styles.ambulance}>
-                Cannot travel, or someone is unconscious or struggling to breathe? Call{" "}
-                <a href={`tel:${brand.emergencyNumber}`}>{brand.emergencyNumber}</a> for an
-                ambulance — it starts treating them on the way, and they will be brought to us.
-            </p>
+            {isVet ? (
+                /* There is no ambulance for a dog, and {brand.emergencyNumber}
+                   does not answer for one. Telling an owner to ring it wastes
+                   the minutes that decide a bloat or a blocked cat. */
+                <p className={styles.ambulance}>
+                    Cannot get here, or they have collapsed? Ring us on{" "}
+                    <a href={brand.phoneHref}>{brand.phone}</a> before you set off — we will
+                    talk you through what to do on the way and have the team waiting.
+                </p>
+            ) : (
+                <p className={styles.ambulance}>
+                    Cannot travel, or someone is unconscious or struggling to breathe? Call{" "}
+                    <a href={`tel:${brand.emergencyNumber}`}>{brand.emergencyNumber}</a> for an
+                    ambulance — it starts treating them on the way, and they will be brought to us.
+                </p>
+            )}
             <NearestEmergency />
         </aside>
     );
@@ -226,7 +247,7 @@ export function UrgentClient(): React.JSX.Element {
                     <p className={styles.live} role="status">
                         {result.redFlag !== null
                             ? "That needs our emergency department now, not this page."
-                            : `${result.units.length} of ${URGENT_UNITS.length} showing`}
+                            : `${result.units.length} of ${units.length} showing`}
                     </p>
 
                     {result.redFlag === null ? null : (

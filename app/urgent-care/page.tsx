@@ -41,6 +41,7 @@ export default async function Page(): Promise<React.JSX.Element> {
                         phone={brand.phone}
                         phoneHref={brand.phoneHref}
                         visit={profile.visit}
+                        isVet={profile.kind === "veterinary"}
                     />
                 </div>
             </PageShell>

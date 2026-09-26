@@ -9,7 +9,7 @@ import { useParallax } from "@/app/core/hooks/useParallax";
 import { useReveal } from "@/app/core/hooks/useReveal";
 import { useBrand, useContent, useProfile } from "../BrandContext";
 import { mediaFor } from "../content";
-import { DEPARTMENTS } from "../care";
+import type { AppointmentType } from "../content";
 import { templateById } from "../templates";
 import type { TemplateId } from "../templates";
 import { HeroMedia } from "./HeroMedia";
@@ -27,7 +27,7 @@ function Rating({ tone }: { readonly tone: "dark" | "light" }): React.JSX.Elemen
                 ))}
             </span>
             <b>{brand.rating}</b>
-            from {brand.ratingCount} patient reviews
+            from {brand.ratingCount} reviews
         </p>
     );
 }
@@ -61,6 +61,13 @@ function HeroCinematic(): React.JSX.Element {
     /* Resolved once, so the poster and the footage can never come from
        different trades — the poster is literally the video's first frame. */
     const media = mediaFor(profile.kind);
+    /* The team and the appointment length are this practice's own, not a
+       general practice's seven clinicians and twenty minutes. */
+    const { clinicians, appointmentTypes } = useContent();
+    const shortest = appointmentTypes.reduce<AppointmentType | undefined>(
+        (best, type) => (best === undefined || type.minutes < best.minutes ? type : best),
+        undefined,
+    );
 
     return (
         <section className={`${styles.hero} ${styles.cinematic}`} id="top">
@@ -75,7 +82,7 @@ function HeroCinematic(): React.JSX.Element {
                     <h1 className={styles.h1}>
                         <span className="line-mask">
                             <span data-reveal="" data-reveal-style="rise">
-                                See a named doctor
+                                See a named {profile.clinician}
                             </span>
                         </span>
                         <span className="line-mask">
@@ -90,8 +97,9 @@ function HeroCinematic(): React.JSX.Element {
                         </span>
                     </h1>
                     <p className={styles.lede}>
-                        Seven clinicians. Twenty-minute appointments. Every price published on this
-                        page, and a real time confirmed within the hour.
+                        {clinicians.length} {clinicians.length === 1 ? profile.clinician : profile.clinicianPlural}.{" "}
+                        {shortest === undefined ? null : `${shortest.minutes}-minute ${profile.visit}s. `}
+                        Every price published on this page, and a real time confirmed within the hour.
                     </p>
                     <div className={styles.cta}>
                         <LinkButton href="/#team" size="lg">
@@ -115,6 +123,10 @@ function HeroSplit(): React.JSX.Element {
     const profile = useProfile();
     const brand = useBrand();
     const ref = useReveal<HTMLDivElement>();
+    /* This practice's departments. The module constant listed a general
+       practice's six on every site, so the chips under the headline never
+       matched the departments the rest of the page offered. */
+    const { departments } = useContent();
 
     return (
         <section className={`${styles.hero} ${styles.split}`} id="top" ref={ref}>
@@ -125,11 +137,11 @@ function HeroSplit(): React.JSX.Element {
                         Find the right department, then the right day
                     </h1>
                     <p className={styles.lede}>
-                        {DEPARTMENTS.length} departments, {brand.ratingCount} patient reviews, and
-                        every clinician bookable by name.
+                        {departments.length} departments, {brand.ratingCount} reviews, and every{" "}
+                        {profile.clinician} bookable by name.
                     </p>
                     <ul className={styles.deptChips} role="list">
-                        {DEPARTMENTS.slice(0, 5).map((department) => (
+                        {departments.slice(0, 5).map((department) => (
                             <li key={department.id}>
                                 <Link href="/#departments">{department.name}</Link>
                             </li>
@@ -248,9 +260,8 @@ function HeroEditorial(): React.JSX.Element {
                         Unhurried care, from people who remember you
                     </h1>
                     <p className={styles.ledeWide}>
-                        Twenty minutes as standard, thirty for anything that needs it, and the same
-                        clinician every visit if you would rather. We book to time because we run to
-                        time.
+                        Time that suits what you came for, and the same {profile.clinician} every
+                        visit if you would rather. We book to time because we run to time.
                     </p>
                     <div className={styles.cta}>
                         <LinkButton href="/#book" size="lg">

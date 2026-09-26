@@ -6,6 +6,10 @@ import type { AdditionalService, Article, CatalogueIcon, Treatment } from "./cat
 import type { KindProfile, PracticeKind, Service } from "./practice-kinds";
 import type { Clinician, Facility, Package } from "./types";
 import type { PriceList } from "./price-list";
+import { urgentUnitsFor } from "./urgent";
+import type { UrgentUnit } from "./urgent";
+import { redFlagsFor } from "./care";
+import type { SymptomOption } from "./care";
 
 /**
  * What this practice actually offers, derived from its trade.
@@ -51,6 +55,9 @@ export interface AppointmentType {
 }
 
 export interface ClinicContent {
+    /** The urgent list and red flags this practice actually uses. */
+    readonly urgentUnits: readonly UrgentUnit[];
+    readonly redFlags: readonly SymptomOption[];
     readonly departments: readonly Department[];
     readonly treatments: readonly Treatment[];
     readonly additionalServices: readonly AdditionalService[];
@@ -545,6 +552,16 @@ export interface ContentOverrides {
      * the trade. See features/clinic/price-list.ts.
      */
     readonly priceList?: PriceList;
+    /**
+     * This practice's own urgent list and red flags.
+     *
+     * The trade default is a reasonable guess — a veterinary practice gets
+     * veterinary categories — but only the practice knows what it actually
+     * runs an urgent list for, and which signs it wants owners watching for.
+     * Settable on the row so one clinic can be corrected without a deploy.
+     */
+    readonly urgentUnits?: readonly UrgentUnit[];
+    readonly redFlags?: readonly SymptomOption[];
 }
 
 /** Everything this practice offers, in its own terms. */
@@ -579,6 +596,8 @@ export function contentFor(
                 ? ARTICLES.filter((a) => departments.some((d) => d.id === a.department))
                 : []),
         packages: o.packages ?? packagesFor(profile, brand, appointmentTypes, format),
+        urgentUnits: o.urgentUnits ?? urgentUnitsFor(profile.kind),
+        redFlags: o.redFlags ?? redFlagsFor(profile.kind),
         priceMode,
     };
 }
