@@ -31,13 +31,19 @@ type Result =
  * hospital, and not the person's front door. Nothing typed here is sent
  * anywhere: the sites and the arithmetic are in the page.
  */
-export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: boolean }): React.JSX.Element {
+export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: boolean }): React.JSX.Element | null {
     const brand = useBrand();
     /* The sites follow the tenant, so they are derived here rather than read
        from a module constant that would name the default clinic on every host. */
     const sites = emergencySites(brand);
     const [postcode, setPostcode] = useState("");
     const [result, setResult] = useState<Result>({ state: "idle" });
+
+    /* "Which of our departments is nearest to you?" is only a question worth
+       asking a practice that has more than one. With a single door the finder
+       asked for a postcode in order to answer with the address already printed
+       directly above it. */
+    const single = sites.length < 2;
 
     function locate(): void {
         if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
@@ -69,6 +75,8 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
         const site = siteForPostcode(sites, postcode);
         setResult(site === null ? { state: "unknown" } : { state: "found", site, km: null });
     }
+
+    if (single) return null;
 
     return (
         <section className={styles.nearest} aria-labelledby="nearest-heading">

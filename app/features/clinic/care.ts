@@ -167,3 +167,27 @@ export function departmentById(id: string): Department | undefined {
 export function slotsFor(clinicianName: string): readonly Slot[] {
     return AVAILABILITY[clinicianName] ?? [];
 }
+
+/**
+ * The red flags a veterinary practice should ask about.
+ *
+ * The human list was showing on veterinary sites: pet owners were being asked
+ * to watch for chest pain, face drooping and slurred speech, and a baby under
+ * three months with a fever. Beyond reading as though nobody checked the page,
+ * it crowds out the signs that actually kill animals — a blocked cat and a
+ * bloated dog are both hours, not days.
+ */
+export const VET_RED_FLAGS: readonly SymptomOption[] = [
+    { id: "vet-breathing", label: "Struggling to breathe, or blue-grey gums", department: "emergency" },
+    { id: "vet-collapse", label: "Collapsed, or cannot stand up", department: "emergency" },
+    { id: "vet-bloat", label: "Hard swollen tummy, retching but bringing nothing up", department: "emergency" },
+    { id: "vet-urine", label: "Straining to pass urine and producing nothing", department: "emergency" },
+    { id: "vet-seizure", label: "A seizure that will not stop", department: "emergency" },
+    { id: "vet-poison", label: "Swallowed something poisonous", department: "emergency" },
+    { id: "vet-bleeding", label: "Heavy bleeding that will not stop", department: "emergency" },
+];
+
+/** The red flags for this trade. Veterinary is the only set that differs. */
+export function redFlagsFor(kind: string): readonly SymptomOption[] {
+    return kind === "veterinary" ? VET_RED_FLAGS : RED_FLAGS;
+}

@@ -6,7 +6,8 @@ import { Check, MessageSquarePlus, Send, Star, X } from "lucide-react";
 import { Button } from "@/app/components/ui/Button";
 import { Field, Input, Textarea } from "@/app/components/ui/Field";
 import { readStoredTheme } from "@/app/features/clinic/theme";
-import { GROUPS, RATING_LABELS } from "./questions";
+import { groupsFor, RATING_LABELS } from "./questions";
+import { useProfile } from "@/app/features/clinic/BrandContext";
 import { clearDraft, EMPTY_DRAFT, loadDraft, saveDraft } from "./storage";
 import type { Draft } from "./storage";
 import styles from "./SuggestionPanel.module.scss";
@@ -33,6 +34,10 @@ export function SuggestionPanel({
     readonly template: string;
 }): React.JSX.Element | null {
     const path = usePathname();
+    /* The panel asks the prospect what they want; asking a vet whether they
+       need "Find a doctor" answers the question badly before they start. */
+    const profile = useProfile();
+    const groups = useMemo(() => groupsFor(profile), [profile]);
     const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
     /* Until the stored draft has been read, persisting would write the empty
        one over it. */
@@ -311,7 +316,7 @@ export function SuggestionPanel({
                                 ) : null}
                             </section>
 
-                            {GROUPS.map((group) => (
+                            {groups.map((group) => (
                                 <section className={styles.block} key={group.id}>
                                     <h3 className={styles.blockTitle}>{group.title}</h3>
                                     <p className={styles.blockBlurb}>{group.blurb}</p>

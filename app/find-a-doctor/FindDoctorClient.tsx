@@ -26,8 +26,8 @@ import {
 import { Button } from "@/app/components/ui/Button";
 import { LinkButton } from "@/app/components/ui/LinkButton";
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
-import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
-import { RED_FLAGS } from "@/app/features/clinic/care";
+import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
+import { redFlagsFor } from "@/app/features/clinic/care";
 import {
     CATEGORISED_SYMPTOMS,
     DURATIONS,
@@ -94,6 +94,7 @@ const STEPS: readonly { readonly stage: Stage; readonly label: string }[] = [
  */
 export function FindDoctorClient(): React.JSX.Element {
     const brand = useBrand();
+    const profile = useProfile();
     const { departments } = useContent();
     const [mode, setMode] = useState<Mode>("browse");
     const [stage, setStage] = useState<Stage>("safety");
@@ -234,7 +235,7 @@ export function FindDoctorClient(): React.JSX.Element {
                     Does any of this apply right now, to you or the person you are booking for?
                 </p>
                 <ul className={styles.flags} role="list">
-                    {RED_FLAGS.map((flag) => (
+                    {redFlagsFor(profile.kind).map((flag) => (
                         <li key={flag.id}>{flag.label}</li>
                     ))}
                 </ul>

@@ -13,7 +13,7 @@
  * first time the queue ran long.
  */
 
-import { RED_FLAGS } from "./care";
+import { redFlagsFor } from "./care";
 import type { Brand } from "./brands";
 import type { SymptomOption } from "./care";
 
@@ -222,6 +222,15 @@ const RED_FLAG_TERMS: Readonly<Record<string, readonly string[]>> = {
     bleeding: ["bleeding", "blood", "haemorrhage", "hemorrhage", "will not stop"],
     baby: ["newborn", "under 3 months", "under three months"],
     harm: ["harm", "suicide", "suicidal", "kill myself", "end it", "self harm"],
+    /* Veterinary. Owners type what they see, not the diagnosis: "belly is
+       hard", "straining in the litter tray", "gums look grey". */
+    "vet-breathing": ["breath", "breathing", "cannot breathe", "panting", "gums", "blue", "grey gums", "choking"],
+    "vet-collapse": ["collapse", "collapsed", "cannot stand", "wont stand", "unconscious", "unresponsive", "floppy"],
+    "vet-bloat": ["bloat", "bloated", "gdv", "hard tummy", "hard belly", "swollen tummy", "swollen belly", "retching", "twisted"],
+    "vet-urine": ["straining", "cannot urinate", "cannot pee", "blocked", "litter tray", "no urine", "crying in the tray"],
+    "vet-seizure": ["seizure", "fit", "fitting", "convulsion", "shaking", "twitching"],
+    "vet-poison": ["poison", "poisoned", "ate", "eaten", "swallowed", "chocolate", "grape", "raisin", "xylitol", "antifreeze", "rat bait", "lily", "ibuprofen", "paracetamol"],
+    "vet-bleeding": ["bleeding", "blood", "haemorrhage", "hemorrhage", "will not stop"],
 };
 
 function normalise(value: string): string {
@@ -233,11 +242,19 @@ function normalise(value: string): string {
  * fall" mentions an injury, and the injuries unit would match it — returning
  * both would let the patient pick the convenient one.
  */
-export function searchUrgent(query: string): UrgentSearch {
+export function searchUrgent(
+    query: string,
+    kind = "general-practice",
+    /* The resolved list, so a row that overrides its urgent categories is
+       searched rather than the trade default sitting behind it. */
+    override?: readonly UrgentUnit[],
+    flags?: readonly SymptomOption[],
+): UrgentSearch {
     const q = normalise(query);
-    if (q.length < 2) return { redFlag: null, units: URGENT_UNITS };
+    const units = override ?? urgentUnitsFor(kind);
+    if (q.length < 2) return { redFlag: null, units };
 
-    for (const flag of RED_FLAGS) {
+    for (const flag of flags ?? redFlagsFor(kind)) {
         const terms = RED_FLAG_TERMS[flag.id] ?? [];
         const haystack = [normalise(flag.label), ...terms.map(normalise)];
         if (haystack.some((term) => term.length > 0 && q.includes(term))) {
@@ -249,7 +266,7 @@ export function searchUrgent(query: string): UrgentSearch {
         }
     }
 
-    const hits = URGENT_UNITS.filter((unit) => {
+    const hits = units.filter((unit) => {
         // A&E always survives a search. Someone typing "cut" at 3am should see
         // the one door that is definitely open.
         if (unit.kind === "emergency") return true;
@@ -265,8 +282,8 @@ export function searchUrgent(query: string): UrgentSearch {
     return { redFlag: null, units: hits };
 }
 
-export function urgentUnitById(id: string): UrgentUnit | undefined {
-    return URGENT_UNITS.find((unit) => unit.id === id);
+export function urgentUnitById(id: string, kind = "general-practice"): UrgentUnit | undefined {
+    return urgentUnitsFor(kind).find((unit) => unit.id === id);
 }
 
 /* ── where to go ───────────────────────────────────────────────────────────
@@ -299,39 +316,28 @@ export interface EmergencySite {
  * the worst possible place for filler text.
  */
 export function emergencySites(brand: Brand): readonly EmergencySite[] {
+    /* One site: this practice, at its own address.
+     *
+     * This used to return three — a "South site" and an "East site" invented
+     * from the practice name, all three pinned to Manchester coordinates and
+     * Manchester outward codes. Every tenant therefore claimed an emergency
+     * network it does not have, and a small animal clinic in Miles City asked
+     * its owners for an M20 postcode to find the nearest of three Montana
+     * emergency departments that do not exist.
+     *
+     * A practice that genuinely runs more than one door can say so on its row;
+     * until then the only address we know is true is theirs. */
     return [
         {
             id: "main",
-            name: `${brand.short} — main emergency department`,
+            name: `${brand.short} — emergency`,
             address: brand.address,
-            lat: 53.4839,
-            lng: -2.2446,
+            lat: 0,
+            lng: 0,
             aeLine: brand.aeLine,
             full: true,
             hours: "24 hours, every day",
-            outwardCodes: ["M1", "M2", "M3", "M4", "M8", "M15", "M60"],
-        },
-        {
-            id: "south",
-            name: `${brand.short} South — emergency department`,
-            address: `South site, ${brand.city}`,
-            lat: 53.4192,
-            lng: -2.2307,
-            aeLine: brand.aeLine,
-            full: true,
-            hours: "24 hours, every day",
-            outwardCodes: ["M19", "M20", "M21", "M22", "M33"],
-        },
-        {
-            id: "east",
-            name: `${brand.short} East — minor injuries unit`,
-            address: `East site, ${brand.city}`,
-            lat: 53.4781,
-            lng: -2.1734,
-            aeLine: brand.aeLine,
-            full: false,
-            hours: "08:00–22:00, every day",
-            outwardCodes: ["M11", "M12", "M18", "M34", "M43"],
+            outwardCodes: [],
         },
     ];
 }
@@ -388,4 +394,90 @@ export function siteForPostcode(
     const outward = postcode.toUpperCase().replace(/[^A-Z0-9]/g, "").match(/^[A-Z]{1,2}\d{1,2}/);
     if (outward === null) return null;
     return sites.find((site) => site.outwardCodes.includes(outward[0])) ?? null;
+}
+
+/* ── the veterinary set ────────────────────────────────────────────────────
+   Everything above this line is human medicine, and it was rendering on
+   veterinary sites unchanged: a small animal clinic in Montana offering
+   "Urgent child health", "Urgent mental health" and "Same-day GP", warning pet
+   owners about face drooping and slurred speech, and telling them to call an
+   ambulance that does not come for a dog.
+
+   These are the categories a veterinary practice actually runs an urgent list
+   for, and the red flags are the ones that genuinely mean "now": a blocked
+   cat, a bloated retching dog, a seizure that will not stop.              */
+
+export const VET_UNITS: readonly UrgentUnit[] = [
+    {
+        id: "vet-emergency",
+        kind: "emergency",
+        name: "Emergency — bring them straight in",
+        summary:
+            "Collapse, struggling to breathe, a bloated hard tummy with retching, a cat straining and passing nothing, a seizure that will not stop, heavy bleeding, or a road accident. Ring on your way so the team is waiting at the door.",
+        notFor:
+            "Nothing. If you are not sure whether it is serious enough, ring us — that judgement is ours to make, not yours.",
+        hours: "Ring first, any hour",
+        wait: "Seen immediately",
+        matches: [
+            "emergency", "collapse", "collapsed", "breathing", "breathe", "choking",
+            "bloat", "gdv", "twisted", "retching", "blocked", "straining", "seizure",
+            "fitting", "convulsion", "bleeding", "blood", "hit by a car", "accident",
+            "poison", "poisoned", "antifreeze", "chocolate", "unconscious",
+        ],
+    },
+    {
+        id: "vet-sick-today",
+        kind: "urgent",
+        name: "Sick today",
+        summary:
+            "Vomiting, diarrhoea, off food, drinking far more than usual, or simply not themselves. Seen the same day rather than waiting for a routine appointment.",
+        notFor: "Routine boosters and check-ups, which are quicker to book normally.",
+        hours: "Monday to Saturday, 08:00–18:00",
+        wait: "Seen within 3 hours",
+        matches: [
+            "sick", "vomit", "vomiting", "diarrhoea", "diarrhea", "off food", "not eating",
+            "lethargic", "drinking", "thirsty", "unwell", "poorly", "tummy", "stomach",
+        ],
+    },
+    {
+        id: "vet-injury",
+        kind: "urgent",
+        name: "Wounds, bites and lameness",
+        summary:
+            "Cuts that may need closing, bite wounds, a torn claw, limping or a leg they will not put down. We can x-ray here.",
+        notFor: "A wound that is bleeding heavily and will not stop — that is an emergency, ring us.",
+        hours: "Every day, 08:00–20:00",
+        wait: "About 40 minutes",
+        matches: [
+            "wound", "cut", "bite", "bitten", "limp", "limping", "lame", "lameness",
+            "leg", "paw", "claw", "nail", "sprain", "broken", "fracture", "x-ray", "xray",
+        ],
+    },
+    {
+        id: "vet-poison",
+        kind: "urgent",
+        name: "Ate something they should not have",
+        summary:
+            "Chocolate, grapes or raisins, xylitol, human medication, rat bait, antifreeze, or a swallowed toy or sock. Ring before you set off — with some of these the first hour decides the outcome.",
+        notFor: "Waiting to see if they seem fine. Several of these show nothing until the damage is done.",
+        hours: "Ring first, any hour",
+        wait: "Advised on the phone, seen straight away if needed",
+        matches: [
+            "ate", "eaten", "swallowed", "poison", "chocolate", "grape", "raisin",
+            "xylitol", "ibuprofen", "paracetamol", "medication", "tablet", "rat bait",
+            "antifreeze", "lily", "sock", "toy", "string", "bone",
+        ],
+    },
+];
+
+/**
+ * The urgent list for this trade.
+ *
+ * Partial on purpose, like the photography: only veterinary genuinely differs
+ * so far. A physiotherapist does not run an urgent list at all, and gets the
+ * human set until someone writes one — which is a weaker answer than a
+ * bespoke one, but not a false one.
+ */
+export function urgentUnitsFor(kind: string): readonly UrgentUnit[] {
+    return kind === "veterinary" ? VET_UNITS : URGENT_UNITS;
 }

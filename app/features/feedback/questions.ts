@@ -354,3 +354,40 @@ export const RATING_LABELS: readonly string[] = [
     "Good",
     "Exactly right",
 ];
+
+/**
+ * The same questions, in this practice's own vocabulary.
+ *
+ * The page list asked a veterinary practice whether it needed "Find a doctor",
+ * "Urgent care / A&E" and a "Health library" — the panel that exists to ask a
+ * prospect what they want was itself written for a general practice, which
+ * rather undermines the question. Only the labels change; the ids do not, so
+ * QUESTION_IDS and every stored answer stay valid.
+ */
+export function groupsFor(profile: {
+    readonly findLabel: string;
+    readonly libraryLabel: string;
+    readonly hasEmergency: boolean;
+    readonly kind: string;
+}): readonly QuestionGroup[] {
+    const urgent = profile.kind === "veterinary" ? "Urgent and out-of-hours" : "Urgent care / A&E";
+    return GROUPS.map((group) => ({
+        ...group,
+        questions: group.questions.map((question) =>
+            question.id === "pages_needed"
+                ? {
+                      ...question,
+                      options: (question.options ?? []).map((option) => {
+                          if (option === "Find a doctor") return profile.findLabel;
+                          if (option === "Health library") return profile.libraryLabel;
+                          if (option === "Urgent care / A&E") return urgent;
+                          if (option === "Patient portal login") {
+                              return profile.kind === "veterinary" ? "Client portal login" : option;
+                          }
+                          return option;
+                      }),
+                  }
+                : question,
+        ),
+    }));
+}
