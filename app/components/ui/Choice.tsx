@@ -3,6 +3,8 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
 import styles from "./Choice.module.scss";
+import { tr } from "@/app/core/content-ar";
+import { useLocale } from "@/app/features/clinic/LocaleContext";
 
 export interface ChoiceOption<T extends string> {
     readonly value: T;
@@ -30,6 +32,7 @@ export function ChoiceGroup<T extends string>({
     onChange,
     error,
 }: ChoiceGroupProps<T>): React.JSX.Element {
+    const { locale } = useLocale();
     const id = useId();
     const errorId = `${id}-error`;
 
@@ -55,7 +58,10 @@ export function ChoiceGroup<T extends string>({
                                 onChange={() => onChange(option.value)}
                             />
                             <label className={styles.chip} htmlFor={optionId}>
-                                {option.label}
+                                {/* The option lists are module-scope constants, so
+                                    they are built before a locale exists. Translated
+                                    here, at the one place a label becomes text. */}
+                                {tr(option.label, locale)}
                             </label>
                         </div>
                     );

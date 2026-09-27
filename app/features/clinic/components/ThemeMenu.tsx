@@ -82,7 +82,8 @@ export function ThemeMenu(): React.JSX.Element {
                 />
                 <Palette size={15} aria-hidden="true" />
                 <span className="visually-hidden">
-                    Brand colours{current === undefined ? "" : `, currently ${current.name}`}
+                    {tr("Brand colours", locale)}
+                    {current === undefined ? "" : `, ${tr("currently", locale)} ${current.name}`}
                 </span>
             </button>
 

@@ -52,7 +52,7 @@ export default async function Page({
             locale={locale}
             kicker={tr("Appointments and access", locale)}
             title={tr("Every way to get seen", locale)}
-            lede={tr("However you would rather do it — online, on the phone, or by walking in. If you are not sure which you need, start with \u201Cwhere to go\u201D below.", locale)}
+            lede={tr("However you would rather do it — online, on the phone, or by walking in. If you are not sure which you need, start with “where to go” below.", locale)}
             imageKey="reception"
             imageAlt="A reception desk with a receptionist looking up, and seating beyond"
         >

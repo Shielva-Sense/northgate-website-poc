@@ -210,7 +210,7 @@ export function Team(): React.JSX.Element {
                                 <div className={styles.personCta}>
                                     <p className={styles.fee}>
                                         {person.fee}
-                                        <span>per appointment</span>
+                                        <span>{tr("per appointment", locale)}</span>
                                     </p>
                                     <LinkButton href="#book" variant="ghost">{tr("Book", locale)}</LinkButton>
                                 </div>
@@ -340,7 +340,7 @@ export function Services({ template }: { readonly template: TemplateId }): React
                                 <h3 className={styles.cardTitle}>{service.name}</h3>
                                 <p className={styles.cardBody}>{service.blurb}</p>
                                 {minutes === undefined ? null : (
-                                    <span className={styles.duration}>{minutes} min</span>
+                                    <span className={styles.duration}>{minutes} {tr("min", locale)}</span>
                                 )}
                             </li>
                         );

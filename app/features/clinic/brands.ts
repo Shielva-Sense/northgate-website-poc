@@ -338,8 +338,15 @@ export function brandFromRecord(
     const name = record.businessName ?? base.name;
     const short = record.short ?? name.split(" ")[0] ?? base.short;
     const theme = record.theme === undefined ? undefined : THEMES.find((t) => t.id === record.theme);
-    const phone = record.phone ?? base.phone;
-    const aeLine = record.aeLine ?? record.phone ?? base.aeLine;
+    /* The country's sample number, not the base brand's.
+     *
+     * `base` is built from the default pack, so its phone is a London one.
+     * A row with no phone of its own therefore published "+44 20 7946 0958" —
+     * an Ofcom fictional number — on a clinic in Sharjah, Ajman, Brisbane and
+     * Valletta. On a demo that carries a real practice's name, a number in the
+     * wrong country is the detail that ends the conversation. */
+    const phone = record.phone ?? pack?.samplePhone ?? base.phone;
+    const aeLine = record.aeLine ?? record.phone ?? pack?.samplePhone ?? base.aeLine;
 
     return {
         ...base,

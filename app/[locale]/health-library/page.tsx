@@ -78,7 +78,7 @@ export default async function Page({
                                                             {article.summary}
                                                         </span>
                                                         <span className={styles.cardGo}>
-                                                            Read this
+                                                            {tr("Read this", locale)}
                                                             <ArrowRight
                                                                 size={15}
                                                                 aria-hidden="true"

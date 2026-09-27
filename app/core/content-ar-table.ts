@@ -1135,4 +1135,12 @@ export const AR: Readonly<Record<string, string>> = {
     "The address may be out of date, or the practice may not offer this service.": "قد يكون العنوان قديماً، أو أن العيادة لا تقدّم هذه الخدمة.",
     "Contact us": "اتصل بنا",
     "That page is not one of ours, but this is what we do.": "تلك الصفحة ليست من صفحاتنا، لكن هذا ما نقدّمه.",
+    "per appointment": "لكل موعد",
+    "min": "دقيقة",
+    "From": "ابتداءً من",
+    "Read this": "اقرأ المزيد",
+    "currently": "حالياً",
+    "General enquiry": "استفسار عام",
+    "Mobile is best for reminders.": "رقم الجوال أفضل للتذكيرات.",
+    "minutes": "دقيقة",
 };

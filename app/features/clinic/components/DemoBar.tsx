@@ -5,7 +5,7 @@ import type { TemplateId } from "../templates";
 import { DemoThemes } from "./DemoThemes";
 import { SuggestionTrigger } from "@/app/features/feedback/SuggestionPanel";
 import styles from "./DemoBar.module.scss";
-import { tr } from "@/app/core/content-ar";
+import { localise, tr } from "@/app/core/content-ar";
 import type { Locale } from "@/app/core/locale";
 
 /**
@@ -38,7 +38,7 @@ export function DemoBar({
                 <span className={styles.labelText}>{tr("Layout", locale)}</span>
             </span>
             <ul className={styles.options} role="list">
-                {TEMPLATES.map((template) => (
+                {localise(TEMPLATES, locale).map((template) => (
                     <li key={template.id}>
                         <Link
                             href={`/?template=${template.id}`}

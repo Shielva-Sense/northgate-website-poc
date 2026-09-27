@@ -209,7 +209,7 @@ function HeroPanel(): React.JSX.Element {
                     <ul className={styles.proofChips} role="list">
                         <li>
                             <Check size={14} aria-hidden="true" />
-                            From {cheapest?.price} per appointment
+                            {tr("From", locale)} {cheapest?.price} {tr("per appointment", locale)}
                         </li>
                         <li>
                             <Clock size={14} aria-hidden="true" />{tr("Confirmed within the hour", locale)}</li>
