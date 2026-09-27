@@ -45,6 +45,7 @@ export default async function Page({
             >
                 <div className="wrap">
                     <NoEmergency
+                        locale={locale}
                         emergencyNumber={brand.emergencyNumber}
                         phone={brand.phone}
                         phoneHref={brand.phoneHref}

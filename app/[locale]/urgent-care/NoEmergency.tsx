@@ -1,7 +1,7 @@
 import { AlertTriangle, Phone } from "lucide-react";
 import styles from "./Urgent.module.scss";
 import { tr } from "@/app/core/content-ar";
-import { useLocale } from "@/app/features/clinic/LocaleContext";
+import type { Locale } from "@/app/core/locale";
 
 /**
  * What a practice without an emergency department says to someone in one.
@@ -12,12 +12,14 @@ import { useLocale } from "@/app/features/clinic/LocaleContext";
  * right destination — not a 404, and certainly not a booking form.
  */
 export function NoEmergency({
+    locale,
     emergencyNumber,
     phone,
     phoneHref,
     visit,
     isVet = false,
 }: {
+    readonly locale: Locale;
     readonly emergencyNumber: string;
     readonly phone: string;
     readonly phoneHref: string;
@@ -25,7 +27,6 @@ export function NoEmergency({
     /** No ambulance service takes an animal, so the whole page changes. */
     readonly isVet?: boolean;
 }): React.JSX.Element {
-    const { locale } = useLocale();
     return (
         <div className={styles.panel}>
             <aside className={styles.emergency} role="note">

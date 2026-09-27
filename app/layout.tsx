@@ -3,7 +3,6 @@ import { Inter, Noto_Sans_Arabic, Source_Serif_4 } from "next/font/google";
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import { siteFromHost } from "./core/site";
-import { DemoRibbon } from "./features/clinic/components/DemoRibbon";
 import { isIndexable } from "./core/seo";
 import { paletteVars, resolveBrand } from "./features/clinic/brands";
 import "./globals.scss";
@@ -82,9 +81,10 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                     <TenantPalette />
                 </Suspense>
-                <Suspense fallback={null}>
-                    <ProposalNotice />
-                </Suspense>
+                {/* The demo ribbon is rendered by app/[locale]/layout.tsx for
+                    the same reason as the skip link: it names the practice in
+                    words, and the root layout sits outside the language
+                    segment so it could only ever say them in English. */}
                 {/* The skip link is rendered by app/[locale]/layout.tsx, not
                     here: it is the first thing a screen-reader user hears, and
                     the root layout sits outside the language segment, so it
@@ -126,8 +126,3 @@ async function PaletteStyle({ host }: { readonly host: string }): Promise<React.
  * only value interpolated is one of two literals chosen by a comparison, so
  * there is nothing from the request in the emitted code.
  */
-/** Reads the host to name the clinic; lives behind Suspense like the palette. */
-async function ProposalNotice(): Promise<React.JSX.Element> {
-    const site = await siteFromHost((await headers()).get("host"));
-    return <DemoRibbon name={site.brand.name} />;
-}

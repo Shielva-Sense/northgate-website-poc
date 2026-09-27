@@ -94,7 +94,7 @@ async function CachedShell({
             {/* The colour switcher has to be reachable from whatever page a
                 prospect happens to be on, not only the home page. Gated on the
                 invite build, like the rest of the demo furniture. */}
-            {isIndexable() ? null : <DemoBar />}
+            {isIndexable() ? null : <DemoBar locale={locale} />}
             <AnnounceBar />
             <SiteHeader />
             <main id="main-content" tabIndex={-1}>

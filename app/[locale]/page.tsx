@@ -60,7 +60,7 @@ export default async function Page({ searchParams, params }: Props): Promise<Rea
             <JsonLd data={clinicJsonLd(brand, site.profile)} />
             <JsonLd data={faqJsonLd()} />
             {/* Sales control: only while this is an invite-only preview. */}
-            {isIndexable() ? null : <DemoBar active={template} />}
+            {isIndexable() ? null : <DemoBar active={template} locale={locale} />}
             <HomeClient template={template} />
             </BookingProvider>
         </BrandProvider>

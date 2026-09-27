@@ -1,7 +1,12 @@
+import { Suspense } from "react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { LOCALES, dirFor, isLocale } from "@/app/core/locale";
+import type { Locale } from "@/app/core/locale";
 import { LocaleProvider } from "@/app/features/clinic/LocaleContext";
 import { stringsFor } from "@/app/core/strings";
+import { siteFromHost } from "@/app/core/site";
+import { DemoRibbon } from "@/app/features/clinic/components/DemoRibbon";
 
 /**
  * The language segment.
@@ -43,7 +48,19 @@ export default async function LocaleLayout({
             <a href="#main-content" className="skip-link">
                 {stringsFor(locale).skipToContent}
             </a>
+            {/* Behind Suspense because it is the one thing here that reads the
+                Host header, and reading it outside a boundary would mark every
+                route dynamic and cost the farm its prerendering. */}
+            <Suspense fallback={null}>
+                <ProposalNotice locale={locale} />
+            </Suspense>
             <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </div>
     );
+}
+
+/** Names the clinic on the demo ribbon; the one Host read in this layout. */
+async function ProposalNotice({ locale }: { readonly locale: Locale }): Promise<React.JSX.Element> {
+    const site = await siteFromHost((await headers()).get("host"));
+    return <DemoRibbon name={site.brand.name} locale={locale} />;
 }
