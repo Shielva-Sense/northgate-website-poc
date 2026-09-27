@@ -191,10 +191,40 @@ for (const [, code, body] of packs) {
     }
 }
 
+
+/* ── post-nominals stay inside their own country ─────────────────────── */
+/**
+ * Third shape of the same bug, and the one that survived the first fix.
+ *
+ * Accreditations were moved onto brand.regulators, the US sites stopped
+ * claiming a CQC rating -- and RCVS was still on both Montana vet pages,
+ * because a second constant prints "BVSc, MRCVS" under each vet's photograph.
+ * Naming a British college under a named American clinician invents a
+ * qualification for a specific person.
+ *
+ * So: every country we sell into needs its own post-nominals for every kind
+ * that has a ROLES entry. A missing pack silently falls back to the British
+ * letters, which is why this is checked rather than trusted.
+ */
+const content = readFileSync("app/features/clinic/content.ts", "utf8");
+const rolesBlock = content.slice(content.indexOf("const ROLES"), content.indexOf("const QUALIFICATIONS_BY_COUNTRY"));
+const roleKinds = [...rolesBlock.matchAll(/^ {4}"?([a-z-]+)"?: \[/gm)].map((m) => m[1]);
+
+const qualBlock = content.slice(content.indexOf("const QUALIFICATIONS_BY_COUNTRY"));
+const packed = [...qualBlock.slice(0, qualBlock.indexOf("\n};")).matchAll(/^ {8}"?([a-z-]+)"?: \[/gm)].map((m) => m[1]);
+
+for (const kind of roleKinds) {
+    if (!packed.includes(kind)) {
+        failures.push(
+            `app/features/clinic/content.ts  QUALIFICATIONS_BY_COUNTRY.US has no "${kind}" — a US ${kind} site would print British post-nominals under a named clinician.`,
+        );
+    }
+}
+
 console.info(
     `check-trade-copy: scanned ${files.length} files for ${BANNED.length} human-medicine phrases; ` +
         `${Object.keys(ALLOWED).length} files allowed by name; ` +
-        `${packs.length} country regulator packs checked for out-of-jurisdiction bodies.`,
+        `${packs.length} regulator packs and ${roleKinds.length} clinician kinds checked for out-of-jurisdiction credentials.`,
 );
 
 if (failures.length > 0) {
