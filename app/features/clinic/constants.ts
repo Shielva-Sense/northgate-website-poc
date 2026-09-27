@@ -1,6 +1,5 @@
 import type { Brand } from "./brands";
 import type {
-    Accreditation,
     PatientStory,
     Promise_,
     Clinician,
@@ -33,13 +32,6 @@ export const STATS: readonly Stat[] = [
     { value: 98, suffix: "%", label: "Would recommend us" },
     { value: 3, suffix: " days", label: "Average wait to be seen" },
     { value: 7, suffix: "", label: "Clinicians on the team" },
-];
-
-export const ACCREDITATIONS: readonly Accreditation[] = [
-    { label: "CQC", detail: "Rated Good, last inspection 2025" },
-    { label: "GMC", detail: "All doctors on the specialist register" },
-    { label: "NMC", detail: "Nurses registered and revalidated" },
-    { label: "ISO 27001", detail: "Patient records held to standard" },
 ];
 
 export const CLINICIANS: readonly Clinician[] = [

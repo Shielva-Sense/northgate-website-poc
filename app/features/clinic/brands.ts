@@ -40,6 +40,20 @@ export interface Regulators {
     readonly inspectorate: string;
     readonly inspectorateNote: string;
     readonly retentionAuthority: string;
+    /**
+     * The body a veterinary practice answers to, and what it can truthfully
+     * say about it. Veterinary medicine is regulated separately from human
+     * medicine in every country here, so a vet site cannot borrow `doctor`.
+     *
+     * The note is a LICENSURE claim, not an accreditation one, everywhere the
+     * accreditation is voluntary. A practice is licensed by operating at all;
+     * it holds a voluntary accreditation only if it applied for and passed
+     * one, which this codebase cannot know. Printing a scheme it has not
+     * joined is a fabricated credential, which is the whole reason this
+     * field exists.
+     */
+    readonly vet: string;
+    readonly vetNote: string;
 }
 
 export interface Brand {
@@ -153,6 +167,8 @@ const UK: Regulators = {
     inspectorate: "CQC",
     inspectorateNote: "Rated Good, last inspection 2025",
     retentionAuthority: "the NHS Records Management Code of Practice",
+    vet: "RCVS",
+    vetNote: "All vets on the register, annually declared",
 };
 
 /** Hand-tuned overrides. Everything else is derived. */
