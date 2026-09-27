@@ -141,7 +141,7 @@ export function DepartmentCarousel({
                                 href="/find-a-doctor"
                                 tabIndex={i === index ? undefined : -1}
                             >
-                                See who is available
+                                {tr("See who is available", locale)}
                                 <ArrowRight size={16} aria-hidden="true" />
                             </Link>
                         </div>
