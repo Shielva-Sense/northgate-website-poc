@@ -13,8 +13,20 @@ import type { SiteRecord } from "@/app/core/site-store";
  * The site registry API.
  *
  * GET  — list every configured site.
- * POST — create or update one. A new prospect site is this call plus a link;
- *        no build, no deploy, no DNS beyond the wildcard.
+ * POST — create or update one, or a batch of them. A new prospect site is
+ *        this call plus a link; no build, no deploy, no DNS beyond the
+ *        wildcard.
+ *
+ * The batch form exists because the rate limit counts REQUESTS, and building
+ * a hundred prospect sites one POST at a time means ten sites then a
+ * ten-minute wait, repeatedly -- about twenty minutes per twenty-three sites.
+ * Raising the limit would be the wrong fix: it is low on purpose, because
+ * this route decides what a page carrying a real clinic's name says. So one
+ * request may now carry many sites and is charged as one.
+ *
+ * A batch is partially applied on purpose. One malformed identifier in
+ * twenty-five should reject that row and create the other twenty-four, not
+ * fail the lot -- the caller gets a per-row result and can fix just the one.
  *
  * Credentialed with the same hashed username and scrypt password as
  * /api/submissions. This is the one part of the farm that must stay shut: it
@@ -23,6 +35,8 @@ import type { SiteRecord } from "@/app/core/site-store";
  */
 
 const MAX_ATTEMPTS = 10;
+/** Sites per batched request. Bounded so one call cannot be unlimited work. */
+const MAX_BATCH = 25;
 const DENY = {
     "WWW-Authenticate": 'Basic realm="Shielva sites", charset="UTF-8"',
     "Cache-Control": "no-store",
@@ -254,45 +268,39 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     );
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
-    const denied = guard(request);
-    if (denied !== null) return denied;
+/** One site's outcome: what to return, and the status it would have had alone. */
+interface SiteResult {
+    readonly status: number;
+    readonly body: Record<string, unknown>;
+}
 
-    let body: unknown;
-    try {
-        body = await request.json();
-    } catch {
-        return NextResponse.json({ error: "Malformed request." }, { status: 400 });
-    }
-    if (typeof body !== "object" || body === null) {
-        return NextResponse.json({ error: "Malformed request." }, { status: 400 });
-    }
+function fail(status: number, error: string): SiteResult {
+    return { status, body: { error } };
+}
 
-    const b = body as Record<string, unknown>;
+/**
+ * Validate and upsert a single site payload.
+ *
+ * Lifted out of POST unchanged so the single and batched forms cannot drift:
+ * a rule enforced for one caller and not the other is how a malformed row
+ * reaches a page carrying a real clinic's name.
+ */
+async function applySite(b: Record<string, unknown>): Promise<SiteResult> {
     const identifier = (str(b.identifier, 40) ?? "").toLowerCase();
     if (!IDENTIFIER.test(identifier)) {
-        return NextResponse.json(
-            { error: "identifier must be 3-40 chars, a-z 0-9 and hyphens, and is used as a subdomain." },
-            { status: 422 },
-        );
+        return fail(422, "identifier must be 3-40 chars, a-z 0-9 and hyphens, and is used as a subdomain.");
     }
     if (RESERVED.has(identifier)) {
-        return NextResponse.json(
-            { error: `"${identifier}" is a reserved hostname and cannot be used as a site identifier.` },
-            { status: 422 },
-        );
+        return fail(422, `"${identifier}" is a reserved hostname and cannot be used as a site identifier.`);
     }
     const kind = str(b.kind, 40);
     if (kind !== undefined && !PRACTICE_KINDS.includes(kind as never)) {
-        return NextResponse.json(
-            { error: `kind must be one of: ${PRACTICE_KINDS.join(", ")}` },
-            { status: 422 },
-        );
+        return fail(422, `kind must be one of: ${PRACTICE_KINDS.join(", ")}`);
     }
 
     const businessName = str(b.businessName, 160);
     if (businessName === undefined) {
-        return NextResponse.json({ error: "businessName is required." }, { status: 422 });
+        return fail(422, "businessName is required.");
     }
 
     /* Assembled by assignment rather than conditional spread: under
@@ -318,13 +326,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
        in front of a prospect. */
     const content = readContent(b.content);
     if (typeof content === "string") {
-        return NextResponse.json({ error: content }, { status: 422 });
+        return fail(422, content);
     }
     if (content !== null) record.content = content as never;
 
     const pages = readPages(b.pages);
     if (typeof pages === "string") {
-        return NextResponse.json({ error: pages }, { status: 422 });
+        return fail(422, pages);
     }
     if (pages !== null) record.pages = pages as never;
 
@@ -332,19 +340,80 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (typeof b[flag] === "boolean") record[flag] = b[flag] as never;
     }
 
-    await ensureIndexes();
     const ok = await upsertSite(record as unknown as SiteRecord);
     if (!ok) {
+        return fail(503, "No site registry is configured (MONGODB_URL is unset).");
+    }
+
+    return {
+        status: 200,
+        body: {
+            ok: true,
+            identifier,
+            url: `https://${identifier}.shielva.ai`,
+            iconPrefix: iconPrefix(identifier),
+        },
+    };
+}
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+    const denied = guard(request);
+    if (denied !== null) return denied;
+
+    let body: unknown;
+    try {
+        body = await request.json();
+    } catch {
+        return NextResponse.json({ error: "Malformed request." }, { status: 400 });
+    }
+    if (typeof body !== "object" || body === null) {
+        return NextResponse.json({ error: "Malformed request." }, { status: 400 });
+    }
+
+    await ensureIndexes();
+    const b = body as Record<string, unknown>;
+
+    /* Single site: the original shape, unchanged. Every existing caller posts
+       this and must keep getting the same body and status back. */
+    if (!Array.isArray(b.sites)) {
+        const result = await applySite(b);
+        return NextResponse.json(result.body, { status: result.status });
+    }
+
+    const sites = b.sites;
+    if (sites.length === 0) {
+        return NextResponse.json({ error: "sites was empty." }, { status: 422 });
+    }
+    if (sites.length > MAX_BATCH) {
         return NextResponse.json(
-            { error: "No site registry is configured (MONGODB_URL is unset)." },
-            { status: 503 },
+            { error: `A batch carries at most ${MAX_BATCH} sites; got ${sites.length}.` },
+            { status: 422 },
         );
     }
 
-    return NextResponse.json({
-        ok: true,
-        identifier,
-        url: `https://${identifier}.shielva.ai`,
-        iconPrefix: iconPrefix(identifier),
-    });
+    /* Sequential rather than Promise.all: these all write to one registry, so
+       parallelism buys nothing here and makes a partial failure harder to
+       reason about. */
+    const results: Record<string, unknown>[] = [];
+    let created = 0;
+    for (const [index, site] of sites.entries()) {
+        if (typeof site !== "object" || site === null) {
+            results.push({ index, ok: false, error: "Not an object." });
+            continue;
+        }
+        const result = await applySite(site as Record<string, unknown>);
+        if (result.body.ok === true) {
+            created += 1;
+            results.push({ index, ...result.body });
+        } else {
+            results.push({ index, ok: false, status: result.status, ...result.body });
+        }
+    }
+
+    /* 207 when some rows were rejected: a flat 200 would have the caller
+       record a failed row as a live site. */
+    return NextResponse.json(
+        { ok: created === sites.length, created, failed: sites.length - created, results },
+        { status: created === sites.length ? 200 : 207 },
+    );
 }
