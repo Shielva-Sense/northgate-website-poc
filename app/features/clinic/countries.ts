@@ -93,6 +93,86 @@ const MT_REG: Regulators = {
  * omitting it.
  */
 export const COUNTRIES: Readonly<Record<string, CountryPack>> = {
+    /* ── the WhatsApp-first markets ──────────────────────────────────────
+       Added when outreach moved into countries where WhatsApp is how a
+       clinic actually talks to patients. Each one is here for one concrete
+       reason: the unknown-country fallback prints 112, and a demo built for
+       a dental practice in Guadalajara told its visitors to call 112 in an
+       emergency. Mexico retired 112 in favour of 911 in 2016.
+
+       `regulators` stays null for all of these. The generic licensure claims
+       are true of any practice anywhere; naming a board we have not checked
+       is the mistake this file has already made twice. Fill one in only
+       after verifying it. */
+    MX: {
+        code: "MX", name: "Mexico",
+        emergencyNumber: "911", currency: "$",
+        defaultCity: "Guadalajara", samplePhone: "+52 33 1234 5678",
+        emergencyDept: "emergency room", emergencyShort: "urgencias",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    BR: {
+        /* 192 is SAMU, the ambulance service. 193 reaches the fire service,
+           who also attend medical calls; 192 is the one to print. */
+        code: "BR", name: "Brazil",
+        emergencyNumber: "192", currency: "R$",
+        defaultCity: "Rio de Janeiro", samplePhone: "+55 21 91234 5678",
+        emergencyDept: "emergency room", emergencyShort: "pronto-socorro",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    CO: {
+        code: "CO", name: "Colombia",
+        emergencyNumber: "123", currency: "$",
+        defaultCity: "Bogotá", samplePhone: "+57 601 234 5678",
+        emergencyDept: "emergency room", emergencyShort: "urgencias",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    AR: {
+        /* 107 is the medical emergency line (SAME). 911 reaches the police
+           in much of the country, so it is the wrong number to print on a
+           clinic page. */
+        code: "AR", name: "Argentina",
+        emergencyNumber: "107", currency: "$",
+        defaultCity: "Buenos Aires", samplePhone: "+54 11 1234 5678",
+        emergencyDept: "emergency room", emergencyShort: "guardia",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    SA: {
+        code: "SA", name: "Saudi Arabia",
+        emergencyNumber: "997", currency: "SR",
+        defaultCity: "Riyadh", samplePhone: "+966 11 234 5678",
+        emergencyDept: "emergency department", emergencyShort: "emergency",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    ZA: {
+        code: "ZA", name: "South Africa",
+        emergencyNumber: "10177", currency: "R",
+        defaultCity: "Johannesburg", samplePhone: "+27 11 234 5678",
+        emergencyDept: "emergency room", emergencyShort: "casualty",
+        generalist: "GP", generalistPlural: "GPs",
+        regulators: null,
+    },
+    ID: {
+        code: "ID", name: "Indonesia",
+        emergencyNumber: "119", currency: "Rp",
+        defaultCity: "Jakarta", samplePhone: "+62 21 1234 5678",
+        emergencyDept: "emergency room", emergencyShort: "UGD",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
+    MA: {
+        code: "MA", name: "Morocco",
+        emergencyNumber: "150", currency: "DH",
+        defaultCity: "Casablanca", samplePhone: "+212 522 123 456",
+        emergencyDept: "emergency department", emergencyShort: "urgences",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
     GB: {
         code: "GB", name: "United Kingdom",
         emergencyNumber: "999", currency: "£",
