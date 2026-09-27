@@ -3,7 +3,8 @@
 import { useId, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { FAQS } from "../constants";
+import { faqsFor } from "../trade-content";
+import { useProfile } from "../BrandContext";
 import sections from "./Sections.module.scss";
 import styles from "./Faq.module.scss";
 import { tr } from "@/app/core/content-ar";
@@ -11,6 +12,7 @@ import { useLocale } from "@/app/features/clinic/LocaleContext";
 import { localise } from "@/app/core/content-ar";
 
 export function Faq(): React.JSX.Element {
+    const kind = useProfile().kind;
     const { locale } = useLocale();
     const reveal = useReveal<HTMLDivElement>();
     const baseId = useId();
@@ -25,7 +27,7 @@ export function Faq(): React.JSX.Element {
                 </div>
 
                 <div className={styles.list} data-reveal="">
-                    {localise(FAQS, locale).map((faq, index) => {
+                    {localise(faqsFor(kind), locale).map((faq, index) => {
                         const open = openIndex === index;
                         const panelId = `${baseId}-panel-${index}`;
                         const buttonId = `${baseId}-button-${index}`;

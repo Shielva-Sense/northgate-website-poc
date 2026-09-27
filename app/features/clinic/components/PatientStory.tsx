@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { PATIENT_STORY, REVIEWS } from "../constants";
+import { patientStoryFor, reviewsFor } from "../trade-content";
+import { useProfile } from "../BrandContext";
 import styles from "./PatientStory.module.scss";
 import { tr } from "@/app/core/content-ar";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
@@ -21,6 +22,7 @@ import { localise } from "@/app/core/content-ar";
  */
 export function PatientStory(): React.JSX.Element {
     const { locale } = useLocale();
+    const kind = useProfile().kind;
     const ref = useReveal<HTMLDivElement>();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [started, setStarted] = useState(false);
@@ -45,12 +47,12 @@ export function PatientStory(): React.JSX.Element {
                         <video
                             ref={videoRef}
                             className={styles.video}
-                            poster={localise(PATIENT_STORY, locale).poster}
+                            poster={localise(patientStoryFor(kind), locale).poster}
                             playsInline
                             preload="none"
-                            aria-label={`${localise(PATIENT_STORY, locale).name}'s story`}
+                            aria-label={`${localise(patientStoryFor(kind), locale).name}'s story`}
                         >
-                            <source src={localise(PATIENT_STORY, locale).video} type="video/mp4" />
+                            <source src={localise(patientStoryFor(kind), locale).video} type="video/mp4" />
                         </video>
 
                         {started ? null : (
@@ -58,11 +60,11 @@ export function PatientStory(): React.JSX.Element {
                                 type="button"
                                 className={styles.cover}
                                 onClick={start}
-                                aria-label={`Play ${localise(PATIENT_STORY, locale).name}'s story`}
+                                aria-label={`Play ${localise(patientStoryFor(kind), locale).name}'s story`}
                             >
                                 <Image
-                                    src={localise(PATIENT_STORY, locale).poster}
-                                    alt={localise(PATIENT_STORY, locale).posterAlt}
+                                    src={localise(patientStoryFor(kind), locale).poster}
+                                    alt={localise(patientStoryFor(kind), locale).posterAlt}
                                     width={1080}
                                     height={1080}
                                     sizes="(min-width: 980px) 460px, 90vw"
@@ -77,13 +79,13 @@ export function PatientStory(): React.JSX.Element {
 
                     <figure className={styles.quoteWrap} data-reveal="">
                         <blockquote className={styles.quote}>
-                            &ldquo;{localise(PATIENT_STORY, locale).quote}&rdquo;
+                            &ldquo;{localise(patientStoryFor(kind), locale).quote}&rdquo;
                         </blockquote>
                         <figcaption className={styles.who}>
                             <span className={styles.name}>
-                                <b>{localise(PATIENT_STORY, locale).name}</b>, {localise(PATIENT_STORY, locale).age}
+                                <b>{localise(patientStoryFor(kind), locale).name}</b>, {localise(patientStoryFor(kind), locale).age}
                             </span>
-                            <span className={styles.context}>{localise(PATIENT_STORY, locale).context}</span>
+                            <span className={styles.context}>{localise(patientStoryFor(kind), locale).context}</span>
                         </figcaption>
                     </figure>
                 </div>
@@ -113,6 +115,7 @@ export function PatientStory(): React.JSX.Element {
  */
 function Voices(): React.JSX.Element {
     const { locale } = useLocale();
+    const kind = useProfile().kind;
     const railRef = useRef<HTMLDivElement>(null);
     const paused = useRef(false);
 
@@ -214,7 +217,7 @@ function Voices(): React.JSX.Element {
                         role={copy === 0 ? "list" : "presentation"}
                         aria-hidden={copy === 1 ? true : undefined}
                     >
-                        {localise(REVIEWS, locale).map((review) => (
+                        {localise(reviewsFor(kind), locale).map((review) => (
                             <li key={review.name} className={styles.voice}>
                                 <blockquote className={styles.voiceQuote}>
                                     &ldquo;{review.quote}&rdquo;
