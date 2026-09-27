@@ -74,7 +74,7 @@ export function Proof(): React.JSX.Element {
                   { label: "Audited", detail: "Infection control reviewed yearly" },
                   { label: "ISO 27001", detail: "Records held to standard" },
               ] as const)
-            : accreditationsFor(kind, brand.regulators),
+            : accreditationsFor(kind, brand.regulators, brand.country),
         locale,
     );
 
