@@ -43,6 +43,8 @@ const GB_REG: Regulators = {
     inspectorate: "CQC",
     inspectorateNote: "Registered with the Care Quality Commission",
     retentionAuthority: "the ICO",
+    vet: "RCVS",
+    vetNote: "All vets on the register, annually declared",
 };
 
 const US_REG: Regulators = {
@@ -51,6 +53,8 @@ const US_REG: Regulators = {
     inspectorate: "The Joint Commission",
     inspectorateNote: "Accredited by The Joint Commission",
     retentionAuthority: "HHS under HIPAA",
+    vet: "State Veterinary Board",
+    vetNote: "Every veterinarian licensed in this state",
 };
 
 const AU_REG: Regulators = {
@@ -59,6 +63,8 @@ const AU_REG: Regulators = {
     inspectorate: "ACSQHC",
     inspectorateNote: "Accredited to the National Safety and Quality Health Service Standards",
     retentionAuthority: "the OAIC",
+    vet: "Veterinary Practitioners Board",
+    vetNote: "Every veterinarian registered in this state",
 };
 
 const AE_REG: Regulators = {
@@ -67,6 +73,8 @@ const AE_REG: Regulators = {
     inspectorate: "DHA",
     inspectorateNote: "Licensed by the Dubai Health Authority",
     retentionAuthority: "the UAE Data Office",
+    vet: "MOCCAE",
+    vetNote: "Veterinarians licensed by the Ministry",
 };
 
 const MT_REG: Regulators = {
@@ -75,6 +83,8 @@ const MT_REG: Regulators = {
     inspectorate: "Superintendence of Public Health",
     inspectorateNote: "Licensed by the Superintendence of Public Health",
     retentionAuthority: "the IDPC",
+    vet: "Veterinary Regulation Directorate",
+    vetNote: "Veterinary surgeons on the national register",
 };
 
 /**

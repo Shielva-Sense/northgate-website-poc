@@ -149,9 +149,52 @@ for (const file of files) {
     }
 }
 
+
+/* ── regulators stay inside their own country ────────────────────────── */
+/**
+ * The second shape of this bug: right trade, wrong country.
+ *
+ * The phrase ratchet above only knows human-vs-veterinary. It passed happily
+ * while two US veterinary demos published "RCVS -- Practice Standards Scheme
+ * accredited" and every US human demo published a CQC inspection rating,
+ * because CQC and RCVS are not human-medicine phrases on a vet site -- they
+ * are British bodies on an American one. The RCVS has no jurisdiction in
+ * Montana and had never inspected either practice.
+ *
+ * Accreditations are now built from `brand.regulators`, so the invariant to
+ * hold is simply that each country pack names its own bodies. A British name
+ * appearing in a pack that is not GB means someone copied a block and did not
+ * finish editing it -- which is exactly how it happened the first time.
+ */
+const GB_BODIES = ["CQC", "GMC", "NMC", "RCVS", "Care Quality Commission"];
+
+const countries = readFileSync("app/features/clinic/countries.ts", "utf8");
+const packs = [...countries.matchAll(/const (\w+)_REG: Regulators = \{([^}]*)\}/g)];
+
+if (packs.length === 0) {
+    failures.push("scripts/check-trade-copy.mjs — no Regulators packs found; the country check silently stopped working.");
+}
+
+for (const [, code, body] of packs) {
+    if (!body.includes("vet:") || !body.includes("vetNote:")) {
+        failures.push(
+            `app/features/clinic/countries.ts  ${code}_REG has no veterinary regulator — a vet site in this country would name another country's body.`,
+        );
+    }
+    if (code === "GB") continue;
+    for (const gb of GB_BODIES) {
+        if (new RegExp(`\\b${gb}\\b`).test(body)) {
+            failures.push(
+                `app/features/clinic/countries.ts  ${code}_REG names "${gb}", which regulates in the United Kingdom only. A practice in this country has never been inspected by it — printing it is a fabricated credential.`,
+            );
+        }
+    }
+}
+
 console.info(
     `check-trade-copy: scanned ${files.length} files for ${BANNED.length} human-medicine phrases; ` +
-        `${Object.keys(ALLOWED).length} files allowed by name.`,
+        `${Object.keys(ALLOWED).length} files allowed by name; ` +
+        `${packs.length} country regulator packs checked for out-of-jurisdiction bodies.`,
 );
 
 if (failures.length > 0) {

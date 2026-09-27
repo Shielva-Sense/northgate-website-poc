@@ -1,5 +1,4 @@
 import {
-    ACCREDITATIONS,
     FAQS,
     JOURNEY,
     PATIENT_STORY,
@@ -7,6 +6,7 @@ import {
     REVIEWS,
     STATS,
 } from "./constants";
+import type { Regulators } from "./brands";
 import type {
     Accreditation,
     FaqItem,
@@ -17,6 +17,8 @@ import type {
     Stat,
 } from "./types";
 
+const isVet = (kind: string): boolean => kind === "veterinary";
+
 /**
  * The last of the shared content, per trade.
  *
@@ -26,7 +28,7 @@ import type {
  * read as though nobody looked at the page:
  *
  *   STATS           "7 clinicians on the team" — contradicts the team shown
- *   ACCREDITATIONS  CQC, GMC, NMC — human regulators, wrong for a vet anywhere
+ *   ACCREDITATIONS  CQC, GMC, NMC — GB human regulators, wrong outside GB
  *   REVIEWS         a named human patient, seen for a paediatric problem
  *   PATIENT_STORY   a woman describing registering as a new patient
  *   PROMISES        appointment lengths quoted for human psychological care
@@ -45,15 +47,48 @@ const VET_STATS: readonly Stat[] = [
     { value: 5, suffix: "", label: "Vets and nurses on the team" },
 ];
 
-/* The RCVS is the veterinary regulator. CQC, GMC and NMC regulate human
-   services and mean nothing on a veterinary practice — claiming one you are
-   not inspected by is the worst of these to get wrong. */
-const VET_ACCREDITATIONS: readonly Accreditation[] = [
-    { label: "RCVS", detail: "Practice Standards Scheme accredited" },
-    { label: "RCVS", detail: "All vets on the register, annually declared" },
-    { label: "RVN", detail: "Nurses registered and revalidated" },
-    { label: "ISO 27001", detail: "Client records held to standard" },
-];
+/**
+ * Accreditations, built from the country's own regulators.
+ *
+ * This used to be two hardcoded lists -- CQC/GMC/NMC for human trades and
+ * RCVS for veterinary -- and both of those are British. Shipping them meant
+ * a veterinary clinic in Miles City, Montana published "RCVS -- Practice
+ * Standards Scheme accredited", and a US general practice published a CQC
+ * inspection rating. Neither body has any jurisdiction in Montana and neither
+ * practice has ever been inspected by one. That is a fabricated credential on
+ * a page we put in front of a real prospect, which is worse than saying
+ * nothing at all.
+ *
+ * The country already owns this: `brand.regulators` has named the local
+ * doctor, nurse and inspectorate bodies per country all along. The list is
+ * now derived from it, so adding a country means filling one pack rather
+ * than remembering this file exists.
+ *
+ * Where a practice's accreditation is voluntary, the pack states LICENSURE
+ * instead. A practice is licensed by operating at all; it holds a voluntary
+ * accreditation only if it applied and passed, which we cannot know from
+ * here. Only the GB packs name an inspection, because CQC registration is
+ * mandatory there.
+ */
+function regulatorAccreditations(
+    kind: string,
+    regulators: Regulators,
+): readonly Accreditation[] {
+    if (isVet(kind)) {
+        return [
+            { label: regulators.vet, detail: regulators.vetNote },
+            { label: "RVN", detail: "Nurses registered and revalidated" },
+            { label: "Insured", detail: "Full professional liability cover" },
+            { label: "ISO 27001", detail: "Client records held to standard" },
+        ];
+    }
+    return [
+        { label: regulators.inspectorate, detail: regulators.inspectorateNote },
+        { label: regulators.doctor, detail: "All doctors on the register" },
+        { label: regulators.nurse, detail: "Nurses registered and revalidated" },
+        { label: "ISO 27001", detail: "Patient records held to standard" },
+    ];
+}
 
 const VET_REVIEWS: readonly Review[] = [
     {
@@ -163,11 +198,12 @@ const VET_FAQS: readonly FaqItem[] = [
     },
 ];
 
-const isVet = (kind: string): boolean => kind === "veterinary";
 
 export const statsFor = (kind: string): readonly Stat[] => (isVet(kind) ? VET_STATS : STATS);
-export const accreditationsFor = (kind: string): readonly Accreditation[] =>
-    isVet(kind) ? VET_ACCREDITATIONS : ACCREDITATIONS;
+export const accreditationsFor = (
+    kind: string,
+    regulators: Regulators,
+): readonly Accreditation[] => regulatorAccreditations(kind, regulators);
 export const reviewsFor = (kind: string): readonly Review[] => (isVet(kind) ? VET_REVIEWS : REVIEWS);
 export const patientStoryFor = (kind: string): PatientStory =>
     isVet(kind) ? VET_PATIENT_STORY : PATIENT_STORY;
