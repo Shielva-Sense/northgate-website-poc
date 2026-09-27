@@ -119,20 +119,9 @@ async function CachedShell({
  * It is the page header with its real text and image — all of which are known
  * without knowing the tenant — so the first paint is the actual page rather
  * than a spinner, and only the chrome arrives a beat later.
- *
- * The bars above and below it are the point. Without them this rendered a
- * heading floating on an empty page, and when the tenant resolved a navigation
- * bar appeared above it and a footer below, shoving the heading down the
- * screen — a visible flash and jump on every page transition, on every site.
- * They are not decoration: they reserve the exact space the real header and
- * footer will occupy, so the only thing that changes on resolve is that
- * content appears inside them. Kept plain rather than animated, because a
- * shimmer that runs for 300ms draws more attention than the wait it covers.
  */
 function ShellFallback({ locale, title, lede, kicker, image, imageAlt }: ShellProps): React.JSX.Element {
     return (
-        <>
-        <div className={styles.headerHold} aria-hidden="true" />
         <main id="main-content" tabIndex={-1}>
             {/* No imageKey here on purpose: the static shell is rendered
                 before the host is known, so which practice's photograph to
@@ -146,10 +135,7 @@ function ShellFallback({ locale, title, lede, kicker, image, imageAlt }: ShellPr
                 image={image}
                 imageAlt={imageAlt}
             />
-            <div className={styles.bodyHold} aria-hidden="true" />
         </main>
-        <div className={styles.footerHold} aria-hidden="true" />
-        </>
     );
 }
 
