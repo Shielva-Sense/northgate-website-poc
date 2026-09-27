@@ -159,9 +159,7 @@ function HeroSplit(): React.JSX.Element {
                             </li>
                         ))}
                         <li>
-                            <Link href="/services" className={styles.chipAll}>
-                                All services
-                                <ArrowRight size={13} aria-hidden="true" />
+                            <Link href="/services" className={styles.chipAll}>{tr("All services", locale)}<ArrowRight size={13} aria-hidden="true" />
                             </Link>
                         </li>
                     </ul>

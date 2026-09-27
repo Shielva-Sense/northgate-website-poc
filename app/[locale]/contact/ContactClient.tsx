@@ -101,9 +101,7 @@ export function ContactClient(): React.JSX.Element {
                 </span>
                 <h2 className={styles.routeTitle}>{tr("WhatsApp", locale)}</h2>
                 <p className={styles.routeBody}>{tr("Best for quick questions, moving an appointment, or asking whether you need one at all. Answered during opening hours.", locale)}</p>
-                <span className={styles.routeAction}>
-                    Message us
-                    <ArrowRight size={16} aria-hidden="true" />
+                <span className={styles.routeAction}>{tr("Message us", locale)}<ArrowRight size={16} aria-hidden="true" />
                 </span>
                 <span className={styles.routeNote}>{tr("Opens WhatsApp. Please do not send clinical photographs or test results here.", locale)}</span>
             </a>

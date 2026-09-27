@@ -136,9 +136,7 @@ export function ReferClient(): React.JSX.Element {
                     offer a time, and write back to you at {referrerEmail.trim()} once they have
                     been seen.
                 </p>
-                <p className={styles.body}>
-                    Urgent referrals are picked up the same working day. If this needs to be seen
-                    sooner than that, ring us on <a href={brand.phoneHref}>{brand.phone}</a> and say
+                <p className={styles.body}>{tr("Urgent referrals are picked up the same working day. If this needs to be seen sooner than that, ring us on", locale)}<a href={brand.phoneHref}>{brand.phone}</a> and say
                     it is a referral.
                 </p>
             </div>
@@ -148,9 +146,7 @@ export function ReferClient(): React.JSX.Element {
     return (
         <form className={styles.panel} onSubmit={(event) => void handleSubmit(event)} noValidate>
             <h2 className={styles.title}>{tr("Refer a patient", locale)}</h2>
-            <p className={styles.body}>
-                For GPs, consultants, dentists, physiotherapists and other clinicians. If you are a
-                patient, please <Link href="/#book">book an appointment</Link> instead.
+            <p className={styles.body}>{tr("For GPs, consultants, dentists, physiotherapists and other clinicians. If you are a patient, please", locale)}<Link href="/#book">book an appointment</Link> instead.
             </p>
 
             <fieldset className={styles.group}>

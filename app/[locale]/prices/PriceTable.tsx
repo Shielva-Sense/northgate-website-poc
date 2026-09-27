@@ -55,9 +55,7 @@ async function Table({
        and rendering the table for them would invent an obligation. */
     if (!ordersPriceList(site.profile, site.brand)) {
         return (
-            <p className={styles.lede}>
-                This practice does not publish a weight-banded veterinary price list. Every
-                price we do charge is on the <Link href="/services">services page</Link>.
+            <p className={styles.lede}>{tr("This practice does not publish a weight-banded veterinary price list. Every price we do charge is on the", locale)}<Link href="/services">services page</Link>.
             </p>
         );
     }

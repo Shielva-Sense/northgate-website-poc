@@ -211,9 +211,7 @@ export function FindDoctorClient(): React.JSX.Element {
                     {triage.emergencyAdvice(brand.aeLine, brand.emergencyNumber)}
                 </p>
                 {isVet ? null : (
-                    <p className={styles.emergencyBody}>
-                        If you cannot travel safely, or someone is unconscious or struggling to
-                        breathe, call <b>{brand.emergencyNumber}</b> for an ambulance instead — they
+                    <p className={styles.emergencyBody}>{tr("If you cannot travel safely, or someone is unconscious or struggling to breathe, call", locale)}<b>{brand.emergencyNumber}</b> for an ambulance instead — they
                         will be brought to us.
                     </p>
                 )}
@@ -433,10 +431,7 @@ export function FindDoctorClient(): React.JSX.Element {
                         </div>
                     )}
 
-                    <p className={styles.disclaimer}>
-                        This points you at the right department. It is not medical advice and it is
-                        not a diagnosis — nobody here has assessed you. If you are unsure or it gets
-                        worse, ring us on <a href={brand.phoneHref}>{brand.phone}</a>.
+                    <p className={styles.disclaimer}>{tr("This points you at the right department. It is not medical advice and it is not a diagnosis — nobody here has assessed you. If you are unsure or it gets worse, ring us on", locale)}<a href={brand.phoneHref}>{brand.phone}</a>.
                     </p>
                     {backButton("detail")}
                 </div>
@@ -447,8 +442,7 @@ export function FindDoctorClient(): React.JSX.Element {
     return (
         <>
             <p className={styles.routed}>
-                <Phone size={14} aria-hidden="true" />
-                Booking with <b>{preferred ?? department?.name}</b>
+                <Phone size={14} aria-hidden="true" />{tr("Booking with", locale)}<b>{preferred ?? department?.name}</b>
                 {preferred === null ? null : ` · ${department?.name ?? ""}`}.{" "}
                 <button
                     type="button"
@@ -460,8 +454,7 @@ export function FindDoctorClient(): React.JSX.Element {
                 >{tr("Change", locale)}</button>
             </p>
             <AppointmentFlow department={departmentId} serviceName={department?.name} />
-            <p className={styles.footNote}>
-                Would rather talk to a person? <Link href="/#book">{tr("Send us a message", locale)}</Link> or ring{" "}
+            <p className={styles.footNote}>{tr("Would rather talk to a person?", locale)}<Link href="/#book">{tr("Send us a message", locale)}</Link> or ring{" "}
                 <a href={brand.phoneHref}>{brand.phone}</a>.
             </p>
         </>

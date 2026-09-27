@@ -436,9 +436,7 @@ export function UrgentClient(): React.JSX.Element {
                             )}
                         </Field>
 
-                        <Checkbox checked={consent} onChange={setConsent} error={errors.consent}>
-                            The clinic may hold these details and contact me about this visit. See
-                            the <Link href="/privacy">privacy notice</Link>.
+                        <Checkbox checked={consent} onChange={setConsent} error={errors.consent}>{tr("The clinic may hold these details and contact me about this visit. See the", locale)}<Link href="/privacy">privacy notice</Link>.
                         </Checkbox>
 
                         {failed === "" ? null : (

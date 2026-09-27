@@ -226,10 +226,7 @@ export default async function Page({
                         <CreditCard size={20} aria-hidden="true" />{tr("What it costs", locale)}</h2>
                     <p className={styles.sectionLede}>{tr("Every price is published on this site. There is no fee to ask a question, no booking fee, and nothing is added afterwards that you were not told about first.", locale)}</p>
                     <ul className={styles.list} role="list">
-                        <li>
-                            Most major insurers are accepted. Give us the policy number when you
-                            book and we will check cover and tell you what, if anything, you will be
-                            asked to pay <b>before</b> your appointment rather than after it.
+                        <li>{tr("Most major insurers are accepted. Give us the policy number when you book and we will check cover and tell you what, if anything, you will be asked to pay", locale)}<b>before</b> your appointment rather than after it.
                         </li>
                         <li>{tr("If something falls outside the published list, we tell you the cost before we do it.", locale)}</li>
                         <li>{tr("If cost is the reason you are putting off being seen, say so when you ring. It is a more common conversation than you would think.", locale)}</li>
