@@ -155,19 +155,19 @@ export function DoctorDirectory({
                     <SlidersHorizontal size={14} aria-hidden="true" />{tr("Filter", locale)}</p>
 
                 <Facet
-                    legend="Department"
+                    legend={tr("Department", locale)}
                     value={department}
                     onChange={setDepartment}
                     options={departments.map((d) => ({ value: d.id, label: d.name }))}
                 />
                 <Facet
-                    legend="Language"
+                    legend={tr("Language", locale)}
                     value={language}
                     onChange={setLanguage}
                     options={languagesOf(clinicians).map((l) => ({ value: l, label: l }))}
                 />
                 <Facet
-                    legend="Site"
+                    legend={tr("Site", locale)}
                     value={site}
                     onChange={(next) => setSite(next as SiteKey | null)}
                     options={siteKeysOf(clinicians).map((key) => ({

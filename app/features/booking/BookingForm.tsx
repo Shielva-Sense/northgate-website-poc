@@ -181,7 +181,7 @@ export function BookingForm(): React.JSX.Element {
             </p>
 
             <ChoiceGroup
-                legend="Are you already registered with us?"
+                legend={tr("Are you already registered with us?", locale)}
                 name="patientType"
                 value={form.patientType}
                 options={PATIENT_OPTIONS}
@@ -204,7 +204,7 @@ export function BookingForm(): React.JSX.Element {
             </Field>
 
             <div className={styles.row}>
-                <Field label={tr("Phone", locale)} help="Mobile is best for reminders." error={errors.phone}>
+                <Field label={tr("Phone", locale)} help={tr("Mobile is best for reminders.", locale)} error={errors.phone}>
                     {(id, describedBy) => (
                         <Input
                             id={id}
@@ -242,7 +242,7 @@ export function BookingForm(): React.JSX.Element {
                 radios in a real fieldset, so arrow keys and screen-reader
                 grouping work unchanged. */}
             <ChoiceGroup
-                legend="What is it for?"
+                legend={tr("What is it for?", locale)}
                 name="service"
                 value={form.service}
                 options={appointmentOptions(departments, appointmentTypes)}
@@ -251,7 +251,7 @@ export function BookingForm(): React.JSX.Element {
             />
 
             <ChoiceGroup
-                legend="Preferred clinician"
+                legend={tr("Preferred clinician", locale)}
                 name="clinician"
                 value={form.clinician}
                 options={clinicianOptions(clinicians, appointmentTypes, form.service)}
@@ -259,7 +259,7 @@ export function BookingForm(): React.JSX.Element {
             />
 
             <ChoiceGroup
-                legend="When suits you?"
+                legend={tr("When suits you?", locale)}
                 name="window"
                 value={form.window}
                 options={WINDOW_OPTIONS}
@@ -267,7 +267,7 @@ export function BookingForm(): React.JSX.Element {
             />
 
             <ChoiceGroup
-                legend="How soon do you need to be seen?"
+                legend={tr("How soon do you need to be seen?", locale)}
                 name="urgency"
                 value={form.urgency}
                 options={URGENCY_OPTIONS}
@@ -282,7 +282,7 @@ export function BookingForm(): React.JSX.Element {
             ) : null}
 
             <ChoiceGroup
-                legend="How should we reply?"
+                legend={tr("How should we reply?", locale)}
                 name="contactMethod"
                 value={form.contactMethod}
                 options={CONTACT_OPTIONS}
@@ -291,7 +291,7 @@ export function BookingForm(): React.JSX.Element {
 
             <Field
                 label={tr("Anything we should know?", locale)}
-                help="Optional. Please do not include sensitive clinical detail here."
+                help={tr("Optional. Please do not include sensitive clinical detail here.", locale)}
             >
                 {(id, describedBy) => (
                     <Textarea

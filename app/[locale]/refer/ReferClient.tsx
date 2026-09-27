@@ -220,7 +220,7 @@ export function ReferClient(): React.JSX.Element {
                     label={tr("Patient phone or email", locale)}
                     required
                     error={errors.patientContact}
-                    help="So we can offer them a time directly rather than going back through you."
+                    help={tr("So we can offer them a time directly rather than going back through you.", locale)}
                 >
                     {(id, describedBy) => (
                         <Input
@@ -239,7 +239,7 @@ export function ReferClient(): React.JSX.Element {
                 <div className={styles.pair}>
                 </div>
                 <ChoiceGroup
-                    legend="Department"
+                    legend={tr("Department", locale)}
                     name="department"
                     value={department}
                     options={deptOptions(departments)}
@@ -247,7 +247,7 @@ export function ReferClient(): React.JSX.Element {
                 />
 
                 <ChoiceGroup
-                    legend="Urgency"
+                    legend={tr("Urgency", locale)}
                     name="urgency"
                     value={urgency}
                     options={URGENCY_OPTIONS}
@@ -258,7 +258,7 @@ export function ReferClient(): React.JSX.Element {
                     label={tr("Reason for referral", locale)}
                     required
                     error={errors.reason}
-                    help="Relevant history, findings, and what you would like from us."
+                    help={tr("Relevant history, findings, and what you would like from us.", locale)}
                 >
                     {(id, describedBy) => (
                         <Textarea

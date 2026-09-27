@@ -98,7 +98,7 @@ export function NearestEmergency({ fullOnly = true }: { readonly fullOnly?: bool
                 </Button>
                 <span className={styles.nearestOr}>or</span>
                 <div className={styles.nearestPostcode}>
-                    <Field label={tr("Your postcode", locale)} help="We only read the first part, like M20.">
+                    <Field label={tr("Your postcode", locale)} help={tr("We only read the first part, like M20.", locale)}>
                         {(id, describedBy) => (
                             <Input
                                 id={id}

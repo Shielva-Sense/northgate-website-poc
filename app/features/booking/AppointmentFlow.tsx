@@ -303,7 +303,7 @@ export function AppointmentFlow({ department, serviceName }: Props): React.JSX.E
 
                     <Field
                         label={tr("Anything we should know", locale)}
-                        help="Optional. Only what you are comfortable writing down."
+                        help={tr("Optional. Only what you are comfortable writing down.", locale)}
                     >
                         {(id, describedBy) => (
                             <Textarea

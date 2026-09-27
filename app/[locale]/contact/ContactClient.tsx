@@ -182,7 +182,7 @@ export function ContactClient(): React.JSX.Element {
                         </Field>
 
                         <ChoiceGroup
-                            legend="What is it about"
+                            legend={tr("What is it about", locale)}
                             name="about"
                             value={about}
                             options={aboutOptions(departments)}
@@ -194,7 +194,7 @@ export function ContactClient(): React.JSX.Element {
                             label={tr("Your message", locale)}
                             required
                             error={errors.message}
-                            help="Only what you are comfortable writing down."
+                            help={tr("Only what you are comfortable writing down.", locale)}
                         >
                             {(id, describedBy) => (
                                 <Textarea

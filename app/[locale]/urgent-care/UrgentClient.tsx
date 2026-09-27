@@ -397,7 +397,7 @@ export function UrgentClient(): React.JSX.Element {
                         <Field
                             label={tr("Mobile number", locale)}
                             required
-                            help="Only used to ring you before you travel if the queue changes."
+                            help={tr("Only used to ring you before you travel if the queue changes.", locale)}
                             error={errors.phone}
                         >
                             {(id, describedBy) => (
@@ -414,7 +414,7 @@ export function UrgentClient(): React.JSX.Element {
                         </Field>
 
                         <ChoiceGroup
-                            legend="When will you get here?"
+                            legend={tr("When will you get here?", locale)}
                             name="arrival"
                             value={arrival}
                             options={ARRIVALS}
@@ -423,7 +423,7 @@ export function UrgentClient(): React.JSX.Element {
 
                         <Field
                             label={tr("What has happened?", locale)}
-                            help="A sentence is plenty. It lets the desk put the right person in front of you."
+                            help={tr("A sentence is plenty. It lets the desk put the right person in front of you.", locale)}
                         >
                             {(id, describedBy) => (
                                 <Textarea
