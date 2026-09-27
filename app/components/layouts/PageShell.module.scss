@@ -57,3 +57,26 @@
         gap: var(--space-8);
     }
 }
+
+/* Space reserved for chrome that has not resolved yet.
+
+   These three hold the height of the real site header, the first block of
+   page content and the footer while the tenant is still being looked up.
+   Before them the fallback was a heading alone on a blank page, so every
+   navigation flashed: heading, then a nav bar pushing it down, then a footer.
+   Matching heights mean the page does not move when the real thing arrives. */
+.headerHold {
+    min-height: 78px; /* SiteHeader's own min-height; keep the two in step. */
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.bodyHold {
+    min-height: 42vh;
+}
+
+.footerHold {
+    min-height: 220px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-subtle);
+}
