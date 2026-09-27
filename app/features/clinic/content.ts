@@ -754,8 +754,43 @@ const ROLES: Readonly<Record<PracticeKind, readonly RoleSpec[]>> = {
  * the directory filters match. Fees come from the department's own appointment
  * price rather than a separate number that could contradict the price list.
  */
+/**
+ * Post-nominals are national, and the ROLES table above is British.
+ *
+ * MRCVS is conferred by the Royal College of Veterinary Surgeons and MCOptom
+ * by the College of Optometrists — both London bodies. A veterinary surgeon
+ * in Miles City, Montana is a DVM licensed by the state board and has never
+ * been near either. Printing "BVSc, MRCVS" under an American vet's photograph
+ * invents a qualification for a named person, which is the most specific kind
+ * of thing on these pages we can get wrong.
+ *
+ * Only the country's own letters belong here. A country with no entry keeps
+ * the British ones, which is correct for GB and honest nowhere else — so add
+ * a pack before selling into a new market rather than after.
+ *
+ * Ordered to match ROLES for that kind; a short list leaves the remaining
+ * roles on the default, so adding a role cannot silently blank a credential.
+ */
+const QUALIFICATIONS_BY_COUNTRY: Readonly<
+    Record<string, Readonly<Record<PracticeKind, readonly string[]>>>
+> = {
+    US: {
+        hospital: ["MD, FACP", "MD", "MD", "RN, BSN"],
+        "general-practice": ["MD, FAAFP", "MD", "DO", "NP-C"],
+        dental: ["DDS", "DMD", "DDS"],
+        physio: ["PT, DPT", "PT, DPT", "PTA"],
+        chiro: ["DC", "DC", "LMT"],
+        dermatology: ["MD, FAAD", "MD", "PA-C"],
+        optometry: ["OD, FAAO", "OD", "OD"],
+        "mental-health": ["PhD", "PsyD", "LMFT"],
+        podiatry: ["DPM", "DPM", "DPM"],
+        veterinary: ["DVM", "DVM", "VMD", "CVT"],
+    },
+};
+
 export function cliniciansFor(profile: KindProfile, brand: Brand): readonly Clinician[] {
     const specs = ROLES[profile.kind] ?? ROLES["general-practice"];
+    const localQualifications = QUALIFICATIONS_BY_COUNTRY[brand.country]?.[profile.kind];
     const set = BY_KIND[profile.kind] ?? GENERAL_PRACTICE;
     const next = seeded(brand.slug);
 
@@ -792,7 +827,7 @@ export function cliniciansFor(profile: KindProfile, brand: Brand): readonly Clin
             initials: `${first.charAt(0)}${last.charAt(0)}`,
             years: 6 + Math.floor(next() * 24),
             registration: `Reg ${Math.floor(next() * 9) + 1}•••${Math.floor(next() * 900) + 100}`,
-            qualifications: spec.qualifications,
+            qualifications: localQualifications?.[index] ?? spec.qualifications,
             rating: Number((4.5 + next() * 0.5).toFixed(1)),
             reviews: 40 + Math.floor(next() * 400),
             fee: priceLabel(brand, fee),
