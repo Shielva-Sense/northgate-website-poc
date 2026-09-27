@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint && node scripts/check-client-hooks.mjs"
+    "lint": "eslint && node scripts/check-client-hooks.mjs && node scripts/check-trade-copy.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.48.0",
