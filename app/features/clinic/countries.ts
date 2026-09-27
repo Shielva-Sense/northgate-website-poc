@@ -104,6 +104,17 @@ export const COUNTRIES: Readonly<Record<string, CountryPack>> = {
        are true of any practice anywhere; naming a board we have not checked
        is the mistake this file has already made twice. Fill one in only
        after verifying it. */
+    LY: {
+        /* 1515 is the ambulance service. 193 reaches the police, who are not
+           who you want for a medical emergency, and the unknown-country
+           fallback prints 112 -- which is why this pack exists at all. */
+        code: "LY", name: "Libya",
+        emergencyNumber: "1515", currency: "LD",
+        defaultCity: "Tripoli", samplePhone: "+218 91 234 5678",
+        emergencyDept: "emergency department", emergencyShort: "emergency",
+        generalist: "family doctor", generalistPlural: "doctors",
+        regulators: null,
+    },
     MX: {
         code: "MX", name: "Mexico",
         emergencyNumber: "911", currency: "$",
