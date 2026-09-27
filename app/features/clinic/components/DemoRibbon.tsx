@@ -1,6 +1,6 @@
 import styles from "./DemoRibbon.module.scss";
 import { tr } from "@/app/core/content-ar";
-import { useLocale } from "@/app/features/clinic/LocaleContext";
+import type { Locale } from "@/app/core/locale";
 
 /**
  * "This is a proposal, not their website."
@@ -14,8 +14,13 @@ import { useLocale } from "@/app/features/clinic/LocaleContext";
  * Deliberately not dismissible, and first in the document so a screen reader
  * reaches it before the clinic's name.
  */
-export function DemoRibbon({ name }: { readonly name: string }): React.JSX.Element {
-    const { locale } = useLocale();
+export function DemoRibbon({
+    name,
+    locale,
+}: {
+    readonly name: string;
+    readonly locale: Locale;
+}): React.JSX.Element {
     return (
         <aside className={styles.ribbon} role="note">
             <b>{tr("Design proposal", locale)}</b>

@@ -48,7 +48,7 @@ export default async function Page({
         >
             <section className={styles.section}>
                 <div className="wrap">
-                    {articles.length === 0 ? <EmptyLibrary /> : null}
+                    {articles.length === 0 ? <EmptyLibrary locale={locale} /> : null}
                     {topics.map((topic) => (
                         <div key={topic} className={styles.topic}>
                             <h2 className={styles.topicTitle}>{topic}</h2>

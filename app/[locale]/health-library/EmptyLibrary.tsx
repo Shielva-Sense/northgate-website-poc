@@ -1,7 +1,7 @@
 import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import styles from "./Library.module.scss";
 import { tr } from "@/app/core/content-ar";
-import { useLocale } from "@/app/features/clinic/LocaleContext";
+import type { Locale } from "@/app/core/locale";
 
 /**
  * What the library shows before a practice has one.
@@ -15,8 +15,7 @@ import { useLocale } from "@/app/features/clinic/LocaleContext";
  * state. Articles are supplied per practice through the registry, so filling
  * this needs no deploy.
  */
-export function EmptyLibrary(): React.JSX.Element {
-    const { locale } = useLocale();
+export function EmptyLibrary({ locale }: { readonly locale: Locale }): React.JSX.Element {
     return (
         <div className={styles.empty}>
             <h2 className={styles.emptyTitle}>{tr("Articles are on their way", locale)}</h2>

@@ -6,7 +6,7 @@ import { DemoThemes } from "./DemoThemes";
 import { SuggestionTrigger } from "@/app/features/feedback/SuggestionPanel";
 import styles from "./DemoBar.module.scss";
 import { tr } from "@/app/core/content-ar";
-import { useLocale } from "@/app/features/clinic/LocaleContext";
+import type { Locale } from "@/app/core/locale";
 
 /**
  * Layout switcher, for showing a client the options live.
@@ -20,13 +20,17 @@ import { useLocale } from "@/app/features/clinic/LocaleContext";
  * this needs no JavaScript and cannot break the page it sits on.
  */
 export function DemoBar({
+    locale,
     active,
 }: {
     /** Absent on inner pages: the layout switch is a home-page concern, the
         colour switch is not, and the bar has to appear on both. */
     readonly active?: TemplateId | undefined;
-} = {}): React.JSX.Element {
-    const { locale } = useLocale();
+    /** Required, unlike `active`: every caller is a server component that
+        already holds the route's language, and defaulting it would put an
+        English bar on an Arabic page rather than fail the build. */
+    readonly locale: Locale;
+}): React.JSX.Element {
     return (
         <aside className={styles.bar} aria-label={tr("Demo layout switcher", locale)}>
             <span className={styles.label}>
