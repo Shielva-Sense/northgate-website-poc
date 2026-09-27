@@ -4,14 +4,9 @@ import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import { ArrowRight, Layers } from "lucide-react";
 import { isIndexable } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
-import { BrandProvider } from "@/app/features/clinic/BrandContext";
-import { BookingProvider } from "@/app/features/booking/BookingPanel";
-import { contentFor } from "@/app/features/clinic/content";
-import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ThemePicker } from "@/app/features/clinic/components/ThemePicker";
 import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
 import styles from "./Templates.module.scss";
-import { overridesFor } from "@/app/core/locale";
 import type { Locale } from "@/app/core/locale";
 import { localise, tr } from "@/app/core/content-ar";
 
@@ -32,13 +27,10 @@ export default async function Page({
     readonly params: Promise<{ readonly locale: Locale }>;
 }): Promise<React.JSX.Element> {
     const { locale } = await params;
-    const site = await siteFromHost((await headers()).get("host"));
-    const brand = site.brand;
     const indexable = isIndexable();
 
     return (
-        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
-            <BookingProvider>
+        <>
             <main id="main-content" tabIndex={-1} className={styles.page}>
                 <div className="wrap">
                     <p className={styles.kicker}>
@@ -135,8 +127,6 @@ export default async function Page({
                     </p>
                 </div>
             </main>
-            <SiteFooter />
-            </BookingProvider>
-        </BrandProvider>
+        </>
     );
 }

@@ -5,13 +5,7 @@ import { JsonLd } from "@/app/components/JsonLd";
 import { clinicJsonLd, faqJsonLd, isIndexable, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
 import { DEFAULT_TEMPLATE, isTemplateId } from "@/app/features/clinic/templates";
-import { BrandProvider } from "@/app/features/clinic/BrandContext";
-import { BookingProvider } from "@/app/features/booking/BookingPanel";
-import { contentFor, mediaFor } from "@/app/features/clinic/content";
-import { DemoBar } from "@/app/features/clinic/components/DemoBar";
-import { overridesFor } from "@/app/core/locale";
-import type { Locale } from "@/app/core/locale";
-import { localise } from "@/app/core/content-ar";
+import { mediaFor } from "@/app/features/clinic/content";
 
 export async function generateMetadata(): Promise<Metadata> {
     const site = await siteFromHost((await headers()).get("host"));
@@ -41,11 +35,9 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Server shell. All interactivity lives in HomeClient. */
 type Props = {
     readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
-    readonly params: Promise<{ readonly locale: Locale }>;
 };
 
-export default async function Page({ searchParams, params }: Props): Promise<React.JSX.Element> {
-    const { locale } = await params;
+export default async function Page({ searchParams }: Props): Promise<React.JSX.Element> {
     const site = await siteFromHost((await headers()).get("host"));
     const brand = site.brand;
     /* ?template= lets a client click through all four on one URL. A prospect's
@@ -55,14 +47,13 @@ export default async function Page({ searchParams, params }: Props): Promise<Rea
     const asked = Array.isArray(requested) ? requested[0] : requested;
     const template = isTemplateId(asked) ? asked : DEFAULT_TEMPLATE;
     return (
-        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
-            <BookingProvider>
+        /* No BrandProvider or BookingProvider here any more: the layout holds
+           both, so the providers — and the chrome inside them — survive a
+           navigation instead of being rebuilt by every page. */
+        <>
             <JsonLd data={clinicJsonLd(brand, site.profile)} />
             <JsonLd data={faqJsonLd()} />
-            {/* Sales control: only while this is an invite-only preview. */}
-            {isIndexable() ? null : <DemoBar active={template} locale={locale} />}
             <HomeClient template={template} />
-            </BookingProvider>
-        </BrandProvider>
+        </>
     );
 }

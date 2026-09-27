@@ -5,13 +5,8 @@ import { JsonLd } from "@/app/components/JsonLd";
 import { SERVICES } from "@/app/features/clinic/constants";
 import { isIndexable, serviceJsonLd, siteUrl } from "@/app/core/seo";
 import { siteFromHost } from "@/app/core/site";
-import { BrandProvider } from "@/app/features/clinic/BrandContext";
-import { BookingProvider } from "@/app/features/booking/BookingPanel";
-import { contentFor } from "@/app/features/clinic/content";
 import { ServiceClient } from "./ServiceClient";
-import { overridesFor } from "@/app/core/locale";
 import type { Locale } from "@/app/core/locale";
-import { localise } from "@/app/core/content-ar";
 
 type Params = { readonly params: Promise<{ readonly slug: string; readonly locale: Locale }> };
 
@@ -45,20 +40,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Params): Promise<React.JSX.Element> {
-    const { slug, locale } = await params;
+    const { slug } = await params;
     const service = SERVICES.find((item) => item.slug === slug);
     if (!service) notFound();
 
-    const site = await siteFromHost((await headers()).get("host"));
-    const brand = site.brand;
     const data = serviceJsonLd(slug);
 
     return (
-        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={contentFor(site.profile, brand, overridesFor(site.overrides, site.overridesByLocale, locale), locale)}>
-            <BookingProvider>
+        <>
             {data ? <JsonLd data={data} /> : null}
             <ServiceClient service={service} />
-            </BookingProvider>
-        </BrandProvider>
+        </>
     );
 }

@@ -1,22 +1,11 @@
-import { Suspense } from "react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { siteFromHost } from "@/app/core/site";
-import { contentFor, mediaFor } from "@/app/features/clinic/content";
+import { mediaFor } from "@/app/features/clinic/content";
 import type { SiteMedia } from "@/app/features/clinic/content";
-import { BrandProvider } from "@/app/features/clinic/BrandContext";
-import { BookingProvider } from "@/app/features/booking/BookingPanel";
-import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
-import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
-import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
-import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
-import { DemoBar } from "@/app/features/clinic/components/DemoBar";
-import { isIndexable } from "@/app/core/seo";
-import { overridesFor } from "@/app/core/locale";
 import type { Locale } from "@/app/core/locale";
 import { tr } from "@/app/core/content-ar";
 import styles from "./PageShell.module.scss";
-import { localise } from "@/app/core/content-ar";
 
 interface ShellProps {
     /** Which language this page is being read in, from the route param. */
@@ -51,16 +40,7 @@ interface ShellProps {
  * served from cache, which is what "prerendered" means for a site whose output
  * legitimately differs per tenant.
  */
-export function PageShell(props: ShellProps): React.JSX.Element {
-    return (
-        <Suspense fallback={<ShellFallback {...props} />}>
-            <ResolveHost {...props} />
-        </Suspense>
-    );
-}
-
-/** The only uncached thing here: one header read. */
-async function ResolveHost(props: ShellProps): Promise<React.JSX.Element> {
+export async function PageShell(props: ShellProps): Promise<React.JSX.Element> {
     const host = (await headers()).get("host") ?? "";
     return <CachedShell host={host} {...props} />;
 }
@@ -78,63 +58,18 @@ async function CachedShell({
 }: ShellProps & { readonly host: string }): Promise<React.JSX.Element> {
     "use cache";
     const site = await siteFromHost(host);
-    const brand = site.brand;
-    /* A clinic's own Arabic, where the registry row carries it, otherwise the
-       default content put through the phrase table. Resolved here and not in
-       `siteFromHost`, which is cached per host and knows nothing of the route
-       param. */
-    const overrides = overridesFor(site.overrides, site.overridesByLocale, locale);
-    const content = contentFor(site.profile, brand, overrides, locale);
     const shot = imageKey === undefined ? image : mediaFor(site.profile.kind)[imageKey];
 
     return (
-        <BrandProvider brand={brand} profile={localise(site.profile, locale)} content={content}>
-            <BookingProvider>
-            <ScrollProgress />
-            {/* The colour switcher has to be reachable from whatever page a
-                prospect happens to be on, not only the home page. Gated on the
-                invite build, like the rest of the demo furniture. */}
-            {isIndexable() ? null : <DemoBar locale={locale} />}
-            <AnnounceBar />
-            <SiteHeader />
-            <main id="main-content" tabIndex={-1}>
-                <Head
-                    title={tr(title, locale)}
-                    lede={lede === undefined ? undefined : tr(lede, locale)}
-                    kicker={kicker === undefined ? undefined : tr(kicker, locale)}
-                    image={shot}
-                    imageAlt={imageAlt}
-                />
-                {children}
-            </main>
-            <SiteFooter />
-            </BookingProvider>
-        </BrandProvider>
-    );
-}
-
-/**
- * What the static shell shows while the host resolves.
- *
- * It is the page header with its real text and image — all of which are known
- * without knowing the tenant — so the first paint is the actual page rather
- * than a spinner, and only the chrome arrives a beat later.
- */
-function ShellFallback({ locale, title, lede, kicker, image, imageAlt }: ShellProps): React.JSX.Element {
-    return (
         <main id="main-content" tabIndex={-1}>
-            {/* No imageKey here on purpose: the static shell is rendered
-                before the host is known, so which practice's photograph to
-                use is exactly the thing it cannot answer yet. A page that
-                names a key simply paints its heading first and the picture a
-                beat later, which is the trade the shell exists to make. */}
             <Head
                 title={tr(title, locale)}
                 lede={lede === undefined ? undefined : tr(lede, locale)}
                 kicker={kicker === undefined ? undefined : tr(kicker, locale)}
-                image={image}
+                image={shot}
                 imageAlt={imageAlt}
             />
+            {children}
         </main>
     );
 }

@@ -43,11 +43,13 @@ function linksFor(
        dentist says "find a dentist" and a podiatrist "find a podiatrist";
        branching on veterinary alone put "find a doctor" on a dental practice
        in both languages, which is the first thing a dentist notices. */
-    /* The nav renders plain <a> elements, not <Link>, so LocaleLink never
-       touched them: every nav click went to a bare path and was redirected
-       to /en. An Arabic reader lost the language on their first click, which
-       is the one click that matters. Prefixing here keeps the fix in the one
-       place the hrefs are built. */
+    /* The hrefs are prefixed with the language here, in the one place they are
+       built. They used to be bare, which sent an Arabic reader to /en on their
+       first click — the one click that matters. The nav used to render plain
+       <a> elements too, which meant every click was a full browser page load:
+       the whole document tore down and rebuilt, the top bars flashed, and a
+       site that is a single-page app behaved like it was not one. They are
+       <Link> now, so a click swaps the content and leaves the chrome alone. */
     const prefix = (href: string): string => withLocale(locale, href);
     const ar = locale === "ar";
     const findLabel = ar ? profile.findLabelAr : profile.findLabel;
@@ -105,9 +107,9 @@ export function SiteHeader(): React.JSX.Element {
 
                 <nav className={`${styles.nav} ${styles.links}`} aria-label={tr("Main", locale)}>
                     {links.map((link) => (
-                        <a key={link.href} href={link.href} className={styles.navLink}>
+                        <Link key={link.href} href={link.href} className={styles.navLink}>
                             {link.label}
-                        </a>
+                        </Link>
                     ))}
                     {/* Deliberately outside LINKS: it is not a peer of "Services",
                         and someone who needs it is scanning for red, not reading
@@ -143,14 +145,14 @@ export function SiteHeader(): React.JSX.Element {
                 <div className="wrap">
                     <nav className={styles.panel} id="mobile-nav" aria-label={tr("Main", locale)}>
                         {links.map((link) => (
-                            <a
+                            <Link
                                 key={link.href}
                                 href={link.href}
                                 className={styles.navLink}
                                 onClick={() => setOpen(false)}
                             >
                                 {link.label}
-                            </a>
+                            </Link>
                         ))}
                         {hasEmergency ? (
                             <Link

@@ -1,12 +1,21 @@
-import { Suspense } from "react";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { LOCALES, dirFor, isLocale } from "@/app/core/locale";
-import type { Locale } from "@/app/core/locale";
 import { LocaleProvider } from "@/app/features/clinic/LocaleContext";
 import { stringsFor } from "@/app/core/strings";
 import { siteFromHost } from "@/app/core/site";
 import { DemoRibbon } from "@/app/features/clinic/components/DemoRibbon";
+import { DemoBar } from "@/app/features/clinic/components/DemoBar";
+import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
+import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
+import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
+import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
+import { BrandProvider } from "@/app/features/clinic/BrandContext";
+import { BookingProvider } from "@/app/features/booking/BookingPanel";
+import { contentFor } from "@/app/features/clinic/content";
+import { localise } from "@/app/core/content-ar";
+import { overridesFor } from "@/app/core/locale";
+import { isIndexable } from "@/app/core/seo";
 
 /**
  * The language segment.
@@ -54,6 +63,22 @@ export default async function LocaleLayout({
        give every page a second address and duplicate the whole farm. */
     if (!isLocale(locale)) notFound();
 
+    /* Resolved once, here, for the whole segment. It used to be resolved by
+       PageShell — which every page rendered — so the masthead, the navigation,
+       the demo bar and the footer were part of the page rather than the
+       layout. In the App Router a layout persists across a navigation and a
+       page does not, so every click tore the entire chrome down and built it
+       again: the reason the site did not feel like the single-page app it
+       actually is. Now only <main> changes. */
+    const site = await siteFromHost((await headers()).get("host"));
+    const brand = site.brand;
+    const content = contentFor(
+        site.profile,
+        brand,
+        overridesFor(site.overrides, site.overridesByLocale, locale),
+        locale,
+    );
+
     return (
         <div lang={locale} dir={dirFor(locale)}>
             {/* First focusable element in the language segment, and said in
@@ -62,19 +87,29 @@ export default async function LocaleLayout({
             <a href="#main-content" className="skip-link">
                 {stringsFor(locale).skipToContent}
             </a>
-            {/* Behind Suspense because it is the one thing here that reads the
-                Host header, and reading it outside a boundary would mark every
-                route dynamic and cost the farm its prerendering. */}
-            <Suspense fallback={null}>
-                <ProposalNotice locale={locale} />
-            </Suspense>
-            <LocaleProvider locale={locale}>{children}</LocaleProvider>
+            {/* Not behind Suspense. It was, with a null fallback, which meant
+                the page painted without the ribbon and then the ribbon arrived
+                and shoved everything down the screen — a visible jolt on every
+                load. The segment is a blocking route (`instant` above), so the
+                Host read here is allowed to hold the response until it is done
+                and the ribbon is in the first paint with everything else. */}
+            <DemoRibbon name={brand.name} locale={locale} />
+            <LocaleProvider locale={locale}>
+                <BrandProvider
+                    brand={brand}
+                    profile={localise(site.profile, locale)}
+                    content={content}
+                >
+                    <BookingProvider>
+                        <ScrollProgress />
+                        {isIndexable() ? null : <DemoBar locale={locale} />}
+                        <AnnounceBar />
+                        <SiteHeader />
+                        {children}
+                        <SiteFooter />
+                    </BookingProvider>
+                </BrandProvider>
+            </LocaleProvider>
         </div>
     );
-}
-
-/** Names the clinic on the demo ribbon; the one Host read in this layout. */
-async function ProposalNotice({ locale }: { readonly locale: Locale }): Promise<React.JSX.Element> {
-    const site = await siteFromHost((await headers()).get("host"));
-    return <DemoRibbon name={site.brand.name} locale={locale} />;
 }
