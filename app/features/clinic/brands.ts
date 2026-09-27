@@ -356,7 +356,14 @@ export function brandFromRecord(
         monogram: short.charAt(0).toUpperCase(),
         city: record.city ?? pack?.defaultCity ?? base.city,
         country: record.country ?? base.country,
-        address: record.address ?? base.address,
+        /* Same trap as the phone: `base` is the default pack, so a row with no
+           address of its own published "1 High Street, Manchester" on a clinic
+           in Sharjah. Falls back to the row's own city, or its country's. */
+        address:
+            record.address ??
+            (pack === null
+                ? base.address
+                : `1 High Street, ${record.city ?? pack.defaultCity}`),
         email: record.email ?? base.email,
         currency: record.currency ?? pack?.currency ?? base.currency,
         emergencyNumber: record.emergencyNumber ?? pack?.emergencyNumber ?? base.emergencyNumber,

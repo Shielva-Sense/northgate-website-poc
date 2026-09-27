@@ -501,7 +501,7 @@ export function FindDoctorClient(): React.JSX.Element {
                                     <span className={styles.deptName}>{item.name}</span>
                                     <span className={styles.deptSummary}>{item.summary}</span>
                                     <span className={styles.deptGo}>
-                                        See who is available
+                                        {tr("See who is available", locale)}
                                         <ArrowRight size={15} aria-hidden="true" />
                                     </span>
                                 </span>
