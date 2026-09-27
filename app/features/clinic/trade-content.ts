@@ -70,9 +70,55 @@ const VET_STATS: readonly Stat[] = [
  * here. Only the GB packs name an inspection, because CQC registration is
  * mandatory there.
  */
+/**
+ * Which trades the country's headline inspectorate and nurse register
+ * actually apply to.
+ *
+ * The trio on a Regulators pack -- inspectorate, doctor, nurse -- is written
+ * for a hospital or a general practice, and it was being printed on every
+ * non-veterinary trade. An optometry practice in Monroe, Louisiana therefore
+ * published "Accredited by The Joint Commission", which accredits hospitals
+ * and health systems and has never looked at an independent eye-care
+ * practice; "State Medical Board", which licenses physicians while
+ * optometrists answer to the State Board of Optometry; and a line about
+ * registered nurses, in a practice that employs none.
+ *
+ * Three false claims on one card. So the trio is now used only where it is
+ * true, and every other trade names its own licensing board.
+ */
+const MEDICAL_TRADES = new Set(["hospital", "general-practice", "dermatology"]);
+
+/**
+ * The board that licenses each trade, per country.
+ *
+ * Licensure, not accreditation: a practice is licensed by operating at all,
+ * where a voluntary accreditation has to be applied for and passed. A trade
+ * with no entry falls back to a claim that is true of any practice anywhere,
+ * rather than borrowing the doctors' board.
+ */
+const TRADE_BOARDS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+    US: {
+        optometry: "State Board of Optometry",
+        dental: "State Dental Board",
+        physio: "State Board of Physical Therapy",
+        chiro: "State Board of Chiropractic",
+        podiatry: "State Board of Podiatric Medicine",
+        "mental-health": "State Board of Psychology",
+    },
+    GB: {
+        optometry: "GOC",
+        dental: "GDC",
+        physio: "HCPC",
+        chiro: "GCC",
+        podiatry: "HCPC",
+        "mental-health": "HCPC",
+    },
+};
+
 function regulatorAccreditations(
     kind: string,
     regulators: Regulators,
+    country: string,
 ): readonly Accreditation[] {
     if (isVet(kind)) {
         return [
@@ -82,10 +128,26 @@ function regulatorAccreditations(
             { label: "ISO 27001", detail: "Client records held to standard" },
         ];
     }
+
+    /* Hospitals and general practices are what the pack describes, so they
+       get it: the inspectorate genuinely inspects them and they genuinely
+       employ registered nurses. */
+    if (MEDICAL_TRADES.has(kind)) {
+        return [
+            { label: regulators.inspectorate, detail: regulators.inspectorateNote },
+            { label: regulators.doctor, detail: "All doctors on the register" },
+            { label: regulators.nurse, detail: "Nurses registered and revalidated" },
+            { label: "ISO 27001", detail: "Patient records held to standard" },
+        ];
+    }
+
+    const board = TRADE_BOARDS[country]?.[kind];
     return [
-        { label: regulators.inspectorate, detail: regulators.inspectorateNote },
-        { label: regulators.doctor, detail: "All doctors on the register" },
-        { label: regulators.nurse, detail: "Nurses registered and revalidated" },
+        board === undefined
+            ? { label: "Licensed", detail: "Every clinician licensed to practise" }
+            : { label: board, detail: "Every clinician licensed and in good standing" },
+        { label: "Insured", detail: "Full professional indemnity cover" },
+        { label: "Audited", detail: "Infection control reviewed yearly" },
         { label: "ISO 27001", detail: "Patient records held to standard" },
     ];
 }
@@ -381,4 +443,5 @@ export const faqsFor = (kind: string): readonly FaqItem[] => BY_TRADE[kind]?.faq
 export const accreditationsFor = (
     kind: string,
     regulators: Regulators,
-): readonly Accreditation[] => regulatorAccreditations(kind, regulators);
+    country: string,
+): readonly Accreditation[] => regulatorAccreditations(kind, regulators, country);
