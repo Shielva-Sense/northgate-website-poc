@@ -23,6 +23,20 @@ import { DemoRibbon } from "@/app/features/clinic/components/DemoRibbon";
  * route still prerenders, and `dir` is decided before anything paints.
  */
 
+/* Render the whole page on the server before replying, rather than sending a
+   shell and streaming the rest in.
+
+   Every byte below the masthead belongs to one specific clinic, resolved from
+   the Host header, so the "static" part of a partial prerender was never more
+   than a heading on a blank page. Streaming it bought nothing and cost a flash
+   on every navigation: the page tore down, app/[locale]/loading.tsx showed a
+   full-screen "Getting the practice details" card for the ~0.4s the lookup
+   takes, and the real page then replaced it. That loading file is gone, and
+   this is what lets it go — `instant: false` is how Cache Components spells a
+   blocking route, and it is the honest description of a farm whose every page
+   is per-tenant. The cost is time to first byte, which is ~0.4s warm. */
+export const instant = false;
+
 export function generateStaticParams(): { locale: string }[] {
     return LOCALES.map((locale) => ({ locale }));
 }
