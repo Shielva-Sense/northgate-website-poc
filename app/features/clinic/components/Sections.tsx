@@ -20,7 +20,8 @@ import { LinkButton } from "@/app/components/ui/LinkButton";
 import { BookingForm } from "@/app/features/booking/BookingForm";
 import { useCountUp } from "@/app/core/hooks/useCountUp";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { ACCREDITATIONS, FAQS, JOURNEY, OPENING, PROMISES, STATS } from "../constants";
+import { OPENING } from "../constants";
+import { accreditationsFor, faqsFor, journeyFor, promisesFor, statsFor } from "../trade-content";
 import type { Stat } from "../types";
 import { DepartmentCarousel } from "./DepartmentCarousel";
 import { templateById } from "../templates";
@@ -60,18 +61,20 @@ export function Proof(): React.JSX.Element {
     const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
     const brand = useBrand();
+    const kind = useProfile().kind;
     /* Naming a regulator the client's country does not have is a fabricated
        credential, not a placeholder. Where the market is unknown, claim only
-       things that are true anywhere. */
+       things that are true anywhere — and where the trade is veterinary, the
+       regulator is the RCVS, never the CQC or the GMC. */
     const accreditations = localise(
         brand.regulators === null
             ? ([
                   { label: "Registered", detail: "All clinicians licensed to practise" },
                   { label: "Insured", detail: "Full medical indemnity cover" },
                   { label: "Audited", detail: "Infection control reviewed yearly" },
-                  { label: "ISO 27001", detail: "Patient records held to standard" },
+                  { label: "ISO 27001", detail: "Records held to standard" },
               ] as const)
-            : ACCREDITATIONS,
+            : accreditationsFor(kind),
         locale,
     );
 
@@ -79,7 +82,7 @@ export function Proof(): React.JSX.Element {
         <section className={styles.proof} aria-label={tr("Practice at a glance", locale)}>
             <div className="wrap" ref={ref}>
                 <ul className={styles.statRow} role="list">
-                    {localise(STATS, locale).map((stat, index) => (
+                    {localise(statsFor(kind), locale).map((stat, index) => (
                         <li key={stat.label} data-reveal="" style={delay(index)}>
                             <StatValue stat={stat} />
                             <span className={styles.statLabel}>{stat.label}</span>
@@ -361,9 +364,10 @@ const PROMISE_ICONS_MAP = {
 } as const;
 
 export function Promises(): React.JSX.Element {
+    const kind = useProfile().kind;
     const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
-    const media = mediaFor(useProfile().kind);
+    const media = mediaFor(kind);
 
     return (
         <section className={styles.ops} id="ops">
@@ -385,7 +389,7 @@ export function Promises(): React.JSX.Element {
                 </div>
 
                 <ul className={styles.opsGrid} role="list">
-                    {localise(PROMISES, locale).map((item, index) => {
+                    {localise(promisesFor(kind), locale).map((item, index) => {
                         const Icon = PROMISE_ICONS_MAP[item.icon];
                         return (
                             <li key={item.title} data-reveal="" style={delay(index)}>
@@ -406,6 +410,7 @@ export function Promises(): React.JSX.Element {
 /* ── journey ──────────────────────────────────── */
 
 export function Journey(): React.JSX.Element {
+    const kind = useProfile().kind;
     const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
 
@@ -418,7 +423,7 @@ export function Journey(): React.JSX.Element {
                 </div>
 
                 <ol className={styles.steps}>
-                    {localise(JOURNEY, locale).map((item, index) => (
+                    {localise(journeyFor(kind), locale).map((item, index) => (
                         <li key={item.step} data-reveal="" style={delay(index)}>
                             <span className={styles.stepNo} aria-hidden="true">
                                 {item.step}
@@ -497,9 +502,10 @@ export function Visiting(): React.JSX.Element {
 /* ── booking ──────────────────────────────────── */
 
 export function Booking(): React.JSX.Element {
+    const kind = useProfile().kind;
     const { locale } = useLocale();
     const ref = useReveal<HTMLDivElement>();
-    const media = mediaFor(useProfile().kind);
+    const media = mediaFor(kind);
 
     return (
         <section className={`${styles.section} ${styles.dark}`} id="book">
@@ -522,7 +528,7 @@ export function Booking(): React.JSX.Element {
                     <h2 className={styles.title}>{tr("Request an appointment", locale)}</h2>
                     <p className={styles.lede}>{tr("It takes about a minute. You will get a confirmation with a time, not a promise to call you back at some point.", locale)}</p>
                     <ul className={styles.darkList} role="list">
-                        {localise(FAQS, locale).slice(0, 3).map((item) => (
+                        {localise(faqsFor(kind), locale).slice(0, 3).map((item) => (
                             <li key={item.question}>
                                 <Check size={15} aria-hidden="true" />
                                 {item.question}
