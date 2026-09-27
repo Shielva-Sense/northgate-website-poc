@@ -90,6 +90,8 @@ const ALLOWED = {
         "The non-veterinary branch of the isVet conditional.",
     "app/[locale]/appointments/page.tsx":
         "Behind profile.hasEmergency, and the human branch of triage.",
+    "app/features/booking/BookingForm.tsx":
+        "The non-veterinary branches of the isVet/hasEmergency notice, plus the comment recording why it is conditional.",
     "app/features/clinic/triage.ts":
         "Comment describing the human routing rules. triageFor() returns VET_TRIAGE for veterinary.",
     "app/features/clinic/mark.ts":

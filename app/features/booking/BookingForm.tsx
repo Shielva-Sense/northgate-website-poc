@@ -18,7 +18,7 @@ import type {
     TimeWindow,
     Urgency,
 } from "./types";
-import { useBrand, useContent } from "@/app/features/clinic/BrandContext";
+import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
 import styles from "./BookingForm.module.scss";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
 import { tr } from "@/app/core/content-ar";
@@ -87,6 +87,8 @@ export function BookingForm(): React.JSX.Element {
     const { locale } = useLocale();
     const { t } = useLocale();
     const brand = useBrand();
+    const profile = useProfile();
+    const isVet = profile.kind === "veterinary";
     const { departments, appointmentTypes, clinicians } = useContent();
     const [form, setForm] = useState<BookingFormValues>(EMPTY_FORM);
     const [errors, setErrors] = useState<BookingErrors>({});
@@ -171,12 +173,19 @@ export function BookingForm(): React.JSX.Element {
 
     return (
         <form className={styles.card} onSubmit={handleSubmit} noValidate>
+            {/* Unconditional until now, so every booking form on the farm
+                promised a 24-hour emergency department — including practices
+                whose row says they have none, and veterinary practices, where
+                "a medical emergency" and "our A&E line" are the wrong words
+                for the wrong species. */}
             <p className={styles.emergency}>
                 <AlertTriangle size={16} aria-hidden="true" />
                 <span>
-                    If this is a medical emergency, come straight to our emergency
-                    department — open 24 hours, no appointment needed — or ring our
-                    A&amp;E line on {brand.aeLine}. Do not use this form.
+                    {isVet
+                        ? `If this is an emergency, ring us on ${brand.aeLine} and bring them straight in. Do not use this form.`
+                        : profile.hasEmergency
+                          ? `If this is a medical emergency, come straight to our emergency department — open 24 hours, no appointment needed — or ring our A&E line on ${brand.aeLine}. Do not use this form.`
+                          : `If this is a medical emergency, call ${brand.emergencyNumber} or go to your nearest emergency department. We are not an emergency service. Do not use this form.`}
                 </span>
             </p>
 
