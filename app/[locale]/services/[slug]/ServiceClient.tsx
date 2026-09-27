@@ -4,17 +4,11 @@ import { LocaleLink as Link } from "@/app/components/ui/LocaleLink";
 import Image from "next/image";
 import { ArrowLeft, Check, Clock } from "lucide-react";
 import { LinkButton } from "@/app/components/ui/LinkButton";
-import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
-import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
-import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
-import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
 import { AppointmentFlow } from "@/app/features/booking/AppointmentFlow";
-import { DEPARTMENTS } from "@/app/features/clinic/care";
 import { useReveal } from "@/app/core/hooks/useReveal";
-import { SERVICES } from "@/app/features/clinic/constants";
 import { useBrand, useContent, useProfile } from "@/app/features/clinic/BrandContext";
 import { mediaFor } from "@/app/features/clinic/content";
-import type { Service } from "@/app/features/clinic/types";
+import type { Service } from "@/app/features/clinic/practice-kinds";
 import styles from "./Service.module.scss";
 import { tr } from "@/app/core/content-ar";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
@@ -24,12 +18,19 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
     const { locale } = useLocale();
     const brand = useBrand();
     const profile = useProfile();
-    const { clinicians } = useContent();
+    const { clinicians, departments, appointmentTypes } = useContent();
     /* A service maps to one or more departments; the first is the one that
-       normally runs it, and it pre-filters the clinician list. */
-    const department = DEPARTMENTS.find((d) => d.services.includes(service.slug));
+       normally runs it, and it pre-filters the clinician list. Read from this
+       practice's own departments rather than the built-in general-practice
+       list, which named departments a dentist does not have. */
+    const department = departments.find((d) => d.services.includes(service.slug));
     const ref = useReveal<HTMLDivElement>();
-    const others = SERVICES.filter((item) => item.slug !== service.slug);
+    const others = profile.services.filter((item) => item.slug !== service.slug);
+    /* How long the appointment is, taken from the booking data so the page and
+       the booking form cannot disagree. Omitted rather than guessed when this
+       practice has no appointment type for the department. */
+    const minutes = appointmentTypes.find((a) => a.department === department?.id)?.minutes;
+    const duration = minutes === undefined ? null : `${minutes} ${tr("minutes", locale)}`;
 
     return (
         <>
@@ -49,11 +50,13 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
 
                         <div className={styles.head} data-reveal="">
                             <h1 className={styles.h1}>{service.name}</h1>
-                            <p className={styles.lede}>{service.summary}</p>
-                            <p className={styles.duration}>
-                                <Clock size={15} aria-hidden="true" />
-                                {service.duration} appointment
-                            </p>
+                            <p className={styles.lede}>{service.blurb}</p>
+                            {duration === null ? null : (
+                                <p className={styles.duration}>
+                                    <Clock size={15} aria-hidden="true" />
+                                    {duration} {tr("appointment", locale)}
+                                </p>
+                            )}
                             <div className={styles.cta}>
                                 <LinkButton href="#book" size="lg">{tr("Request an appointment", locale)}</LinkButton>
                                 <LinkButton href={brand.phoneHref} variant="ghost" size="lg">
@@ -81,8 +84,9 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                             <ul className={styles.points} role="list">
                                 <li>
                                     <Check size={16} aria-hidden="true" />
-                                    A {service.duration} appointment with a named clinician, booked
-                                    for the time it actually takes.
+                                    {duration === null
+                                        ? tr("An appointment with a named clinician, booked for the time it actually takes.", locale)
+                                        : `${tr("A", locale)} ${duration} ${tr("appointment with a named clinician, booked for the time it actually takes.", locale)}`}
                                 </li>
                                 <li>
                                     <Check size={16} aria-hidden="true" />{tr("A written summary of what was said and what happens next.", locale)}</li>

@@ -1127,4 +1127,12 @@ export const AR: Readonly<Record<string, string>> = {
     "faq": "الأسئلة الشائعة",
     "contact": "التواصل",
     "is a fictional practice.": "عيادة افتراضية.",
+    "appointment": "موعد",
+    "A": "موعد",
+    "An appointment with a named clinician, booked for the time it actually takes.": "موعد مع طبيب باسمه، محجوز بالمدة التي يستغرقها فعلاً.",
+    "appointment with a named clinician, booked for the time it actually takes.": "مع طبيب باسمه، محجوز بالمدة التي يستغرقها فعلاً.",
+    "This page does not exist": "هذه الصفحة غير موجودة",
+    "The address may be out of date, or the practice may not offer this service.": "قد يكون العنوان قديماً، أو أن العيادة لا تقدّم هذه الخدمة.",
+    "Contact us": "اتصل بنا",
+    "That page is not one of ours, but this is what we do.": "تلك الصفحة ليست من صفحاتنا، لكن هذا ما نقدّمه.",
 };

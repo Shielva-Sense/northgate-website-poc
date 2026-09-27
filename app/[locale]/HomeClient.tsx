@@ -1,9 +1,6 @@
 "use client";
 
 import { Fragment, ViewTransition } from "react";
-import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
-import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
-import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
 import {
     Booking,
     Departments,
@@ -20,7 +17,6 @@ import {
 import { Hero } from "@/app/features/clinic/components/HeroVariants";
 import { PatientStory } from "@/app/features/clinic/components/PatientStory";
 import { StickyCta } from "@/app/features/clinic/components/StickyCta";
-import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { designVars, templateById } from "@/app/features/clinic/templates";
 import type { SectionId, TemplateId } from "@/app/features/clinic/templates";
 
