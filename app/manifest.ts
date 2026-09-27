@@ -7,8 +7,10 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     return {
         name: brand.name,
         short_name: brand.short,
-        description:
-            `See a named doctor this week. Appointments, opening hours and booking for ${brand.name}.`,
+        /* The trade's own line. This was the eighth place the general
+           practice's strapline had been hardcoded, and the only one that
+           reaches the home-screen icon after someone installs the site. */
+        description: `${brand.strapline}. Appointments, opening hours and booking for ${brand.name}.`,
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
