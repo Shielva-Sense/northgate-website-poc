@@ -33,7 +33,7 @@
  * list fails. Adding a line to ALLOWED is deliberate; forgetting to is not
  * possible.
  */
-import { readFileSync, globSync } from "node:fs";
+import { existsSync, readFileSync, globSync } from "node:fs";
 
 /* Words a veterinary page must never say. Deliberately narrow: each one is a
    phrase that is wrong rather than merely unusual, so there is no judgement
@@ -218,6 +218,26 @@ for (const kind of roleKinds) {
         failures.push(
             `app/features/clinic/content.ts  QUALIFICATIONS_BY_COUNTRY.US has no "${kind}" — a US ${kind} site would print British post-nominals under a named clinician.`,
         );
+    }
+}
+
+
+/* ── every poster points at a file that exists ───────────────────────── */
+/**
+ * The optometry content was written with a poster at /img/optometry/consult.jpg
+ * and that directory has never existed. Nothing in the toolchain minds: the
+ * build compiles, the page renders, and the visitor gets a broken image on
+ * the one section that is meant to carry a human face.
+ *
+ * Cheap to check, so it is checked.
+ */
+for (const file of ["app/features/clinic/trade-content.ts", "app/features/clinic/constants.ts"]) {
+    const src = readFileSync(file, "utf8");
+    for (const m of src.matchAll(/poster:\s*"(\/[^"]+)"/g)) {
+        const asset = "public" + m[1];
+        if (!existsSync(asset)) {
+            failures.push(`${file}  poster "${m[1]}" has no file at ${asset} — the story section renders a broken image.`);
+        }
     }
 }
 

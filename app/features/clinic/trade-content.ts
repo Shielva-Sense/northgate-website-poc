@@ -199,16 +199,186 @@ const VET_FAQS: readonly FaqItem[] = [
 ];
 
 
-export const statsFor = (kind: string): readonly Stat[] => (isVet(kind) ? VET_STATS : STATS);
+/* ── optometry ───────────────────────────────────────────────────────── */
+/**
+ * An eye test is not an appointment with a doctor about an illness, and the
+ * general practice content reads wrong in a specific way: it answers
+ * questions about registering, referrals and being unwell. What an optometry
+ * patient actually wants to know is whether the test covers the eye health
+ * scan or just the prescription, whether they are about to be sold frames
+ * they did not ask for, and whether the children's test works on a child who
+ * cannot read a chart yet.
+ */
+const OPTOMETRY_STATS: readonly Stat[] = [
+    { value: 5200, suffix: "+", label: "Eye examinations a year" },
+    { value: 30, suffix: " min", label: "Length of a standard test" },
+    { value: 97, suffix: "%", label: "Would recommend us" },
+    { value: 4, suffix: "", label: "Optometrists on the team" },
+];
+
+const OPTOMETRY_REVIEWS: readonly Review[] = [
+    {
+        quote:
+            "First time anyone has shown me the photographs of the back of my own eyes and talked me through what they were looking at. Thirty years of tests and nobody had done that.",
+        name: "Ray T.",
+        context: "Standard eye examination",
+        rating: 5,
+    },
+    {
+        quote:
+            "They found a prescription change that explained the headaches I had been having at work for months. I came in about the headaches, not my eyes.",
+        name: "Denise M.",
+        context: "Test and new glasses",
+        rating: 5,
+    },
+    {
+        quote:
+            "My daughter is six and cannot read yet. They tested her with pictures and shapes and she thought the whole thing was a game. No fight, no tears.",
+        name: "Sam K.",
+        context: "Children's eye test",
+        rating: 5,
+    },
+];
+
+const OPTOMETRY_PATIENT_STORY: PatientStory = {
+    quote:
+        "I had been squinting at the screen for a year and telling myself it was tiredness. The test took half an hour, they showed me the scan, and the new lenses fixed something I had stopped noticing was broken. I wish I had not waited.",
+    name: "Denise",
+    age: "41",
+    context: "Came in about headaches, left with the cause",
+    /* No filmed story and no optometry-specific still yet, so this uses the
+       trade-neutral reception shot. It shows an empty reception desk, which
+       is true of an eye-care practice and claims nothing about one. The alt
+       text describes what is actually in the frame rather than the testing
+       room we would like to be showing -- a caption that oversells the
+       photograph is the same class of problem as the RCVS line was. */
+    video: "",
+    poster: "/img/reception.jpg",
+    posterAlt:
+        "The reception desk of a small practice, lit by a window onto the street",
+};
+
+const OPTOMETRY_PROMISES: readonly Promise_[] = [
+    {
+        title: "The eye health scan is in the test",
+        body: "Retinal photography and pressure check included in the standard price. Not an upsell at the chair, not a separate booking.",
+        icon: "files",
+    },
+    {
+        title: "The same optometrist each time",
+        body: "So the comparison with last year's scan is made by the person who took it, not read cold off a file.",
+        icon: "headset",
+    },
+    {
+        title: "No pressure on frames",
+        body: "Your prescription is yours. Take it and buy your glasses wherever you like -- we will still adjust them for you.",
+        icon: "wallet",
+    },
+    {
+        title: "Half an hour, not ten minutes",
+        body: "Long enough to test properly and to answer what you actually came in to ask.",
+        icon: "car",
+    },
+];
+
+const OPTOMETRY_JOURNEY: readonly JourneyStep[] = [
+    {
+        step: 1,
+        title: "Book a test",
+        body: "Two fields. No account, no portal, and no need to be an existing patient.",
+    },
+    {
+        step: 2,
+        title: "Thirty minutes in the chair",
+        body: "Vision, prescription, eye pressure and a retinal photograph, with the optometrist explaining as they go.",
+    },
+    {
+        step: 3,
+        title: "You see your own results",
+        body: "The scan on the screen, what it shows, and what has changed since last time if we have seen you before.",
+    },
+    {
+        step: 4,
+        title: "Frames only if you want them",
+        body: "You leave with your prescription either way, and a reminder when your next test is due.",
+    },
+];
+
+const OPTOMETRY_FAQS: readonly FaqItem[] = [
+    {
+        question: "Does the test include the eye health check, or is that extra?",
+        answer:
+            "It is included. Retinal photography and a pressure check are part of the standard examination at the standard price. We do not run a cheaper test and then charge for the part that spots disease.",
+    },
+    {
+        question: "Can I take my prescription elsewhere to buy glasses?",
+        answer:
+            "Yes, and we will hand it to you without being asked. It is your prescription. If you buy frames elsewhere and they need adjusting, bring them in and we will do it.",
+    },
+    {
+        question: "How young can a child be tested?",
+        answer:
+            "From around three. A child does not need to know their letters -- we test with pictures, shapes and matching games, and we can tell a great deal from how the eyes behave without asking the child anything.",
+    },
+    {
+        question: "How often should I be tested?",
+        answer:
+            "Every two years for most adults, yearly over 70, yearly for children, and yearly if you are diabetic or there is glaucoma in the family. We will tell you which applies to you and remind you when it is due.",
+    },
+];
+
+
+/**
+ * One row per trade. A trade that does not override a field falls through to
+ * the general practice's version, which is the honest default: it is real
+ * content written for a real clinic, just not this one's.
+ *
+ * This replaced a chain of `isVet(kind) ? VET_X : X` ternaries. That shape
+ * was fine for one trade and became a lie the moment a second one arrived --
+ * optometry is not veterinary, so `isVet` returned false and an eye-care
+ * practice quietly served a GP's registration FAQs. Adding a trade is now a
+ * row here, and forgetting a field degrades to the default rather than to
+ * whatever the previous branch happened to be.
+ */
+interface TradeContent {
+    readonly stats: readonly Stat[];
+    readonly reviews: readonly Review[];
+    readonly patientStory: PatientStory;
+    readonly promises: readonly Promise_[];
+    readonly journey: readonly JourneyStep[];
+    readonly faqs: readonly FaqItem[];
+}
+
+const BY_TRADE: Readonly<Record<string, Partial<TradeContent>>> = {
+    veterinary: {
+        stats: VET_STATS,
+        reviews: VET_REVIEWS,
+        patientStory: VET_PATIENT_STORY,
+        promises: VET_PROMISES,
+        journey: VET_JOURNEY,
+        faqs: VET_FAQS,
+    },
+    optometry: {
+        stats: OPTOMETRY_STATS,
+        reviews: OPTOMETRY_REVIEWS,
+        patientStory: OPTOMETRY_PATIENT_STORY,
+        promises: OPTOMETRY_PROMISES,
+        journey: OPTOMETRY_JOURNEY,
+        faqs: OPTOMETRY_FAQS,
+    },
+};
+
+export const statsFor = (kind: string): readonly Stat[] => BY_TRADE[kind]?.stats ?? STATS;
+export const reviewsFor = (kind: string): readonly Review[] => BY_TRADE[kind]?.reviews ?? REVIEWS;
+export const patientStoryFor = (kind: string): PatientStory =>
+    BY_TRADE[kind]?.patientStory ?? PATIENT_STORY;
+export const promisesFor = (kind: string): readonly Promise_[] =>
+    BY_TRADE[kind]?.promises ?? PROMISES;
+export const journeyFor = (kind: string): readonly JourneyStep[] =>
+    BY_TRADE[kind]?.journey ?? JOURNEY;
+export const faqsFor = (kind: string): readonly FaqItem[] => BY_TRADE[kind]?.faqs ?? FAQS;
+
 export const accreditationsFor = (
     kind: string,
     regulators: Regulators,
 ): readonly Accreditation[] => regulatorAccreditations(kind, regulators);
-export const reviewsFor = (kind: string): readonly Review[] => (isVet(kind) ? VET_REVIEWS : REVIEWS);
-export const patientStoryFor = (kind: string): PatientStory =>
-    isVet(kind) ? VET_PATIENT_STORY : PATIENT_STORY;
-export const promisesFor = (kind: string): readonly Promise_[] =>
-    isVet(kind) ? VET_PROMISES : PROMISES;
-export const journeyFor = (kind: string): readonly JourneyStep[] =>
-    isVet(kind) ? VET_JOURNEY : JOURNEY;
-export const faqsFor = (kind: string): readonly FaqItem[] => (isVet(kind) ? VET_FAQS : FAQS);
