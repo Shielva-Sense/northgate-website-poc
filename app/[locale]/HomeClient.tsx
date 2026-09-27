@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, ViewTransition } from "react";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
 import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
@@ -49,15 +49,16 @@ export function HomeClient({ template }: { readonly template: TemplateId }): Rea
 
     return (
         <div data-template={template} style={designVars(template) as React.CSSProperties}>
-            <ScrollProgress />
-            <AnnounceBar />
-            <SiteHeader />
+            {/* Chrome lives in app/[locale]/layout.tsx so it survives a
+                navigation. Rendering it here too put a second masthead and a
+                second announce bar on the page. */}
+            <ViewTransition default="page">
             <main id="main-content" tabIndex={-1}>
                 {sections.map((id) => (
                     <Fragment key={id}>{rendered[id]}</Fragment>
                 ))}
             </main>
-            <SiteFooter />
+            </ViewTransition>
             <StickyCta />
         </div>
     );

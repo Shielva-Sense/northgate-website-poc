@@ -18,6 +18,7 @@ import type { Service } from "@/app/features/clinic/types";
 import styles from "./Service.module.scss";
 import { tr } from "@/app/core/content-ar";
 import { useLocale } from "@/app/features/clinic/LocaleContext";
+import { ViewTransition } from "react";
 
 export function ServiceClient({ service }: { service: Service }): React.JSX.Element {
     const { locale } = useLocale();
@@ -32,10 +33,10 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
 
     return (
         <>
-            <ScrollProgress />
-            <AnnounceBar />
-            <SiteHeader />
-
+            {/* Chrome lives in app/[locale]/layout.tsx so it survives a
+                navigation. Rendering it here too put a second masthead and a
+                second announce bar on the page. */}
+            <ViewTransition default="page">
             <main id="main-content" tabIndex={-1}>
                 <article className={styles.page} ref={ref}>
                     <div className="wrap">
@@ -131,8 +132,7 @@ export function ServiceClient({ service }: { service: Service }): React.JSX.Elem
                     </div>
                 </article>
             </main>
-
-            <SiteFooter />
+            </ViewTransition>
         </>
     );
 }

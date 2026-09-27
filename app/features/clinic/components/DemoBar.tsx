@@ -32,7 +32,7 @@ export function DemoBar({
     readonly locale: Locale;
 }): React.JSX.Element {
     return (
-        <aside className={styles.bar} aria-label={tr("Demo layout switcher", locale)}>
+        <aside className={`${styles.bar} demo-bar-anchor`} aria-label={tr("Demo layout switcher", locale)}>
             <span className={styles.label}>
                 <Layers size={14} aria-hidden="true" />
                 <span className={styles.labelText}>{tr("Layout", locale)}</span>

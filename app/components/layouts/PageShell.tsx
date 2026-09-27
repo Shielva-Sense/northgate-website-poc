@@ -6,6 +6,7 @@ import type { SiteMedia } from "@/app/features/clinic/content";
 import type { Locale } from "@/app/core/locale";
 import { tr } from "@/app/core/content-ar";
 import styles from "./PageShell.module.scss";
+import { ViewTransition } from "react";
 
 interface ShellProps {
     /** Which language this page is being read in, from the route param. */
@@ -61,7 +62,16 @@ async function CachedShell({
     const shot = imageKey === undefined ? image : mediaFor(site.profile.kind)[imageKey];
 
     return (
-        <main id="main-content" tabIndex={-1}>
+        /* The page content, and only the page content, is a view transition.
+        
+           The chrome above and below it is anchored by a fixed
+           `view-transition-name` in globals.scss, so the masthead does not slide with
+           the page — a header that moves takes away the one fixed point a reader uses
+           to understand that the *content* changed rather than the whole window.
+           React runs these on route navigations automatically, and a browser without
+           the View Transitions API simply swaps as before. */
+        <ViewTransition default="page">
+            <main id="main-content" tabIndex={-1}>
             <Head
                 title={tr(title, locale)}
                 lede={lede === undefined ? undefined : tr(lede, locale)}
@@ -71,6 +81,7 @@ async function CachedShell({
             />
             {children}
         </main>
+            </ViewTransition>
     );
 }
 

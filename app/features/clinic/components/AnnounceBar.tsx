@@ -33,7 +33,7 @@ export function AnnounceBar(): React.JSX.Element {
     }, [announcements.length]);
 
     return (
-        <aside className={styles.bar} aria-label={tr("Practice updates", locale)}>
+        <aside className={`${styles.bar} announce-anchor`} aria-label={tr("Practice updates", locale)}>
             <p className={styles.inner} aria-live="polite">
                 {/* Keyed on the message itself: it remounts on each change so
                     the fade re-runs, without keying on an array index. */}

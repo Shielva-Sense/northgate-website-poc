@@ -13,7 +13,7 @@ export function SiteFooter(): React.JSX.Element {
        four — so a dental site offered vaccinations and travel health. */
     const profile = useProfile();
     return (
-        <footer className={styles.foot}>
+        <footer className={`${styles.foot} site-footer-anchor`}>
             <div className="wrap">
                 <div className={styles.footGrid}>
                     <div>

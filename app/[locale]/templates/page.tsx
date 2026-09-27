@@ -9,6 +9,7 @@ import { designVars, TEMPLATES } from "@/app/features/clinic/templates";
 import styles from "./Templates.module.scss";
 import type { Locale } from "@/app/core/locale";
 import { localise, tr } from "@/app/core/content-ar";
+import { ViewTransition } from "react";
 
 export async function generateMetadata(): Promise<Metadata> {
     const brand = (await siteFromHost((await headers()).get("host"))).brand;
@@ -31,6 +32,7 @@ export default async function Page({
 
     return (
         <>
+            <ViewTransition default="page">
             <main id="main-content" tabIndex={-1} className={styles.page}>
                 <div className="wrap">
                     <p className={styles.kicker}>
@@ -127,6 +129,7 @@ export default async function Page({
                     </p>
                 </div>
             </main>
+            </ViewTransition>
         </>
     );
 }

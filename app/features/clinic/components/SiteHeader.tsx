@@ -92,7 +92,7 @@ export function SiteHeader(): React.JSX.Element {
     const [open, setOpen] = useState(false);
 
     return (
-        <header className={styles.head}>
+        <header className={`${styles.head} site-header-anchor`}>
             <div className={`wrap ${styles.bar}`}>
                 {/* "/" not "#top": a bare hash goes nowhere from /services or
                     /urgent-care, so the brand looked dead on every inner page.

@@ -162,3 +162,78 @@ p {
         clip-path: none;
     }
 }
+
+/* ── Page transitions ─────────────────────────────────────────────
+
+   Navigation used to be a full document load, so there was nothing to
+   animate: the browser tore the page down and painted a new one. Now that a
+   click is a real client-side navigation, the content can move between the
+   two states instead of blinking between them.
+
+   Only <main> participates — it carries `view-transition-class: page` from the
+   <ViewTransition> wrapper around it. The chrome is pinned below, because a
+   masthead that slides with the content removes the one fixed point a reader
+   uses to tell that the page changed rather than the whole window.
+
+   The offset is deliberately small. Far enough to read as movement, not so far
+   that the eye has to chase text across the screen on every click. */
+
+::view-transition-old(.page) {
+    animation:
+        120ms ease-in both page-fade reverse,
+        320ms ease-in-out both page-slide-out;
+}
+
+::view-transition-new(.page) {
+    animation:
+        180ms ease-out 100ms both page-fade,
+        320ms ease-in-out both page-slide-in;
+}
+
+@keyframes page-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes page-slide-out {
+    from { translate: 0; }
+    to { translate: -40px; }
+}
+
+@keyframes page-slide-in {
+    from { translate: 40px; }
+    to { translate: 0; }
+}
+
+/* The chrome holds still. Each of these gets its own name so the browser
+   treats it as the same element across the two states and leaves it alone. */
+.site-header-anchor { view-transition-name: site-header; }
+.announce-anchor { view-transition-name: announce-bar; }
+.demo-bar-anchor { view-transition-name: demo-bar; }
+.demo-ribbon-anchor { view-transition-name: demo-ribbon; }
+.site-footer-anchor { view-transition-name: site-footer; }
+
+::view-transition-group(site-header),
+::view-transition-group(announce-bar),
+::view-transition-group(demo-bar),
+::view-transition-group(demo-ribbon),
+::view-transition-group(site-footer) {
+    animation: none;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(announce-bar),
+::view-transition-old(demo-bar),
+::view-transition-old(demo-ribbon),
+::view-transition-old(site-footer) {
+    display: none;
+}
+
+/* Someone who has asked the system for less motion gets the swap without the
+   movement — the transition still happens, it just does not travel. */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(.page),
+    ::view-transition-new(.page) {
+        animation: none;
+    }
+}

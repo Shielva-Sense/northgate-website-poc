@@ -22,7 +22,7 @@ export function DemoRibbon({
     readonly locale: Locale;
 }): React.JSX.Element {
     return (
-        <aside className={styles.ribbon} role="note">
+        <aside className={`${styles.ribbon} demo-ribbon-anchor`} role="note">
             <b>{tr("Design proposal", locale)}</b>
             <span>
                 A concept site prepared for {name} by Shielva Sense. Not affiliated with,
