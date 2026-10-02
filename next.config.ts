@@ -1,5 +1,13 @@
 import type { NextConfig } from "next";
 
+/* Origins allowed to embed the sites (a portfolio's live preview), from FRAME_ANCESTORS
+   at BUILD time — headers() is baked into the build. Only https origins are accepted;
+   with none set, nothing may frame the site. */
+const FRAME_ANCESTORS = (process.env.FRAME_ANCESTORS ?? "").split(/[\s,]+/).filter((o) => /^https:\/\/[a-z0-9.-]+$/i.test(o));
+const FRAMING = FRAME_ANCESTORS.length > 0
+    ? [{ key: "Content-Security-Policy", value: `frame-ancestors 'self' ${FRAME_ANCESTORS.join(" ")}` }]
+    : [{ key: "X-Frame-Options", value: "DENY" }];
+
 const nextConfig: NextConfig = {
     /* Every route was `ƒ` — server-rendered on demand — because each page reads
        the Host header to resolve the tenant's brand, and reading headers() opts
@@ -24,7 +32,7 @@ const nextConfig: NextConfig = {
                 source: "/:path*",
                 headers: [
                     { key: "X-Content-Type-Options", value: "nosniff" },
-                    { key: "X-Frame-Options", value: "DENY" },
+                    ...FRAMING,
                     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
                     {
                         key: "Permissions-Policy",
