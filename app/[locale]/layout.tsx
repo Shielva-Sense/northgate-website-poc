@@ -10,6 +10,7 @@ import { AnnounceBar } from "@/app/features/clinic/components/AnnounceBar";
 import { SiteHeader } from "@/app/features/clinic/components/SiteHeader";
 import { SiteFooter } from "@/app/features/clinic/components/SiteFooter";
 import { ScrollProgress } from "@/app/features/clinic/components/ScrollProgress";
+import { FrameReadyBeacon } from "@/app/components/FrameReadyBeacon";
 import { BrandProvider } from "@/app/features/clinic/BrandContext";
 import { BookingProvider } from "@/app/features/booking/BookingPanel";
 import { contentFor } from "@/app/features/clinic/content";
@@ -102,6 +103,7 @@ export default async function LocaleLayout({
                 >
                     <BookingProvider>
                         <ScrollProgress />
+                        <FrameReadyBeacon />
                         {isIndexable() ? null : <DemoBar locale={locale} />}
                         <AnnounceBar />
                         <SiteHeader />

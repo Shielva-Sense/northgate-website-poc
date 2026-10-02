@@ -14,7 +14,9 @@ COPY . .
 # The gate must be configured at RUN time, not baked in. POC_PASSWORD is
 # deliberately absent here: next.config sets `output: standalone`, nothing in
 # the build reads the secret, and a build arg would end up in a layer.
-ENV NEXT_TELEMETRY_DISABLED=1
+# Embedding origins are baked into the response headers at build time (next.config.ts).
+ARG FRAME_ANCESTORS=
+ENV NEXT_TELEMETRY_DISABLED=1 FRAME_ANCESTORS=$FRAME_ANCESTORS
 RUN pnpm run build
 
 FROM node:22-alpine AS runner
