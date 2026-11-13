@@ -5,8 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  source-map-js: ^1.2.2
   zod@<4.6.6: ^4.6.6
-  source-map-js: 1.2.2
 
 importers:
 
