@@ -2,4 +2,5 @@ ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
 overrides:
+  'zod@<4.6.6': '^4.6.6'
   source-map-js: 1.2.2
